@@ -1,7 +1,24 @@
 {
 	"name" : "acoby/framework",
 	"require" : {
+		"php" : ">=7.4",
 		"slim/slim" : "~4",
 		"guzzlehttp/guzzle" : "~7"
+	},
+	"license" : "MIT",
+	"homepage" : "https://www.acoby.de/",
+	"authors" : [{
+			"name" : "Thoralf Rickert-Wendt"
+		}
+	],
+	"autoload" : {
+		"psr-4" : {
+			"acoby\\" : "src/acoby"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"acoby\\" : "src/acoby"
+		}
 	}
 }

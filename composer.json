@@ -1,0 +1,7 @@
+{
+	"name" : "acoby/framework",
+	"require" : {
+		"slim/slim" : "~4",
+		"guzzlehttp/guzzle" : "~7"
+	}
+}

@@ -6,6 +6,7 @@
 		"guzzlehttp/guzzle" : "~7"
 	},
 	"license" : "MIT",
+	"type" : "library",
 	"homepage" : "https://www.acoby.de/",
 	"authors" : [{
 			"name" : "Thoralf Rickert-Wendt"
@@ -13,12 +14,12 @@
 	],
 	"autoload" : {
 		"psr-4" : {
-			"acoby\\" : "src/acoby"
+			"acoby\\" : "src"
 		}
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"acoby\\" : "src/acoby"
+			"acoby\\" : "src"
 		}
 	}
 }

@@ -2,8 +2,15 @@
 	"name" : "acoby/framework",
 	"require" : {
 		"php" : ">=7.4",
+		"firebase/php-jwt" : "~5",
+		"guzzlehttp/guzzle" : "~7",
+		"netresearch/jsonmapper" : "~4",
+		"ramsey/uuid" : "~4",
+		"slim/csrf" : "~1",
+		"slim/psr7" : "~1",
 		"slim/slim" : "~4",
-		"guzzlehttp/guzzle" : "~7"
+		"slim/twig-view" : "~3",
+		"tuupola/slim-basic-auth" : "~3"
 	},
 	"license" : "MIT",
 	"type" : "library",

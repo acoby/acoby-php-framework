@@ -7,16 +7,14 @@ use PDO;
 use PDOStatement;
 use acoby\exceptions\DatabaseException;
 use Exception;
+use acoby\models\AbstractSearch;
+use acoby\services\ConfigService;
 
 class DatabaseMapper {
   private static $instance = null;
 
   public static function getInstance() :DatabaseMapper {
-    if (self::$instance === null) {
-      // @codeCoverageIgnoreStart
-      self::$instance = new DatabaseMapper();
-      // @codeCoverageIgnoreEnd
-    }
+    if (self::$instance === null) self::$instance = new DatabaseMapper();
     return self::$instance;
   }
 
@@ -29,11 +27,7 @@ class DatabaseMapper {
    * @return string[]
    */
   private function getColumns(PDO $connection, string $tableName) {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
 
     $query = "SELECT * FROM `".$tableName."` LIMIT 0";
     $result = $connection->query($query);
@@ -56,10 +50,10 @@ class DatabaseMapper {
    */
   private function addInsertParam(array &$query, array &$params, &$var, string $key) :void {
     if (!isset($var)) return;
-    if (!endsWith($query[0], "(")) $query[0] .= ",";
+    if (!Utils::endsWith($query[0], "(")) $query[0] .= ",";
     $query[0] .= "`".$key."`";
 
-    if (!endsWith($query[1], "(")) $query[1] .= ",";
+    if (!Utils::endsWith($query[1], "(")) $query[1] .= ",";
     $query[1] .= ":".$key;
     $params[":".$key] = $var;
   }
@@ -71,12 +65,8 @@ class DatabaseMapper {
    * @return PDOStatement|NULL
    */
   public function insert(PDO $connection, string $tableName, object $object) :?PDOStatement {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $tableColumns = $this->getColumns($connection, $tableName);
     $classFields = array_keys(get_class_vars(get_class($object)));
 
@@ -101,7 +91,7 @@ class DatabaseMapper {
     $stmt = $connection->prepare($q);
     if (!$stmt) {
       // @codeCoverageIgnoreStart
-      error_log("Failed to parse query: ".$q." ".print_r($params,true));
+      Utils::logError("Failed to parse query: ".$q." ".print_r($params,true));
       throw new DatabaseException("Failed to parse query: ".$q." ".print_r($params,true));
       // @codeCoverageIgnoreEnd
     }
@@ -112,16 +102,14 @@ class DatabaseMapper {
     try {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        logError("Failed query",$q,$params,$stmt->errorInfo());
+        Utils::logError("Failed query",$q,$params,$stmt->errorInfo());
         return null;
         // @codeCoverageIgnoreEnd
       }
       return $stmt;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      error_log($q);
-      error_log(print_r($params,true));
-      error_log(print_r($stmt->errorInfo(),true));
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return null;
     // @codeCoverageIgnoreEnd
@@ -137,7 +125,7 @@ class DatabaseMapper {
    */
   public function addUpdateParam(string &$query, array &$params, &$var, string $key) :void {
     if (!isset($var)) return;
-    if (!endsWith($query, ' SET ')) $query .=" ,";
+    if (!Utils::endsWith($query, ' SET ')) $query .=" ,";
     $query .= "`".$key."` = :".$key." ";
     $params[":".$key] = $var;
   }
@@ -225,12 +213,8 @@ class DatabaseMapper {
    * @return bool
    */
   public function update(PDO $connection, string $tableName, object $object, string $identifierName, string $identifier) :bool {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $tableColumns = $this->getColumns($connection, $tableName);
     $classFields = array_keys(get_class_vars(get_class($object)));
 
@@ -258,16 +242,14 @@ class DatabaseMapper {
     try {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        logError("Unknown error",$query,$params,$stmt->errorInfo());
+        Utils::logError("Unknown error",$query,$params,$stmt->errorInfo());
         return false;
         // @codeCoverageIgnoreEnd
       }
       return true;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      error_log($query);
-      error_log(print_r($params,true));
-      error_log(print_r($stmt->errorInfo(),true));
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return false;
     // @codeCoverageIgnoreEnd
@@ -284,15 +266,11 @@ class DatabaseMapper {
    * @return bool
    */
   public function exec(PDO $connection, string $query, array &$params) :bool {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $stmt = $connection->prepare($query);
     if (!$stmt) {
-      error_log("Failed to parse query: ".$query." ".print_r($params,true));
+      Utils::logError("Failed to parse query: ".$query." ".print_r($params,true));
       throw new DatabaseException("Failed to parse query: ".$query." ".print_r($params,true));
     }
     foreach ($params as $key => &$value) {
@@ -301,12 +279,12 @@ class DatabaseMapper {
 
     try {
       if (!$stmt->execute()) {
-        logError("Query failed", $query, $params, $stmt->errorInfo());
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
         return false;
       }
       return true;
     } catch (Exception $e) {
-      logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return false;
   }
@@ -322,15 +300,11 @@ class DatabaseMapper {
    * @return integer
    */
   public function count(PDO $connection, string $query, array &$params) :int {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $stmt = $connection->prepare($query);
     if (!$stmt) {
-      error_log("Failed to parse query: ".$query." ".print_r($params,true));
+      Utils::logError("Failed to parse query: ".$query." ".print_r($params,true));
       throw new DatabaseException("Failed to parse query: ".$query." ".print_r($params,true));
     }
     foreach ($params as $key => &$value) {
@@ -339,14 +313,14 @@ class DatabaseMapper {
 
     try {
       if (!$stmt->execute()) {
-        logError("Query failed", $query, $params, $stmt->errorInfo());
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
         return 0;
       }
       $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
       if ($result[0] == null) return 0;
       return $result[0];
     } catch (Exception $e) {
-      logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return 0;
   }
@@ -363,15 +337,11 @@ class DatabaseMapper {
    * @return bool
    */
   public function query(PDO $connection, string $query, array &$params) :?array {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $stmt = $connection->prepare($query);
     if (!$stmt) {
-      error_log("Failed to parse query: ".$query." ".print_r($params,true));
+      Utils::logError("Failed to parse query: ".$query." ".print_r($params,true));
       throw new DatabaseException("Failed to parse query: ".$query." ".print_r($params,true));
     }
     foreach ($params as $key => &$value) {
@@ -380,12 +350,12 @@ class DatabaseMapper {
 
     try {
       if (!$stmt->execute()) {
-        logError("Query failed", $query, $params, $stmt->errorInfo());
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
         return null;
       }
       return $stmt->fetchAll();
     } catch (Exception $e) {
-      logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return null;
   }
@@ -399,12 +369,8 @@ class DatabaseMapper {
    * @return array
    */
   public function search(PDO $connection, string $tableName, AbstractSearch $search, string $resultType, string $orderBy = null) :array {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $tableColumns = $this->getColumns($connection, $tableName);
     $classFields = array_keys(get_class_vars(get_class($search)));
     $searchFields = array_keys(get_class_vars(AbstractSearch::class));
@@ -426,7 +392,7 @@ class DatabaseMapper {
           $this->addSelectParam($query, $params, $search->$field, $field,gettype($search->$field));
         } else {
           // @codeCoverageIgnoreStart
-          error_log("INFO: class field: ".$field." has no pendant in table ".$tableName);
+          Utils::logDebug("INFO: class field: ".$field." has no pendant in table ".$tableName);
           // @codeCoverageIgnoreEnd
         }
       }
@@ -457,7 +423,7 @@ class DatabaseMapper {
     try {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        logError("Error in search query",$query,$params,$stmt->errorInfo());
+        Utils::logError("Error in search query",$query,$params,$stmt->errorInfo());
         return null;
         // @codeCoverageIgnoreEnd
       }
@@ -466,9 +432,7 @@ class DatabaseMapper {
       return $results;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      error_log($query);
-      error_log(print_r($params,true));
-      error_log(print_r($stmt->errorInfo(),true));
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return null;
     // @codeCoverageIgnoreEnd
@@ -488,12 +452,8 @@ class DatabaseMapper {
    * @return array
    */
   public function findAll(PDO $connection, string $tableName, string $resultType, string $condition = "", array $params, bool $expand = false, $limit, $offset = 0) :array {
-    if (!isset($connection)) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("PDO not initialized");
-      // @codeCoverageIgnoreEnd
-    }
-
+    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+    
     $query = 'SELECT * FROM `'.$tableName.'`';
     if (isset($condition) && strlen($condition) > 0) $query.=" WHERE ".$condition;
     if (isset($limit) && is_numeric($limit)) {
@@ -520,7 +480,7 @@ class DatabaseMapper {
     try {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        logError("Error in query",$query,$params,$stmt->errorInfo());
+        Utils::logError("Error in query",$query,$params,$stmt->errorInfo());
         return null;
         // @codeCoverageIgnoreEnd
       }
@@ -529,9 +489,7 @@ class DatabaseMapper {
       return $results;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      error_log($query);
-      error_log(print_r($params,true));
-      error_log(print_r($stmt->errorInfo(),true));
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
     return null;
     // @codeCoverageIgnoreEnd
@@ -554,11 +512,7 @@ class DatabaseMapper {
     $query.=" LIMIT 0,1";
 
     $stmt = $connection->prepare($query);
-    if (!$stmt) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("Failed to parse query: ".$query);
-      // @codeCoverageIgnoreEnd
-    }
+    if (!$stmt) throw new DatabaseException("Failed to parse query: ".$query);
 
     foreach ($params as $key => &$value) {
       $stmt->bindParam($key, $value);
@@ -567,7 +521,7 @@ class DatabaseMapper {
     try {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        logError("Error in query",$query,$params,$stmt->errorInfo());
+        Utils::logError("Error in query",$query,$params,$stmt->errorInfo());
         return null;
         // @codeCoverageIgnoreEnd
       }
@@ -578,10 +532,7 @@ class DatabaseMapper {
       }
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      error_log("Exception during quering: ".$e->getMessage()." in ".$e->getTraceAsString());
-      error_log($query);
-      error_log(print_r($params,true));
-      error_log(print_r($stmt->errorInfo(),true));
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
       // @codeCoverageIgnoreEnd
     }
     return null;
@@ -592,12 +543,11 @@ class DatabaseMapper {
    * @return PDO
    */
   public function beginTransaction() :PDO {
-    global $ACOBY_CONFIG;
-    $connection = new PDO($ACOBY_CONFIG["acoby_db_dsn"], $ACOBY_CONFIG["acoby_db_username"], $ACOBY_CONFIG["acoby_db_password"]);
+    $connection = new PDO(ConfigService::get("acoby_db_dsn"), ConfigService::get("acoby_db_username"), ConfigService::get("acoby_db_password"));
     if (!$connection) {
       // @codeCoverageIgnoreStart
       $error = createError(500, "could not open database.");
-      error_log(print_r($error,true));
+      Utils::logError(print_r($error,true));
 
       header("Content-Type: application/json");
       echo json_encode($error);

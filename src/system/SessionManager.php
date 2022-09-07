@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace acoby\system;
 
@@ -46,7 +47,7 @@ class SessionManager {
    *
    * @param User $user
    */
-  public function setUser(User $user) :void {
+  public function setUser(object $user) :void {
     $this->set(SessionManager::SESSION_KEY_USER,json_encode($user));
   }
 
@@ -54,10 +55,10 @@ class SessionManager {
    *
    * @return User|NULL
    */
-  public function getUser() :?User {
+  public function getUser(object $class) :?object {
     $userdata = $this->get(SessionManager::SESSION_KEY_USER);
     if ($userdata !== null) {
-      return $this->mapper->mapObject($userdata, new User());
+      return $this->mapper->mapObject($userdata, $class);
     }
     return null;
   }

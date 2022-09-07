@@ -6,7 +6,6 @@ namespace acoby\controller;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use acoby\system\SessionManager;
 
 abstract class AbstractAPIController extends AbstractController {
   const FORMAT_FULL = 0;
@@ -21,7 +20,7 @@ abstract class AbstractAPIController extends AbstractController {
    * @return ResponseInterface|NULL wenn alles ok ist, kommt ein null zurück
    */
   protected function validateAPIRequest(ServerRequestInterface $request, ResponseInterface $response, array $args) :?ResponseInterface {
-    $user = SessionManager::getInstance()->getUser();
+    $user = $this->getCurrentUser();
     if ($user === null) {
       return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
     }

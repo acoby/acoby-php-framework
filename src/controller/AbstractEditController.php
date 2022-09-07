@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Views\Twig;
 use Throwable;
-use acoby\system\SessionManager;
 use acoby\system\Utils;
 
 /**
@@ -158,7 +157,7 @@ abstract class AbstractEditController extends AbstractController {
 
     $form = $this->getForm($request, $args);
 
-    $user = SessionManager::getInstance()->getUser();
+    $user = $this->getCurrentUser();
     if ($user === null) {
       return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
     }
@@ -261,7 +260,7 @@ abstract class AbstractEditController extends AbstractController {
    * @return ResponseInterface|NULL wenn alles ok ist, kommt ein null zurück
    */
   protected function validateFormRequest(ServerRequestInterface $request, ResponseInterface $response, array $args, array $form, object $object) :?ResponseInterface {
-    $user = SessionManager::getInstance()->getUser();
+    $user = $this->getCurrentUser();
     if ($user === null) {
       return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
     }

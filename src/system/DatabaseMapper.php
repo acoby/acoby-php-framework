@@ -329,14 +329,13 @@ class DatabaseMapper {
   /**
    * Führt eine Funktion aus
    *
-   * @codeCoverageIgnore
    * @param PDO $connection
    * @param string $query
    * @param array $params
    * @throws DatabaseException
    * @return bool
    */
-  public function query(PDO $connection, string $query, array &$params) :?array {
+  public function query(PDO $connection, string $query, array &$params, int $fetch_style = PDO::FETCH_NUM, $fetch_arguments = null) :array {
     if (!isset($connection)) throw new DatabaseException("PDO not initialized");
     
     $stmt = $connection->prepare($query);
@@ -348,16 +347,22 @@ class DatabaseMapper {
       $stmt->bindParam($key, $value);
     }
 
+    // @codeCoverageIgnoreStart
     try {
       if (!$stmt->execute()) {
         Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
-        return null;
+        return [];
       }
-      return $stmt->fetchAll();
+      if ($fetch_arguments !== null) {
+        return $stmt->fetchAll($fetch_style, $fetch_arguments);
+      } else {
+        return $stmt->fetchAll($fetch_style);
+      }
     } catch (Exception $e) {
       Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
-    return null;
+    // @codeCoverageIgnoreEnd
+    return [];
   }
 
 

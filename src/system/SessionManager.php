@@ -57,7 +57,7 @@ class SessionManager {
   public function getUser(object $class) :?object {
     $userdata = $this->get(SessionManager::SESSION_KEY_USER);
     if ($userdata !== null) {
-      return $this->mapper->mapObject($userdata, $class);
+      return $this->mapper->map($userdata, $class);
     }
     return null;
   }

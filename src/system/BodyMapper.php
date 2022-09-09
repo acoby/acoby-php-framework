@@ -4,12 +4,13 @@ declare(strict_types=1);
 namespace acoby\system;
 
 use acoby\exceptions\IllegalArgumentException;
+use JsonMapper;
 
 class BodyMapper {
   private $mapper;
 
   public function __construct() {
-    $this->mapper = new \JsonMapper();
+    $this->mapper = new JsonMapper();
   }
 
   /**
@@ -79,19 +80,16 @@ class BodyMapper {
    * @throws IllegalArgumentException
    * @return object
    */
-  public function mapObject(string $body, object $object) :object {
+  public function mapObject($body, object $object) :object {
     try {
-      $mixed = json_decode($body,false,100,JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT | JSON_BIGINT_AS_STRING);
-      return $this->mapper->map($mixed, $object);
+      return $this->mapper->map($body, $object);
       // @codeCoverageIgnoreStart
     } catch (\Exception $error) {
-      Utils::logException("Cannot map JSON String to Object", $error);
       throw new IllegalArgumentException($error->getMessage());
     } catch (\Error $error) {
-      Utils::logException("Cannot map JSON String to Object", $error);
       throw new IllegalArgumentException($error->getMessage());
+      // @codeCoverageIgnoreEnd
     }
-    // @codeCoverageIgnoreEnd
   }
 
   /**
@@ -117,6 +115,12 @@ class BodyMapper {
     // @codeCoverageIgnoreEnd
   }
 
+  /**
+   * Return a JSON string from an array
+   * 
+   * @param array $data
+   * @return string
+   */
   public function mapJSON(array $data) :string {
     return json_encode($data);
   }

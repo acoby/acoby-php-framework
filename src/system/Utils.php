@@ -7,9 +7,6 @@ use Throwable;
 use Exception;
 use DateTime;
 use acoby\models\RESTStatus;
-use acoby\models\RESTResult;
-use acoby\models\RESTError;
-use acoby\services\ConfigService;
 
 class Utils {
   /**
@@ -272,13 +269,7 @@ class Utils {
    * @return RESTStatus
    */
   public static function createError(int $code, string $message = "") :RESTStatus {
-    $error = new RESTError();
-    $error->message = $message;
-    $status = new RESTStatus();
-    $status->code = $code;
-    $status->error = $error;
-    
-    return $status;
+    return RequestUtils::createError($code, $message);
   }
   
   /**
@@ -291,23 +282,7 @@ class Utils {
    * @return RESTStatus
    */
   public static function createException(int $code, string $message, Exception $exception) :RESTStatus {
-    $error = new RESTError();
-    $error->message = $message;
-    
-    if (ConfigService::get("acoby_environment") !== "prod") {
-      $error->file = $exception->getFile();
-      $error->line = $exception->getLine();
-      $error->trace =  $exception->getTraceAsString();
-      $error->message = $exception->getMessage();
-    } else {
-      // die Exception geben wir im Prod Betrieb nicht raus, aber ins Log
-      error_log("Exception in file ".$exception->getFile().":".$exception->getLine()." with message ".$exception->getMessage()."\n".$exception->getTraceAsString());
-    }
-    
-    $status = new RESTStatus();
-    $status->code = $code;
-    $status->error = $error;
-    return $status;
+    return RequestUtils::createException($code, $message, $exception);
   }
   
   /**
@@ -318,12 +293,7 @@ class Utils {
    * @return RESTStatus
    */
   public static function createResult(int $code, string $message) :RESTStatus {
-    $result = new RESTResult();
-    $result->message = $message;
-    $status = new RESTStatus();
-    $status->code = $code;
-    $status->result = $result;
-    return $status;
+    return RequestUtils::createResult($code, $message);
   }
   
   /**

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
+         backupGlobals="true" 
+         backupStaticAttributes="false" 
+         bootstrap="tests/bootstrap.php" 
+         colors="false" 
+         convertErrorsToExceptions="true" 
+         convertNoticesToExceptions="true" 
+         convertWarningsToExceptions="true" 
+         forceCoversAnnotation="false" 
+         processIsolation="false" 
+         stopOnError="false" 
+         stopOnFailure="false" 
+         stopOnIncomplete="false" 
+         stopOnSkipped="false" 
+         stopOnRisky="false" 
+         timeoutForSmallTests="1" 
+         timeoutForMediumTests="10" 
+         timeoutForLargeTests="60" 
+         verbose="false">
+
+  <coverage>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php" prefix="inc_">./src</directory>
+    </exclude>
+    <report>
+      <html outputDirectory="build/logs/coverage" lowUpperBound="30" highLowerBound="75"/>
+      <text outputFile="php://stdout"/>
+    </report>
+  </coverage>
+
+  <testsuites>
+    <testsuite name="Acoby PHP Framework Test Suite">
+      <directory>./tests</directory>
+    </testsuite>
+  </testsuites>
+
+  <logging>
+    <junit outputFile="build/logs/junit.xml"/>
+  </logging>
+
+  <php>
+    <server name='HTTP_HOST' value='localhost' />
+    <server name='HTTP_ACCEPT_LANGUAGE' value='de,en-US;q=0.7,en;q=0.3 ' />
+  </php>
+</phpunit>

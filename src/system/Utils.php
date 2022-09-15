@@ -310,7 +310,7 @@ class Utils {
    * @param string $email
    * @return string|NULL
    */
-  public function getDomain(string $email) :?string {
+  public static function getDomain(string $email) :?string {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
       return array_pop(explode('@', $email));
     }

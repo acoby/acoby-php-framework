@@ -1,4 +1,4 @@
 .buildpath
 .phpunit.result.cache
-/build/
-/vendor/
+build/
+vendor/

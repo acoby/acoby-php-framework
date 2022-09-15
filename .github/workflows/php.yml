@@ -25,3 +25,10 @@ jobs:
 
     - name: "Run PHP Unit tests"
       uses: php-actions/phpunit@v8
+      with:
+        php_extensions: xdebug
+        bootstrap: vendor/autoload.php
+        configuration: test/phpunit.xml
+        args: --coverage-text
+      env:
+        XDEBUG_MODE: coverage

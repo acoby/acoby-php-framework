@@ -9,17 +9,28 @@ use acoby\system\SessionManager;
 
 class AcobyAuthHandler {
   private static $ignoreRoute = array();
+  private static $cookieSupport = array();
   
   public static function addIgnoreRoute(string $route) :void {
     AcobyAuthHandler::$ignoreRoute[] = $route;
+  }
+  
+  public static function addCookieSupport(string $cookieName, string $function) :void {
+    AcobyAuthHandler::$cookieSupport[$cookieName] = $function;
   }
   
   public function handleRequest($request, $handler) {
     $routeContext = RouteContext::fromRequest($request);
     $route = $routeContext->getRoute();
     if ($route === null) throw new ObjectNotFoundException();
+    
+    foreach (AcobyAuthHandler::$cookieSupport as $cookieName => $function) {
+      if (isset($_COOKIE[$cookieName])) {
+        call_user_func($function, $request);
+      }
+    }
 
-    if (!isset($_SESSION["user"])) {
+    if (!isset($_SESSION[SessionManager::SESSION_KEY_USER])) {
       $routeName = $route->getName();
       if (in_array($routeName, AcobyAuthHandler::$ignoreRoute)) {
         return $handler->handle($request);

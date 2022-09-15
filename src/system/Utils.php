@@ -304,4 +304,16 @@ class Utils {
   public static function ln(string $string) :string {
     return $string."\n";
   }
+  
+  /**
+   *
+   * @param string $email
+   * @return string|NULL
+   */
+  public function getDomain(string $email) :?string {
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return array_pop(explode('@', $email));
+    }
+    return null;
+  }
 }

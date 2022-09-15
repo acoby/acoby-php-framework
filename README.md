@@ -1,3 +1,5 @@
+[![Build & Test](https://github.com/acoby/acoby-php-framework/actions/workflows/php.yml/badge.svg)](https://github.com/acoby/acoby-php-framework/actions/workflows/php.yml)
+
 # acoby/framework
 
 This is our primary php framework. It contains some helpful classes for our PHP projects. Please add them via

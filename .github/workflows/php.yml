@@ -23,3 +23,7 @@ jobs:
       run: |
         php composer.phar --no-plugins --no-scripts install
         ./vendor/bin/phpunit --configuration phpunit.xml --coverage-text
+      with:
+        coverage: xdebug
+      env:
+        XDEBUG_MODE: coverage

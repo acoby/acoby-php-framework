@@ -17,6 +17,15 @@ to your compose.json.
 
 ## change log
 
+### v1.4.7
+
+- feat: cookie support and domain validation utility
+- feat: add some more query options
+- feat: add History
+- fix: remove strict mode for exceptions
+- fix: some minor issues
+
+
 ### v1.0.0
 
 - inital version with Slim, Twig and DatabaseMapper

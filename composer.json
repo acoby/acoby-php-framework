@@ -26,7 +26,13 @@
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"acoby\\" : "src"
+			"acoby\\" : [
+				"src",
+				"tests"
+			]
 		}
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "~9"
 	}
 }

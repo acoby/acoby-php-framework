@@ -35,6 +35,10 @@ to your compose.json. We don't publish the package to the public composer archiv
 
 ## change log
 
+### v1.4.8
+
+- fix: found a minor bug during decrypting data
+
 ### v1.4.7
 
 - feat: cookie support and domain validation utility

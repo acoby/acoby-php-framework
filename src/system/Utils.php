@@ -249,7 +249,7 @@ class Utils {
    * erzeugt einen Paar aus username und passwort und speichert es ab.
    */
   public static function getCredentials(string $ciphertext, string $key) :array {
-    $data = decrypt($ciphertext, $key);
+    $data = Utils::decrypt($ciphertext, $key);
     return explode(" ", $data);
   }
   

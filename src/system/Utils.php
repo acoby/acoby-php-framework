@@ -7,6 +7,7 @@ use Throwable;
 use Exception;
 use DateTime;
 use acoby\models\RESTStatus;
+use acoby\services\ConfigService;
 
 class Utils {
   /**
@@ -131,8 +132,7 @@ class Utils {
    * @param string $message
    */
   public static function logDebug(string $message) {
-    global $ACOBY_CONFIG;
-    if ($ACOBY_CONFIG["acoby_environment"] !== "test") {
+    if (ConfigService::get("acoby_environment","unknown") !== "test") {
       error_log("[DEBUG] ".$message);
     }
   }
@@ -203,16 +203,16 @@ class Utils {
    * Verschlüsseln von Daten
    */
   public static function encrypt(string $content, string $key) :?string {
-    global $ACOBY_CONFIG;
-    if (!in_array($ACOBY_CONFIG["acoby_cipher"], openssl_get_cipher_methods())) {
+    $cipher = ConfigService::get("acoby_cipher","aes-256-cbc");
+    if (!in_array($cipher, openssl_get_cipher_methods())) {
       // @codeCoverageIgnoreStart
-      Utils::logError("could not found cipher ".$ACOBY_CONFIG["acoby_cipher"]);
+      Utils::logError("could not found cipher ".$cipher);
       return null;
       // @codeCoverageIgnoreEnd
     }
-    $ivlen = openssl_cipher_iv_length($ACOBY_CONFIG["acoby_cipher"]);
+    $ivlen = openssl_cipher_iv_length($cipher);
     $iv = openssl_random_pseudo_bytes($ivlen);
-    $ciphertext_raw = openssl_encrypt($content, $ACOBY_CONFIG["acoby_cipher"], $key, OPENSSL_RAW_DATA, $iv);
+    $ciphertext_raw = openssl_encrypt($content, $cipher, $key, OPENSSL_RAW_DATA, $iv);
     
     $hmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
     return base64_encode( $iv.$hmac.$ciphertext_raw );
@@ -222,19 +222,19 @@ class Utils {
    * Entschlüsseln von Daten
    */
   public static function decrypt(string $ciphertext, string $key) :?string {
-    global $ACOBY_CONFIG;
-    if (!in_array($ACOBY_CONFIG["acoby_cipher"], openssl_get_cipher_methods())) {
+    $cipher = ConfigService::get("acoby_cipher","aes-256-cbc");
+    if (!in_array($cipher, openssl_get_cipher_methods())) {
       // @codeCoverageIgnoreStart
-      Utils::logError("could not found cipher ".$ACOBY_CONFIG["acoby_cipher"]);
+      Utils::logError("could not found cipher ".$cipher);
       return null;
       // @codeCoverageIgnoreEnd
     }
     $c = base64_decode($ciphertext);
-    $ivlen = openssl_cipher_iv_length($ACOBY_CONFIG["acoby_cipher"]);
+    $ivlen = openssl_cipher_iv_length($cipher);
     $iv = substr($c, 0, $ivlen);
     $hmac = substr($c, $ivlen, $sha2len=32);
     $ciphertext_raw = substr($c, $ivlen+$sha2len);
-    $content = openssl_decrypt($ciphertext_raw, $ACOBY_CONFIG["acoby_cipher"], $key, OPENSSL_RAW_DATA, $iv);
+    $content = openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
     $calcmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
     if (hash_equals($hmac, $calcmac)) {
       return $content;

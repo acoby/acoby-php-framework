@@ -87,9 +87,9 @@ abstract class AbstractEditController extends AbstractController {
     foreach ($form["elements"] as &$element) {
       $defaultValue = null;
       if (isset($element["value"])) {
-        $defaultValue = $element["value"];
+        $defaultValue = strval($element["value"]);
       }
-      $value = $this->getAttribute($element["name"],$defaultValue);
+      $value = strval($this->getAttribute($element["name"],$defaultValue));
       if ($element["mandatory"] && $defaultValue !== $value && Utils::isEmpty($value)) {
         $element["error"] = $element["label"]." must be defined";
         $isValid = false;

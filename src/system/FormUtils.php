@@ -5,19 +5,19 @@ namespace acoby\system;
 
 class FormUtils {
   private static $instance = null;
-
+  
   public static function getInstance() :FormUtils {
     if (self::$instance === null) self::$instance = new FormUtils();
     return self::$instance;
   }
-
+  
   /**
    * create a standard text input field
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $type
    * @param string $id
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -30,15 +30,15 @@ class FormUtils {
    * @return array
    * @deprecated please use a specific method
    */
-  public function createInputFormElement(string $tab, string $type, string $id, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createInputFormElement(string $tab, string $type, string $id, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createFormElement($tab, "input", $type, $id, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
   /**
    * Create a password input field
-   * 
+   *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -50,7 +50,7 @@ class FormUtils {
    * @param string $pattern define a pattern for this field
    * @return array
    */
-  public function createPasswordField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createPasswordField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createFormElement($tab, "input", "password", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
@@ -58,7 +58,7 @@ class FormUtils {
    * Create a phone input field
    *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -70,7 +70,7 @@ class FormUtils {
    * @param string $pattern define a pattern for this field
    * @return array
    */
-  public function createPhoneField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createPhoneField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createFormElement($tab, "input", "tel", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
@@ -90,7 +90,7 @@ class FormUtils {
    * @param string $pattern define a pattern for this field
    * @return array
    */
-  public function createEMailField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createEMailField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createFormElement($tab, "input", "email", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
@@ -110,7 +110,7 @@ class FormUtils {
    * @param string $pattern define a pattern for this field
    * @return array
    */
-  public function createURLField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createURLField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createFormElement($tab, "input", "url", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
@@ -118,7 +118,7 @@ class FormUtils {
    * Create a number input field
    *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param int $currentValue an optional default value
@@ -127,7 +127,7 @@ class FormUtils {
    * @param bool $readonly define this field as readonly
    * @return array
    */
-  public function createNumberField(string $tab, string $name, string $label, string $placeholder = null, int $currentValue = null, bool $mandatory = false, array $validator = null, int $minValue = null, int $maxValue = null, bool $readonly = false) :array {
+  public function createNumberField(string $tab, string $name, string $label, string $placeholder = null, int $currentValue = null, bool $mandatory = false, array $validator = null, int $minValue = null, int $maxValue = null, bool $readonly = null) :array {
     $element = array();
     $element["tab"] = $tab;
     $element["tag"] = "input";
@@ -142,15 +142,15 @@ class FormUtils {
     $element["label"] = $label;
     if (isset($minValue)) $element["minValue"] = $minValue;
     if (isset($maxValue)) $element["maxValue"] = $maxValue;
-    if (isset($readonly)) $element["readonly"] = $readonly;
+    if (isset($readonly) && $readonly) $element["readonly"] = "true";
     return $element;
   }
   
   /**
    * Create a text input form
-   * 
+   *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -162,17 +162,17 @@ class FormUtils {
    * @param string $pattern define a pattern for this field
    * @return array
    */
-  public function createInputField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createInputField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createFormElement($tab, "input", "text", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
-
+  
   /**
    * Create a text input form
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $id which id is used for this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -186,15 +186,15 @@ class FormUtils {
    * @return array
    * @deprecated please use createInputField
    */
-  public function createInputTextFormElement(string $tab, string $id, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  public function createInputTextFormElement(string $tab, string $id, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     return $this->createInputFormElement($tab, "text", $id, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
-
+  
   /**
    * Create a simple static select form
-   * 
+   *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -210,10 +210,10 @@ class FormUtils {
   
   /**
    * Create a simple static select form
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $id which id is used for this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -229,10 +229,10 @@ class FormUtils {
   
   /**
    * Create a simple dynamic select form
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $id which id is used for this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -248,9 +248,9 @@ class FormUtils {
   
   /**
    * Create a simple dynamic select form
-   * 
+   *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -258,17 +258,17 @@ class FormUtils {
    * @param array $validator a reference to a validator that is called with new data
    * @param string $ajax the endpoint for retrieving possible values
    * @return array
-   */  
+   */
   public function createSelect2Field(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, string $ajax = null, bool $readonly = null) :array {
     return $this->createFormElement($tab, "select2", "", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, ["url"=>$ajax]);
   }
   
   /**
    * Create a multu select form field
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $id which id is used for this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -285,9 +285,9 @@ class FormUtils {
   
   /**
    * Create a multu select form field
-   * 
+   *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -304,10 +304,10 @@ class FormUtils {
   
   /**
    * Create a multi line text input field
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $id which id is used for this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -322,9 +322,9 @@ class FormUtils {
   
   /**
    * Create a multi line text input field
-   * 
+   *
    * @param string $tab which tab contains this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -339,10 +339,10 @@ class FormUtils {
   
   /**
    * Create a text field (without input)
-   * 
+   *
    * @param string $tab which tab contains this element
    * @param string $id which id is used for this element
-   * @param string $name which name has this element 
+   * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
@@ -354,7 +354,7 @@ class FormUtils {
   
   /**
    * Create a checkbox entry
-   * 
+   *
    * @param string $tab
    * @param string $name
    * @param string $label
@@ -362,7 +362,7 @@ class FormUtils {
    * @param array $validator
    * @return array
    */
-  public function createCheckbox(string $tab, string $name, string $label, bool $currentValue = false, array $validator = null) :array {
+  public function createCheckbox(string $tab, string $name, string $label, bool $currentValue = false, array $validator = null, bool $readonly = null) :array {
     $element = array();
     $element["tab"] = $tab;
     $element["tag"] = "checkbox";
@@ -372,6 +372,7 @@ class FormUtils {
     $element["label"] = $label;
     $element["value"] = $currentValue;
     if (isset($validator)) $element["validator"] = $validator;
+    if (isset($readonly) && $readonly) $element["readonly"] = "true";
     return $element;
   }
   /**
@@ -387,7 +388,7 @@ class FormUtils {
    * @param array $validator
    * @return array
    */
-  protected function createFormElement(string $tab, string $tag, string $type, string $id, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, array $values = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
+  protected function createFormElement(string $tab, string $tag, string $type, string $id, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, array $values = null, bool $readonly = null, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
     $element = array();
     $element["tab"] = $tab;
     $element["tag"] = $tag;
@@ -400,11 +401,11 @@ class FormUtils {
     $element["mandatory"] = $mandatory;
     if (isset($validator)) $element["validator"] = $validator;
     if (isset($values)) $element["values"] = $values;
-    if (isset($readonly)) $element["readonly"] = $readonly;
+    if (isset($readonly) && $readonly) $element["readonly"] = "true";
     if (isset($pattern)) $element["pattern"] = $pattern;
     if (isset($minlength)) $element["minlength"] = $minlength;
     if (isset($maxlength)) $element["maxlength"] = $maxlength;
     return $element;
   }
-
+  
 }

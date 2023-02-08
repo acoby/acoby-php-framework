@@ -140,11 +140,10 @@ class FormUtils {
    * @param string $name
    * @param string $label
    * @param bool $checked
-   * @param bool $mandatory
    * @param array $validator
    * @return array
    */
-  public function createCheckbox(string $tab, string $name, string $label, bool $currentValue = false, bool $mandatory = false, array $validator = null) :array {
+  public function createCheckbox(string $tab, string $name, string $label, bool $currentValue = false, array $validator = null) :array {
     $element = array();
     $element["tab"] = $tab;
     $element["tag"] = "checkbox";
@@ -153,7 +152,6 @@ class FormUtils {
     $element["name"] = $name;
     $element["label"] = $label;
     $element["value"] = $currentValue;
-    $element["mandatory"] = $mandatory;
     if (isset($validator)) $element["validator"] = $validator;
     return $element;
   }

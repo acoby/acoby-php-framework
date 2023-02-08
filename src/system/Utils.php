@@ -149,6 +149,28 @@ class Utils {
   }
   
   /**
+   * 
+   * @param bool $value
+   * @param bool $defaultValue
+   * @return bool
+   */
+  public static function asBool(bool $value = null, bool $defaultValue = false) :bool {
+    if ($value === null) return $defaultValue;
+    return $defaultValue;
+  }
+  
+  /**
+   * 
+   * @param int $value
+   * @param int $defaultValue
+   * @return int
+   */
+  public static function asInt(int $value = null, int $defaultValue = 0) :int {
+    if ($value === null) return $defaultValue;
+    return $defaultValue;
+  }
+  
+  /**
    *
    * @param string $string
    * @param int $maxLength

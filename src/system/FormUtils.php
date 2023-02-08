@@ -47,6 +47,84 @@ class FormUtils {
   }
   
   /**
+   * Create a phone input field
+   *
+   * @param string $tab which tab contains this element
+   * @param string $name which name has this element 
+   * @param string $label what label has this element
+   * @param string $placeholder an optional placeholder in the input field
+   * @param string $currentValue an optional default value
+   * @param bool $mandatory mark this field as mandatory (must be filled)
+   * @param array $validator a reference to a validator that is called with new data
+   * @return array
+   */
+  public function createPhoneField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null) :array {
+    return $this->createFormElement($tab, "input", "tel", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator);
+  }
+  
+  /**
+   * Create a phone input field
+   *
+   * @param string $tab which tab contains this element
+   * @param string $name which name has this element
+   * @param string $label what label has this element
+   * @param string $placeholder an optional placeholder in the input field
+   * @param string $currentValue an optional default value
+   * @param bool $mandatory mark this field as mandatory (must be filled)
+   * @param array $validator a reference to a validator that is called with new data
+   * @return array
+   */
+  public function createEMailField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null) :array {
+    return $this->createFormElement($tab, "input", "email", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator);
+  }
+  
+  /**
+   * Create a URL input field
+   *
+   * @param string $tab which tab contains this element
+   * @param string $name which name has this element
+   * @param string $label what label has this element
+   * @param string $placeholder an optional placeholder in the input field
+   * @param string $currentValue an optional default value
+   * @param bool $mandatory mark this field as mandatory (must be filled)
+   * @param array $validator a reference to a validator that is called with new data
+   * @return array
+   */
+  public function createURLField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null) :array {
+    return $this->createFormElement($tab, "input", "url", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator);
+  }
+  
+  /**
+   * Create a number input field
+   *
+   * @param string $tab which tab contains this element
+   * @param string $name which name has this element 
+   * @param string $label what label has this element
+   * @param string $placeholder an optional placeholder in the input field
+   * @param int $currentValue an optional default value
+   * @param bool $mandatory mark this field as mandatory (must be filled)
+   * @param array $validator a reference to a validator that is called with new data
+   * @return array
+   */
+  public function createENumberField(string $tab, string $name, string $label, string $placeholder = null, int $currentValue = null, bool $mandatory = false, array $validator = null, int $minValue = null, int $maxValue = null) :array {
+    $element = array();
+    $element["tab"] = $tab;
+    $element["tag"] = "input";
+    $element["type"] = "number";
+    $element["id"] = $name;
+    $element["name"] = $name;
+    $element["label"] = $label;
+    if (isset($placeholder)) $element["placeholder"] = $placeholder;
+    if (isset($currentValue)) $element["value"] = $currentValue;
+    $element["mandatory"] = $mandatory;
+    if (isset($validator)) $element["validator"] = $validator;
+    $element["label"] = $label;
+    if (isset($minValue)) $element["minValue"] = $minValue;
+    if (isset($maxValue)) $element["maxValue"] = $maxValue;
+    return $element;
+  }
+  
+  /**
    * Create a text input form
    * 
    * @param string $tab which tab contains this element

@@ -51,7 +51,7 @@ class FormUtils {
    * @return array
    */
   public function createPasswordField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
-    return $this->createFormElement($tab, "input", "password", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, $readonly, $minlength, $maxlength, $pattern);
+    return $this->createFormElement($tab, "input", "password", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
   /**
@@ -71,7 +71,7 @@ class FormUtils {
    * @return array
    */
   public function createPhoneField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
-    return $this->createFormElement($tab, "input", "tel", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, $readonly, $minlength, $maxlength, $pattern);
+    return $this->createFormElement($tab, "input", "tel", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
   /**
@@ -91,7 +91,7 @@ class FormUtils {
    * @return array
    */
   public function createEMailField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
-    return $this->createFormElement($tab, "input", "email", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, $readonly, $minlength, $maxlength, $pattern);
+    return $this->createFormElement($tab, "input", "email", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
   /**
@@ -111,7 +111,7 @@ class FormUtils {
    * @return array
    */
   public function createURLField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :array {
-    return $this->createFormElement($tab, "input", "url", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, $readonly, $minlength, $maxlength, $pattern);
+    return $this->createFormElement($tab, "input", "url", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, null, $readonly, $minlength, $maxlength, $pattern);
   }
   
   /**
@@ -182,7 +182,7 @@ class FormUtils {
    * @param int $minlength define the minimum length of the value
    * @param int $maxlength define the maximum length of this value
    * @param string $pattern define a pattern for this field
-   * @param array $values
+   * @param array $values a list of possible values
    * @return array
    * @deprecated please use createInputField
    */
@@ -200,11 +200,12 @@ class FormUtils {
    * @param string $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
    * @param array $validator a reference to a validator that is called with new data
-   * @param array $values
+   * @param array $values a list of possible values
+   * @param bool $readonly define this field as readonly
    * @return array
    */
-  public function createSelectField(string $tab,string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, array $values = null) :array {
-    return $this->createFormElement($tab, "select", "", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, $values);
+  public function createSelectField(string $tab,string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, array $values = null, bool $readonly = null) :array {
+    return $this->createFormElement($tab, "select", "", $name, $name, $label, $placeholder, $currentValue, $mandatory, $validator, $values, $readonly);
   }
   
   /**
@@ -218,7 +219,7 @@ class FormUtils {
    * @param string $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
    * @param array $validator a reference to a validator that is called with new data
-   * @param array $values a list of allowed fields
+   * @param array $values a list of allowed values
    * @return array
    * @deprecated please use createSelectField
    */
@@ -237,7 +238,7 @@ class FormUtils {
    * @param string $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
    * @param array $validator a reference to a validator that is called with new data
-   * @param string $ajax
+   * @param string $ajax the endpoint for retrieving possible values
    * @return array
    * @deprecated please use createSelect2Field
    */
@@ -255,7 +256,7 @@ class FormUtils {
    * @param string $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
    * @param array $validator a reference to a validator that is called with new data
-   * @param string $ajax
+   * @param string $ajax the endpoint for retrieving possible values
    * @return array
    */  
   public function createSelect2Field(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, string $ajax = null, bool $readonly = null) :array {

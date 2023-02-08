@@ -106,7 +106,7 @@ class FormUtils {
    * @param array $validator a reference to a validator that is called with new data
    * @return array
    */
-  public function createENumberField(string $tab, string $name, string $label, string $placeholder = null, int $currentValue = null, bool $mandatory = false, array $validator = null, int $minValue = null, int $maxValue = null) :array {
+  public function createNumberField(string $tab, string $name, string $label, string $placeholder = null, int $currentValue = null, bool $mandatory = false, array $validator = null, int $minValue = null, int $maxValue = null) :array {
     $element = array();
     $element["tab"] = $tab;
     $element["tag"] = "input";

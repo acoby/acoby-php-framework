@@ -35,6 +35,11 @@ to your compose.json. We don't publish the package to the public composer archiv
 
 ## change log
 
+### v1.5.0
+
+- feat: created some more FormField Types
+- fix: update dependencies
+
 ### v1.4.8
 
 - fix: found a minor bug during decrypting data

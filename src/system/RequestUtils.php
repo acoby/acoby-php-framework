@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use acoby\models\RESTStatus;
 use acoby\services\ConfigService;
 use Exception;
+use Throwable;
 use acoby\models\RESTError;
 use acoby\models\RESTResult;
 
@@ -103,7 +104,7 @@ class RequestUtils {
    * @param Exception $exception
    * @return RESTStatus
    */
-  public static function createException(int $code, string $message, Exception $exception) :RESTStatus {
+  public static function createException(int $code, string $message, Throwable $exception) :RESTStatus {
     $error = new RESTError();
     $error->message = $message;
     

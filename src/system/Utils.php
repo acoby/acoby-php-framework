@@ -378,7 +378,7 @@ class Utils {
    * @param Exception $exception
    * @return RESTStatus
    */
-  public static function createException(int $code, string $message, Exception $exception) :RESTStatus {
+  public static function createException(int $code, string $message, Throwable $exception) :RESTStatus {
     return RequestUtils::createException($code, $message, $exception);
   }
   

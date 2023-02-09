@@ -5,6 +5,7 @@ namespace acoby\system;
 
 use PDO;
 use PDOStatement;
+use RuntimeException;
 use acoby\exceptions\DatabaseException;
 use Exception;
 use acoby\models\AbstractSearch;
@@ -12,7 +13,8 @@ use acoby\services\ConfigService;
 
 class DatabaseMapper {
   private static $instance = null;
-
+  private $columnCache = array();
+  
   public static function getInstance() :DatabaseMapper {
     if (self::$instance === null) self::$instance = new DatabaseMapper();
     return self::$instance;
@@ -27,16 +29,23 @@ class DatabaseMapper {
    * @return string[]
    */
   private function getColumns(PDO $connection, string $tableName) {
-    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
-
+    if (isset($this->columnCache[$tableName])) return $this->columnCache[$tableName];
+    if (!isset($connection)) {
+      // @codeCoverageIgnoreStart
+      throw new RuntimeException("PDO not initialized");
+      // @codeCoverageIgnoreEnd
+    }
+    
     $query = "SELECT * FROM `".$tableName."` LIMIT 0";
     $result = $connection->query($query);
-    if ($result === false) throw new DatabaseException("Table ".$tableName." is not available");
+    if ($result === false) throw new Exception("Table ".$tableName." is not available");
     $columns = array();
     for ($i = 0; $i < $result->columnCount(); $i++) {
       $col = $result->getColumnMeta($i);
       $columns[] = $col['name'];
     }
+    
+    $this->columnCache[$tableName] = $columns;
     return $columns;
   }
 
@@ -166,16 +175,16 @@ class DatabaseMapper {
         $params[":".$key] = str_replace("*","%",$var);
       }
     } else  if ($type == "integer") {
-      if (strpos($var,">=")===0) {
+      if (is_string($var) && strpos($var,">=")===0) {
         $query .= " AND ".$this->addToQuery($key,">=",$orNull);
         $params[":".$key] = str_replace(">=","",$var);
-      } else if (strpos($var,">")===0) {
+      } else if (is_string($var) && strpos($var,">")===0) {
         $query .= " AND ".$this->addToQuery($key,">",$orNull);
         $params[":".$key] = str_replace(">","",$var);
-      } else if (strpos($var,"<=")===0) {
+      } else if (is_string($var) && strpos($var,"<=")===0) {
         $query .= " AND ".$this->addToQuery($key,"<=",$orNull);
         $params[":".$key] = str_replace("<=","",$var);
-      } else if (strpos($var,"<")===0) {
+      } else if (is_string($var) && strpos($var,"<")===0) {
         $query .= " AND ".$this->addToQuery($key,"<",$orNull);
         $params[":".$key] = str_replace("<","",$var);
       } else {
@@ -288,8 +297,96 @@ class DatabaseMapper {
     }
     return false;
   }
-
-
+  
+  /**
+   * Physical remove row from database.
+   *
+   * @param PDO $connection
+   * @param string $tableName
+   * @param string $identifierName
+   * @param string $identifier
+   * @throws RuntimeException
+   * @return bool
+   */
+  public function remove(PDO $connection, string $tableName, string $identifierName, string $identifier) :bool {
+    if (!isset($connection)) {
+      // @codeCoverageIgnoreStart
+      throw new RuntimeException("PDO not initialized");
+      // @codeCoverageIgnoreEnd
+    }
+    
+    $params = array();
+    $query = 'DELETE FROM `'.$tableName.'` WHERE 1=1';
+    $this->addSelectParam($query, $params, $identifier, $identifierName);
+    
+    $stmt = $connection->prepare($query);
+    if (!$stmt) {
+      // @codeCoverageIgnoreStart
+      throw new RuntimeException("Failed to parse query: ".$query);
+      // @codeCoverageIgnoreEnd
+    }
+    foreach ($params as $key => &$value) {
+      $stmt->bindParam($key, $value);
+    }
+    
+    // @codeCoverageIgnoreStart
+    try {
+      if (!$stmt->execute()) {
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
+        return false;
+      }
+      return true;
+    } catch (Exception $e) {
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+    }
+    // @codeCoverageIgnoreEnd
+    return false;
+  }
+  /**
+   *
+   * @param PDO $connection
+   * @param string $tableName
+   * @param object $object
+   * @param string $identifierName
+   * @param string $identifier
+   * @throws RuntimeException
+   * @return bool
+   */
+  public function delete(PDO $connection, string $tableName, string $identifierName, string $identifier, string $condition = "`deleted`= now()") :bool {
+    if (!isset($connection)) {
+      // @codeCoverageIgnoreStart
+      throw new RuntimeException("PDO not initialized");
+      // @codeCoverageIgnoreEnd
+    }
+    
+    $params = array();
+    $query = 'UPDATE `'.$tableName.'` SET '.$condition.' WHERE 1=1 ';
+    $this->addSelectParam($query, $params, $identifier, $identifierName);
+    
+    $stmt = $connection->prepare($query);
+    if (!$stmt) {
+      // @codeCoverageIgnoreStart
+      throw new RuntimeException("Failed to parse query: ".$query);
+      // @codeCoverageIgnoreEnd
+    }
+    foreach ($params as $key => &$value) {
+      $stmt->bindParam($key, $value);
+    }
+    
+    // @codeCoverageIgnoreStart
+    try {
+      if (!$stmt->execute()) {
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
+        return false;
+      }
+      return true;
+    } catch (Exception $e) {
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+    }
+    // @codeCoverageIgnoreEnd
+    return false;
+  }
+  
   /**
    * Führt eine Funktion aus
    *
@@ -456,7 +553,7 @@ class DatabaseMapper {
    * @throws DatabaseException
    * @return array
    */
-  public function findAll(PDO $connection, string $tableName, string $resultType, string $condition = "", array $params, bool $expand = false, $limit, $offset = 0) :array {
+  public function findAll(PDO $connection, string $tableName, string $resultType, string $condition = "", array $params, bool $expand = false, $limit, $offset = 0, bool $hide=null) :array {
     if (!isset($connection)) throw new DatabaseException("PDO not initialized");
     
     $query = 'SELECT * FROM `'.$tableName.'`';
@@ -490,7 +587,13 @@ class DatabaseMapper {
         // @codeCoverageIgnoreEnd
       }
       $results = $stmt->fetchAll(PDO::FETCH_CLASS, $resultType);
-      foreach ($results as $result) $result->reform($expand);
+      foreach ($results as $result) {
+        if ($hide !== null) {
+          $result->reform($expand,$hide);
+        } else {
+          $result->reform($expand);
+        }
+      }
       return $results;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
@@ -499,45 +602,103 @@ class DatabaseMapper {
     return null;
     // @codeCoverageIgnoreEnd
   }
-
+  
   /**
+   * find a Single row, map it to a class on a given condition
+   *
+   * <pre>
+   * $params = array();
+   * $params['externalId'] = $instanceId;
+   * $condition = "`".ServiceInstance::TABLE_NAME."`.`deleted` IS NULL AND `".ServiceInstance::TABLE_NAME."`.`externalId`=:externalId";
+   * if ($customerId !== null) {
+   *   $params['customerId'] = $customerId;
+   *   $condition.= " AND `".ServiceInstance::TABLE_NAME."`.`customerId`=:customerId";
+   * }
+   * $join = array();
+   * $join[] = [
+   *     "table"=>Service::TABLE_NAME,
+   *     "condition"=>"LEFT JOIN `".Service::TABLE_NAME."` ON `".ServiceInstance::TABLE_NAME."`.`serviceId` = `".Service::TABLE_NAME."`.`externalId`",
+   *     "class"=>Service::class,
+   *     "field"=>"service"
+   * ];
+   * </pre>
    *
    * @param PDO $connection
-   * @param string $tableName
-   * @param string $resultType
-   * @param string $condition
-   * @param bool $expand
-   * @param array $params
-   * @throws DatabaseException
+   * @param string $tableName the table to look for
+   * @param string $resultType the result class type
+   * @param string $condition the SQL condition to look for, like 'deleted is null and id = :id'
+   * @param bool $expand expand the object (uses the internal method to expand the object)
+   * @param array $params a key-value map for mapping the prepared statements
+   * @param array $join with a list of map containing values "table", "class", "field", "condition" for joining a table and mapping it to a class and assign it to a field
+   * @throws RuntimeException
    * @return object|NULL
    */
-  public function findOne(PDO $connection, string $tableName, string $resultType, bool $expand = true, string $condition = "", array &$params) :?object {
-    $query = 'SELECT * FROM `'.$tableName.'`';
-    if (isset($condition) && strlen($condition) > 0) $query.=" WHERE ".$condition;
-    $query.=" LIMIT 0,1";
-
-    $stmt = $connection->prepare($query);
-    if (!$stmt) throw new DatabaseException("Failed to parse query: ".$query);
-
-    foreach ($params as $key => &$value) {
-      $stmt->bindParam($key, $value);
-    }
-
+  public function findOne(PDO $connection, string $tableName, string $resultType, bool $expand, string $condition, array &$params, array $join=null, bool $hide=null) :?object {
+    $stmt = null;
     try {
+      $query = 'SELECT `'.$tableName.'`.*';
+      
+      if ($join !== null) {
+        foreach ($join as $table) {
+          $tableColumns = $this->getColumns($connection, $table["table"]);
+          foreach ($tableColumns as $column) {
+            if ($column === "id") continue;
+            $query.= ',`'.$table["table"].'`.`'.$column.'` AS '.$table["table"].'_X_'.$column;
+          }
+        }
+      }
+      $query.= ' FROM `'.$tableName.'`';
+      if ($join !== null) {
+        foreach ($join as $table) {
+          $query.= ' '.$table["condition"].' ';
+        }
+      }
+      if (isset($condition) && strlen($condition) > 0) $query.=" WHERE ".$condition;
+      $query.=" LIMIT 0,1";
+      
+      $stmt = $connection->prepare($query);
+      if (!$stmt) {
+        throw new RuntimeException("Failed to parse query: ".$query);
+      }
+      
+      foreach ($params as $key => &$value) {
+        $stmt->bindParam($key, $value);
+      }
+      
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        Utils::logError("Error in query",$query,$params,$stmt->errorInfo());
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
         return null;
         // @codeCoverageIgnoreEnd
       }
+      
       $results = $stmt->fetchAll(PDO::FETCH_CLASS, $resultType);
       foreach ($results as $result) {
-        $result->reform($expand);
+        if ($join !== null) {
+          foreach ($join as $table) {
+            $classVars = array_keys(get_class_vars($table["class"]));
+            $class = new $table["class"];
+            $field = $table["field"];
+            foreach ($classVars as $classVar) {
+              $rowVar = $table["table"].'_X_'.$classVar;
+              if (isset($result->$rowVar)) $class->$classVar = $result->$rowVar;
+              unset($result->$rowVar);
+            }
+            $result->$field = $class;
+          }
+        }
+        if ($hide !== null) {
+          $result->reform($expand, $hide);
+        } else {
+          $result->reform($expand);
+        }
         return $result;
       }
-      // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+      // @codeCoverageIgnoreStart
+      $errorInfo = array();
+      if ($stmt !== null && is_object($stmt)) $errorInfo = $stmt->errorInfo();
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $errorInfo);
       // @codeCoverageIgnoreEnd
     }
     return null;

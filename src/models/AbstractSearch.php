@@ -55,6 +55,7 @@ abstract class AbstractSearch {
    */
   public function verify() :void {
     if (!isset($this->expand)) $this->expand = FALSE;
+    if (!isset($this->reverse)) $this->reverse = FALSE;
     if (!isset($this->offset)) $this->offset = 0;
     if (!isset($this->limit)) $this->limit = 100;
   }

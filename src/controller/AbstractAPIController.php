@@ -17,7 +17,7 @@ abstract class AbstractAPIController extends AbstractController {
   /**
    *
    * @param ResponseInterface $response
-   * @param arobjectray $data
+   * @param $data
    * @param int $code
    * @return ResponseInterface
    */
@@ -79,5 +79,36 @@ abstract class AbstractAPIController extends AbstractController {
    */
   public function getData(ServerRequestInterface $request, array $args, int $format = AbstractAPIController::FORMAT_FULL) :array {
     return array();
+  }
+  
+  
+  /**
+   *
+   * @param ResponseInterface $response
+   * @param array $list
+   * @param int $offset
+   * @param int $limit
+   * @param int $httpStatus
+   * @return ResponseInterface
+   */
+  protected function getListResponse(ResponseInterface $response, array $list, int $offset = 0, int $limit = 100, int $httpStatus = StatusCodeInterface::HTTP_OK) :ResponseInterface {
+    if (count($list)>$limit) {
+      array_pop($list);
+      $response = $response->withAddedHeader("X-NOBOD-more", "true");
+    }
+    $response = $response->withAddedHeader("X-NOBOD-offset", $offset);
+    $response = $response->withAddedHeader("X-NOBOD-limit", $limit);
+    return $this->getJSONResponse($response, $list, $httpStatus);
+  }
+  
+  /**
+   *
+   * @param ResponseInterface $response
+   * @param array $list
+   * @param int $httpStatus
+   * @return ResponseInterface
+   */
+  protected function getJSONResponse(ResponseInterface $response, array $list, int $httpStatus = StatusCodeInterface::HTTP_OK) :ResponseInterface {
+    return $response->withStatus($httpStatus)->withJson($list);
   }
 }

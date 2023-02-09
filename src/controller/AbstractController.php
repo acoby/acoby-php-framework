@@ -7,13 +7,8 @@ use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Views\Twig;
-use DateTime;
 use Throwable;
-use acoby\models\History;
-use acoby\models\Job;
 use acoby\services\ConfigService;
-use acoby\services\HistoryService;
-use acoby\services\UserService;
 use acoby\system\BodyMapper;
 use acoby\system\RequestBody;
 use acoby\system\Utils;
@@ -197,4 +192,6 @@ abstract class AbstractController {
    * @return object|NULL
    */
   protected abstract function getCurrentUser() :?object;
+  
+  
 }

@@ -91,7 +91,23 @@ class BodyMapper {
       // @codeCoverageIgnoreEnd
     }
   }
-
+  
+  /**
+   *
+   * @param string $body
+   * @param string $class
+   * @return array
+   */
+  public function mapList(string $body, string $class) :array {
+    $response = array();
+    $items = json_decode($body,true);
+    foreach ($items as $item) {
+      $body = json_encode($item);
+      $response[] = $this->map($body, new $class);
+    }
+    return $response;
+  }
+  
   /**
    * Mappen eines Array auf eine Klasse. Gibt es beim Parsen oder Objekt-machen einen Fehler, wird eine Exception geworfen
    *
@@ -123,5 +139,14 @@ class BodyMapper {
    */
   public function mapJSON(array $data) :string {
     return json_encode($data);
+  }
+  
+  /**
+   *
+   * @param object $object
+   * @return string
+   */
+  public function toString(object $object) :string {
+    return json_encode($object);
   }
 }

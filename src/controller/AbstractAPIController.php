@@ -6,51 +6,11 @@ namespace acoby\controller;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use acoby\system\RequestBody;
-use acoby\system\Utils;
 
 abstract class AbstractAPIController extends AbstractController {
   const FORMAT_FULL = 0;
   const FORMAT_SELECT2 = 1;
 
-  
-  /**
-   *
-   * @param ResponseInterface $response
-   * @param $data
-   * @param int $code
-   * @return ResponseInterface
-   */
-  protected function withJSONObject(ResponseInterface $response, object $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    $body = new RequestBody();
-    $body->write(json_encode($data));
-    return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
-  }
-  
-  /**
-   *
-   * @param ResponseInterface $response
-   * @param array $data
-   * @param int $code
-   * @return ResponseInterface
-   */
-  protected function withJSONObjectList(ResponseInterface $response, array $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    $body = new RequestBody();
-    $body->write(json_encode($data));
-    return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
-  }
-  
-  /**
-   *
-   * @param ResponseInterface $response
-   * @param array $data
-   * @param int $code
-   * @return ResponseInterface
-   */
-  protected function withJSONError(ResponseInterface $response, string $message, int $code=StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR) :ResponseInterface {
-    $status = Utils::createError($code,$message);
-    return $this->withJSONObject($response, $status, $code);
-  }
   
   /**
    * Prüft, ob der Request korrekt abgearbeitet werden kann.

@@ -14,7 +14,7 @@ use acoby\system\Utils;
  *
  * @author thoralf
  */
-abstract class AbstractEditController extends AbstractController {
+abstract class AbstractEditController extends AbstractViewController {
   const VIEW_MODE_EDIT = 1;
   const VIEW_MODE_ADD = 2;
   /**

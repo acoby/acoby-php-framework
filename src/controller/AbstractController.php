@@ -6,12 +6,10 @@ namespace acoby\controller;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Views\Twig;
-use Throwable;
-use acoby\services\ConfigService;
 use acoby\system\BodyMapper;
 use acoby\system\RequestBody;
 use acoby\system\Utils;
+use acoby\system\RequestUtils;
 
 abstract class AbstractController {
   const CONTENT_TYPE = "Content-Type";
@@ -26,91 +24,45 @@ abstract class AbstractController {
     $this->mapper = new BodyMapper();
   }
 
+  
   /**
    *
    * @param ResponseInterface $response
-   * @param Twig $view
-   * @param string $template
-   * @param array $data
+   * @param $data
    * @param int $code
    * @return ResponseInterface
    */
-  protected function withTwig(ResponseInterface $response, Twig $view, string $template, array $data=[], int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    return $view->render($response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_HTML), $template, $data);
-  }
-
-  /**
-   *
-   * @param ResponseInterface $response
-   * @param array $data
-   * @param int $code
-   * @return ResponseInterface
-   */
-  protected function withJSON(ResponseInterface $response, array $data=[], int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
+  protected function withJSONObject(ResponseInterface $response, object $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
     $body = new RequestBody();
-    $body->write($this->mapper->mapJSON($data));
+    $body->write(json_encode($data));
     return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
   }
-
+  
   /**
-   * @codeCoverageIgnore
+   *
    * @param ResponseInterface $response
-   * @param Twig $view
-   * @param string $message
-   * @param Throwable $throwable
+   * @param array $data
    * @param int $code
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return ResponseInterface
    */
-  protected function withError(ResponseInterface $response, Twig $view, string $message = "Unknown error", Throwable $throwable = null, int $code = StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR) {
-    try {
-      $data = array();
-      if ($throwable !== null) {
-        $data["error"] = $throwable;
-      }
-      $data["message"] = $message;
-      return $this->withTwig($response, $view, 'error.html',$data, $code);
-    } catch (Throwable $t1) {
-      Utils::logException("Problem during rendering error message",$t1);
-      try {
-        $data = array();
-        if ($throwable !== null) {
-          $data["error"] = $throwable;
-        }
-        $data["message"] = $message;
-        return $this->withTwig($response, $view, 'login/error.html',$data, StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
-      } catch (Throwable $t2) {
-        Utils::logException("Problem during rendering second error message",$t2);
-
-        $doc = "<html><head><title>Error</title></head><body><h3>Error</h3><p>";
-        $doc.= $message."<br/>";
-        if (ConfigService::getString("acoby_environment") !== "prod") {
-          if ($throwable !== null) {
-            $doc.= $throwable->getMessage()."<br/>";
-            if ($throwable->getPrevious() !== null) $doc.= $throwable->getMessage()."<br/>";
-            $doc.= " in ".$throwable->getFile().":".$throwable->getLine()."<br/>";
-            $doc.= nl2br($throwable->getTraceAsString());
-          }
-          $doc.= "</p><p>Rendering error message also produces second error</p><p>";
-          $doc.= $t1->getMessage()."<br/>";
-          if ($t1->getPrevious() !== null) $doc.= $t1->getMessage()."<br/>";
-          $doc.= " in ".$t1->getFile().":".$t1->getLine()."<br/>";
-          $doc.= nl2br($t1->getTraceAsString());
-          $doc.= "</p><p>Rendering second error message also produces third error</p><p>";
-          $doc.= $t2->getMessage()."<br/>";
-          if ($t2->getPrevious() !== null) $doc.= $t2->getMessage()."<br/>";
-          $doc.= " in ".$t2->getFile().":".$t2->getLine()."<br/>";
-          $doc.= nl2br($t2->getTraceAsString());
-        } else {
-          $doc.= "There was an Error. Details are written to logfile";
-        }
-        $doc.="</p></body></html>";
-        $body = new RequestBody();
-        $body->write($doc);
-        return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withBody($body);
-      }
-    }
+  protected function withJSONObjectList(ResponseInterface $response, array $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
+    $body = new RequestBody();
+    $body->write(json_encode($data));
+    return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
   }
-
+  
+  /**
+   *
+   * @param ResponseInterface $response
+   * @param array $data
+   * @param int $code
+   * @return ResponseInterface
+   */
+  protected function withJSONError(ResponseInterface $response, string $message, int $code=StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR) :ResponseInterface {
+    $status = Utils::createError($code,$message);
+    return $this->withJSONObject($response, $status, $code);
+  }
+  
   /**
    *
    * @param ServerRequestInterface $request
@@ -119,13 +71,7 @@ abstract class AbstractController {
    * @return bool
    */
   public function getBooleanQueryParameter(ServerRequestInterface $request, string $name, bool $defaultValue) :bool {
-    $queries = $request->getQueryParams();
-    if (array_key_exists($name, $queries)) {
-      $value = urlencode($queries[$name]);
-      return filter_var($value, FILTER_VALIDATE_BOOLEAN);
-    } else {
-      return $defaultValue;
-    }
+    return RequestUtils::getBooleanQueryParameter($request, $name, $defaultValue);
   }
 
   /**
@@ -136,13 +82,7 @@ abstract class AbstractController {
    * @return int
    */
   public function getIntegerQueryParameter(ServerRequestInterface $request, string $name, int $defaultValue) :int {
-    $queries = $request->getQueryParams();
-    if (array_key_exists($name, $queries)) {
-      $value = urlencode($queries[$name]);
-      return filter_var($value, FILTER_VALIDATE_INT);
-    } else {
-      return $defaultValue;
-    }
+    return RequestUtils::getIntegerQueryParameter($request, $name, $defaultValue);
   }
 
   /**

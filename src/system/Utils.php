@@ -8,6 +8,7 @@ use Exception;
 use DateTime;
 use acoby\models\RESTStatus;
 use acoby\services\ConfigService;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Utils {
   /**
@@ -23,13 +24,15 @@ class Utils {
    */
   public static function endsWith(string $haystack, string $needle) :bool {
     $length = strlen($needle);
-    if ($length == 0) {
-      return true;
-    }
-
+    if ($length == 0) return true;
     return (substr($haystack, -$length) === $needle);
   }
 
+  /**
+   * Check, if var content is empty
+   * @param mixed $value
+   * @return bool
+   */
   public static function isEmpty(string $value = null) :bool {
     return $value === null || strlen(trim($value)) === 0;
   }
@@ -51,7 +54,7 @@ class Utils {
     $max = mb_strlen($keyspace, '8bit') - 1;
     if ($max < 1) {
       // @codeCoverageIgnoreStart
-      throw new \Exception('$keyspace must be at least two characters long');
+      throw new Exception('$keyspace must be at least two characters long');
       // @codeCoverageIgnoreEnd
     }
     for ($i = 0; $i < $length; ++$i) {
@@ -61,11 +64,13 @@ class Utils {
   }
 
   /**
+   * Check, if string is a boolean "true"
    *
    * @param string $value
    * @return bool
    */
-  public static function isEnabled(string $value) :bool {
+  public static function isEnabled($value) :bool {
+    if (is_bool($value)) return $value;
     return (strtolower($value) === "true" || strtolower($value) === "on" || strtolower($value) === "yes" || $value === "1");
   }
 
@@ -137,6 +142,15 @@ class Utils {
     }
   }
   
+  /**
+   * @codeCoverageIgnore
+   * @param string $message
+   */
+  public static function logInfo(string $message) :void {
+    if (ConfigService::getString("acoby_environment") !== "prod") {
+      error_log("[INFO] ".$message);
+    }
+  }
   
   /**
    *
@@ -154,9 +168,9 @@ class Utils {
    * @param bool $defaultValue
    * @return bool
    */
-  public static function asBool(bool $value = null, bool $defaultValue = false) :bool {
-    if ($value === null) return $defaultValue;
-    return $defaultValue;
+  public static function asBool($value = null, bool $defaultValue = false) :bool {
+    if (!isset($value)) return $defaultValue;
+    return $value;
   }
   
   /**
@@ -165,9 +179,21 @@ class Utils {
    * @param int $defaultValue
    * @return int
    */
-  public static function asInt(int $value = null, int $defaultValue = 0) :int {
-    if ($value === null) return $defaultValue;
-    return $defaultValue;
+  public static function asInt($value = null, int $defaultValue = 0) :int {
+    if (!isset($value)) return $defaultValue;
+    return $value;
+  }
+  
+  /**
+   *
+   * @param int $value
+   * @param string $defaultValue
+   * @return string|NULL
+   */
+  public static function asDateTimeStringFromTimestamp($value = null, string $defaultValue = null, string $format = 'c') :?string {
+    if (!isset($value)) return $defaultValue;
+    if ($value === 0) return $defaultValue;
+    return (new DateTime())->setTimestamp((int)$value)->format($format);
   }
   
   /**
@@ -183,6 +209,19 @@ class Utils {
       return substr($string,0,$part-3).$skipText.substr($string,-$part);
     } else {
       return $string;
+    }
+  }
+  
+  /**
+   *
+   * @param string $host
+   * @return string
+   */
+  public static function getHostname(string $host) :string {
+    if (strpos($host,'.')>0) {
+      return substr($host,0,strpos($host,'.'));
+    } else {
+      return $host;
     }
   }
   
@@ -219,6 +258,41 @@ class Utils {
     
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' ago' : 'just now';
+  }
+  
+  /**
+   * Produces a string that contains the human readable time between two datetime strings.
+   *
+   * @param string $timeA
+   * @param string $timeB
+   * @return string
+   */
+  public static function getTimeDifference(string $timeA, string $timeB) {
+    $now = new DateTime($timeB);
+    $ago = new DateTime($timeA);
+    $diff = $now->diff($ago);
+    
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+    
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+      if ($diff->$k) {
+        $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+      } else {
+        unset($string[$k]);
+      }
+    }
+    
+    return $string ? implode(', ', $string) : '0 seconds';
   }
   
   /**
@@ -286,6 +360,7 @@ class Utils {
   /**
    * Erzeugt ein Standard Error-Array, wie wir es für den JSON Output brauchen.
    *
+   * @codeCoverageIgnore
    * @param int $code
    * @param string $message
    * @return RESTStatus
@@ -309,7 +384,8 @@ class Utils {
   
   /**
    * Erzeugt ein Standard Result-Array, wie wir es für den JSON Output brauchen.
-   *
+   * 
+   * @codeCoverageIgnore
    * @param int $code
    * @param string $message
    * @return RESTStatus
@@ -318,13 +394,66 @@ class Utils {
     return RequestUtils::createResult($code, $message);
   }
   
+  
   /**
-   *
+   * @codeCoverageIgnore
+   * @param ServerRequestInterface $request
+   * @param string $name
+   * @param bool $defaultValue
+   * @return bool
+   */
+  public static function getBooleanQueryParameter(ServerRequestInterface $request, string $name, bool $defaultValue) :bool {
+    return RequestUtils::getBooleanQueryParameter($request, $name, $defaultValue);
+  }
+  
+  /**
+   * @codeCoverageIgnore
+   * @param ServerRequestInterface $request
+   * @param string $name
+   * @param int $defaultValue
+   * @return int
+   */
+  public static function getIntegerQueryParameter(ServerRequestInterface $request, string $name, int $defaultValue) :int {
+    return RequestUtils::getIntegerQueryParameter($request, $name, $defaultValue);
+  }
+  
+  /**
+   * @codeCoverageIgnore
+   * @param ServerRequestInterface $request
+   * @param string $name
+   * @param string $defaultValue
+   * @return string|NULL
+   */
+  public static function getStringQueryParameter(ServerRequestInterface $request, string $name, string $defaultValue = null) :?string {
+    return RequestUtils::getStringQueryParameter($request, $name, $defaultValue);
+  }
+  
+  /**
+   * @codeCoverageIgnore
+   * @param array $args
+   * @param string $name
+   * @param string $defaultValue
+   * @return string|NULL
+   */
+  public static function getStringPathParameter(array $args, string $name, string $defaultValue = null) :?string {
+    return RequestUtils::getStringPathParameter($args, $name, $defaultValue);
+  }
+  
+  /**
+   * @codeCoverageIgnore
    * @param string $string
    * @return string
    */
   public static function ln(string $string) :string {
     return $string."\n";
+  }
+  /**
+   *
+   * @param int $value
+   * @return string
+   */
+  public static function toID(int $value, int $length = 2) :string {
+    return "".str_pad("".$value, $length, "0", STR_PAD_LEFT);
   }
   
   /**
@@ -334,7 +463,8 @@ class Utils {
    */
   public static function getDomain(string $email) :?string {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      return array_pop(explode('@', $email));
+      $split = explode('@', $email);
+      return array_pop($split);
     }
     return null;
   }

@@ -43,11 +43,13 @@ class ConfigService {
   }
   
   public static function getInt(string $key, int $defaultValue = null) :?int {
-    return intval(ConfigService::get($key,$defaultValue));
+    return intval(ConfigService::get($key,strval($defaultValue)));
   }
   
   public static function getBool(string $key, bool $defaultValue = null) :?bool {
-    return Utils::isEnabled(ConfigService::get($key,Utils::bool2str($defaultValue)));
+    $value = ConfigService::get($key);
+    if ($value === null) return $defaultValue;
+    return Utils::isEnabled($value);
   }
   
   public static function getArray(string $key, array $defaultValue = null) :?array {

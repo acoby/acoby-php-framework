@@ -23,7 +23,7 @@ class ConfigServiceTest extends BaseTestCase {
     $this->assertEquals($value4, 1);
 
     $value5 = ConfigService::getBool("testkey");
-    $this->assertFalse($value5);
+    $this->assertNull($value5);
 
     $value6 = ConfigService::getBool("testkey",true);
     $this->assertNotNull($value6);

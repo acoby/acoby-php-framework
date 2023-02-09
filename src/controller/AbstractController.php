@@ -113,25 +113,4 @@ abstract class AbstractController {
   public function clear() :void {
     $this->attributes = array();
   }
-
-  /**
-   *
-   * @param mixed $value
-   * @return string
-   */
-  protected function convert($value) {
-    if ($value !== null) {
-      return htmlspecialchars("".$value);
-    }
-    return "";
-  }
-
-  /**
-   * Return the currently logged in user
-   *
-   * @return object|NULL
-   */
-  protected abstract function getCurrentUser() :?object;
-  
-  
 }

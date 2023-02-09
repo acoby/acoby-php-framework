@@ -12,12 +12,17 @@ use acoby\system\RequestBody;
 use acoby\system\Utils;
 
 abstract class AbstractViewController extends AbstractController {
-  protected $attributes = array();
-
   public function __construct() {
     parent::__construct();
   }
-
+  
+  /**
+   * Return the currently logged in user
+   *
+   * @return object|NULL
+   */
+  protected abstract function getCurrentUser() :?object;
+  
   /**
    *
    * @param ResponseInterface $response
@@ -105,35 +110,6 @@ abstract class AbstractViewController extends AbstractController {
 
   /**
    *
-   * @param string $key
-   * @param string $defaultValue
-   * @return string|NULL
-   */
-  public function getAttribute(string $key, string $defaultValue = null) :?string {
-    if (isset($_GET[$key])) return $_GET[$key];
-    if (isset($_POST[$key])) return $_POST[$key];
-    if (isset($this->attributes[$key])) return $this->attributes[$key];
-    return $defaultValue;
-  }
-
-  /**
-   *
-   * @param string $key
-   * @param string $value
-   */
-  public function setAttribute(string $key, string $value) :void {
-    $this->attributes[$key] = $value;
-  }
-
-  /**
-   *
-   */
-  public function clear() :void {
-    $this->attributes = array();
-  }
-
-  /**
-   *
    * @param mixed $value
    * @return string
    */
@@ -143,11 +119,4 @@ abstract class AbstractViewController extends AbstractController {
     }
     return "";
   }
-
-  /**
-   * Return the currently logged in user
-   *
-   * @return object|NULL
-   */
-  protected abstract function getCurrentUser() :?object;
 }

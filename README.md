@@ -35,6 +35,14 @@ to your compose.json. We don't publish the package to the public composer archiv
 
 ## change log
 
+### v2.0.0
+
+- we made some major changes
+  - Slim4 REST Backend functions
+  - additional support for Controller and Factories
+  - additional OAuthMiddleware
+- a lot of bugfixes
+
 ### v1.5.0
 
 - feat: created some more FormField Types

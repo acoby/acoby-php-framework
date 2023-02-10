@@ -5,7 +5,7 @@ namespace acoby\services;
 
 use acoby\models\AbstractUser;
 
-abstract class UserFactory {
+abstract class UserFactory extends AbstractFactory {
   const ADMIN = "ADMIN";
   const MANAGER = "MANAGER";
   const USER = "USER";

@@ -6,36 +6,37 @@ namespace acoby\services;
 use acoby\system\Utils;
 
 class ConfigService {
+  private static $config = array();
   
   const INTEGER_MAX_VALUE = 2147483648; // we limit to 32bit
   
   public static function isDefined(string $key) :bool {
-    global $ACOBY_CONFIG;
-    if ($ACOBY_CONFIG === null) $ACOBY_CONFIG = array();
-    return (isset($ACOBY_CONFIG[$key]));
+    return (isset(ConfigService::$config[$key]));
+  }
+  
+  public static function setArray(string $key, array $value) :void {
+    ConfigService::$config[$key] = $value;
+  }
+  public static function set(string $key, string $value) :void {
+    ConfigService::$config[$key] = $value;
+  }
+  public static function setString(string $key, string $value) :void {
+    ConfigService::$config[$key] = $value;
+  }
+  public static function setBool(string $key, bool $value) :void {
+    ConfigService::$config[$key] = $value;
+  }
+  public static function setInt(string $key, int $value) :void {
+    ConfigService::$config[$key] = $value;
+  }
+  
+  public static function unset(string $key) :void {
+    unset(ConfigService::$config[$key]);
   }
   
   public static function get(string $key, string $defaultValue = null) :?string {
     if (!ConfigService::isDefined($key)) return $defaultValue;
-    global $ACOBY_CONFIG;
-    return $ACOBY_CONFIG[$key];
-  }
-  
-  public static function setArray(string $key, array $value) :void {
-    global $ACOBY_CONFIG;
-    if ($ACOBY_CONFIG === null) $ACOBY_CONFIG = array();
-    $ACOBY_CONFIG[$key] = $value;
-  }
-  public static function set(string $key, string $value) :void {
-    global $ACOBY_CONFIG;
-    if ($ACOBY_CONFIG === null) $ACOBY_CONFIG = array();
-    $ACOBY_CONFIG[$key] = $value;
-  }
-  
-  public static function unset(string $key) :void {
-    global $ACOBY_CONFIG;
-    if ($ACOBY_CONFIG === null) $ACOBY_CONFIG = array();
-    unset($ACOBY_CONFIG[$key]);
+    return ConfigService::$config[$key];
   }
   
   public static function getString(string $key, string $defaultValue = null) :?string {
@@ -54,8 +55,7 @@ class ConfigService {
   
   public static function getArray(string $key, array $defaultValue = null) :?array {
     if (!ConfigService::isDefined($key)) return $defaultValue;
-    global $ACOBY_CONFIG;
-    return $ACOBY_CONFIG[$key];
+    return ConfigService::$config[$key];
   }
   
   public static function contains(string $key) :bool {

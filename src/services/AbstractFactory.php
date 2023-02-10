@@ -16,12 +16,13 @@ abstract class AbstractFactory {
   }
 
   /**
-   *
-   * @param string $table
-   * @param bool $ignoreDeleted
+   * Returns the number of entries in the given table
+   * 
+   * @param string $table the table name to count
+   * @param bool $ignoreDeleted true when ignoring deleted fields
    * @return number
    */
-  public function getObjectCount(string $table, bool $ignoreDeleted = true) {
+  public function getObjectCount(string $table, bool $ignoreDeleted = true) :int {
     $query = "SELECT count(id) FROM `".$table."`";
     if ($ignoreDeleted) $query.= " WHERE `deleted` IS NULL";
     $params = array();

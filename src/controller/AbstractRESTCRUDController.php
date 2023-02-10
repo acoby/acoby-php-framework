@@ -219,7 +219,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
         throw new IllegalArgumentException('Object could not be deleted');
         // @codeCoverageIgnoreEnd
       }
-      return $this->withJSONObject($response, RequestUtils::createResult(StatusCodeInterface::STATUS_ACCEPTED), StatusCodeInterface::STATUS_ACCEPTED);
+      return $this->withJSONObject($response, RequestUtils::createResult(StatusCodeInterface::STATUS_ACCEPTED, 'Object deleted'), StatusCodeInterface::STATUS_ACCEPTED);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {

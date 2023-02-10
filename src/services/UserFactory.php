@@ -3,18 +3,18 @@ declare(strict_types=1);
 
 namespace acoby\services;
 
-class UserFactory {
-  protected static $instance = null;
-  
+use acoby\models\AbstractUser;
+
+abstract class UserFactory {
   const ADMIN = "ADMIN";
   const MANAGER = "MANAGER";
   const USER = "USER";
   const REPORT = "REPORT";
   
-  /** */
-  public static function getInstance() :UserFactory {
-    if (self::$instance === null) self::$instance = new UserFactory();
-    return self::$instance;
-  }
+  /**
+   * Returns the singleton of this class 
+   */
+  public static abstract function getInstance() :UserFactory;
   
+  public static abstract function hasRole(AbstractUser $user, string $role): bool;
 }

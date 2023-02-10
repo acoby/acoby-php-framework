@@ -9,15 +9,20 @@ use Psr\Http\Message\ServerRequestInterface;
 use acoby\system\BodyMapper;
 use acoby\system\RequestBody;
 use acoby\system\Utils;
+use acoby\system\HttpHeader;
 use acoby\system\RequestUtils;
 
 abstract class AbstractController {
-  const CONTENT_TYPE = "Content-Type";
+  const CONTENT_TYPE = HttpHeader::CONTENT_TYPE;
 
-  const MIMETYPE_HTML = "text/html; charset=utf-8";
-  const MIMETYPE_JSON = "application/json; charset=UTF-8";
-
+  const MIMETYPE_HTML = HttpHeader::MIMETYPE_HTML;
+  const MIMETYPE_JSON = HttpHeader::MIMETYPE_JSON;
+  
+  const ATTRIBUTE_KEY_USER = "user";
+  
+  /** @var $attributes array[] */
   protected $attributes = array();
+  /** @var $mapper BodyMapper */
   protected $mapper;
 
   public function __construct() {
@@ -26,6 +31,7 @@ abstract class AbstractController {
 
   
   /**
+   * Converts an object into JSON and returns that as a HTTP Response
    *
    * @param ResponseInterface $response
    * @param $data
@@ -39,6 +45,7 @@ abstract class AbstractController {
   }
   
   /**
+   * Converts an array into JSON and returns that as a HTTP Response
    *
    * @param ResponseInterface $response
    * @param array $data
@@ -65,6 +72,7 @@ abstract class AbstractController {
   
   /**
    *
+   * @deprecated Please use RequestUtils::getBooleanQueryParameter
    * @param ServerRequestInterface $request
    * @param string $name
    * @param bool $defaultValue
@@ -76,6 +84,7 @@ abstract class AbstractController {
 
   /**
    *
+   * @deprecated Please use RequestUtils::getIntegerQueryParameter
    * @param ServerRequestInterface $request
    * @param string $name
    * @param int $defaultValue
@@ -86,6 +95,7 @@ abstract class AbstractController {
   }
 
   /**
+   * Gets a specific attribute from this request (request scope only)
    *
    * @param string $key
    * @param string $defaultValue
@@ -99,6 +109,7 @@ abstract class AbstractController {
   }
 
   /**
+   * Sets a specific attribute from this request (request scope only)
    *
    * @param string $key
    * @param string $value
@@ -108,7 +119,7 @@ abstract class AbstractController {
   }
 
   /**
-   *
+   * Removes all request specific and custom entries from the attribute list.
    */
   public function clear() :void {
     $this->attributes = array();

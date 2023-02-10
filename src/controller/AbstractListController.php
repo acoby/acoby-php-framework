@@ -73,7 +73,7 @@ abstract class AbstractListController extends AbstractViewAPIController {
     if ($my_response !== null) return $my_response;
 
     $list = $this->getData($request, $args);
-    return $this->withJSONObjectList($response,$list);
+    return $this->withJSONArray($response,$list);
   }
 
   /**
@@ -90,6 +90,6 @@ abstract class AbstractListController extends AbstractViewAPIController {
     if ($my_response !== null) return $my_response;
 
     $list = $this->getData($request, $args, AbstractViewAPIController::FORMAT_SELECT2);
-    return $this->withJSONObjectList($response,$list);
+    return $this->withJSONArray($response,$list);
   }
 }

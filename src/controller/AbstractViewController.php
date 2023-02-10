@@ -8,15 +8,10 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
 use Throwable;
 use acoby\services\ConfigService;
-use acoby\system\RequestBody;
-use acoby\system\Utils;
 use acoby\models\AbstractUser;
+use acoby\system\Utils;
 
 abstract class AbstractViewController extends AbstractController {
-  public function __construct() {
-    parent::__construct();
-  }
-  
   /**
    * Return the currently logged in user
    *
@@ -46,7 +41,7 @@ abstract class AbstractViewController extends AbstractController {
    * @deprecated see withJSONObjectList
    */
   protected function withJSON(ResponseInterface $response, array $data=[], int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    return $this->withJSONObjectList($response, $data, $code);
+    return $this->withJSONArray($response, $data, $code);
   }
 
   /**
@@ -101,7 +96,7 @@ abstract class AbstractViewController extends AbstractController {
           $doc.= "There was an Error. Details are written to logfile";
         }
         $doc.="</p></body></html>";
-        $body = new RequestBody();
+        $body = $response->getBody();
         $body->write($doc);
         return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withBody($body);
       }

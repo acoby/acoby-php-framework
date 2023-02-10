@@ -6,7 +6,6 @@ namespace acoby\controller;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use acoby\system\BodyMapper;
-use acoby\system\RequestBody;
 use acoby\system\Utils;
 use acoby\system\HttpHeader;
 use Throwable;
@@ -42,7 +41,7 @@ abstract class AbstractController {
    * @return ResponseInterface
    */
   protected function withJSONObject(ResponseInterface $response, object $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    $body = new RequestBody();
+    $body = $response->getBody();
     $body->write(json_encode($data));
     return $response->withStatus($code)->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_JSON)->withBody($body);
   }
@@ -54,15 +53,29 @@ abstract class AbstractController {
    * @param array $data
    * @param int $code
    * @return ResponseInterface
+   * @deprecated use withJSONArray()
    */
   protected function withJSONObjectList(ResponseInterface $response, array $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    $body = new RequestBody();
+    return $this->withJSONArray($response, $data, $code);
+  }
+  
+  /**
+   * Converts an array into JSON and returns that as a HTTP Response
+   * 
+   * @param ResponseInterface $response
+   * @param array $data
+   * @param int $code
+   * @return ResponseInterface
+   */
+  protected function withJSONArray(ResponseInterface $response, array $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
+    $body = $response->getBody();
     $body->write(json_encode($data));
     return $response->withStatus($code)->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_JSON)->withBody($body);
   }
   
   /**
-   *
+   * Converts an array into JSON and returns that as a HTTP Response
+   * 
    * @param ResponseInterface $response
    * @param array $list
    * @param int $offset
@@ -70,7 +83,7 @@ abstract class AbstractController {
    * @param int $httpStatus
    * @return ResponseInterface
    */
-  protected function withJSONListResponse(ResponseInterface $response, array $list, int $offset = 0, int $limit = 100, int $httpStatus = StatusCodeInterface::HTTP_OK) :ResponseInterface {
+  protected function withJSONListResponse(ResponseInterface $response, array $list, int $offset = 0, int $limit = 100, int $httpStatus = StatusCodeInterface::STATUS_OK) :ResponseInterface {
     // we should search always $limit+1 to find out, that there are more objects,
     // then we pop that value from list and have a hint about more results
     if (count($list)>$limit) {
@@ -79,7 +92,7 @@ abstract class AbstractController {
     }
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_OFFSET, $offset);
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, $limit);
-    return $this->withJSONObjectList($response, $list);
+    return $this->withJSONArray($response, $list);
   }
   
   /**
@@ -116,8 +129,8 @@ abstract class AbstractController {
    * @return ResponseInterface
    * @deprecated please use withJSONObjectList
    */
-  protected function getJSONResponse(ResponseInterface $response, array $list, int $httpStatus = StatusCodeInterface::HTTP_OK) :ResponseInterface {
-    return $this->withJSONObjectList($response, $list);
+  protected function getJSONResponse(ResponseInterface $response, array $list, int $httpStatus = StatusCodeInterface::STATUS_OK) :ResponseInterface {
+    return $this->withJSONArray($response, $list);
   }
   
   /**

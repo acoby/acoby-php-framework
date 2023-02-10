@@ -12,8 +12,8 @@ use acoby\exceptions\AccessDeniedException;
 use Fig\Http\Message\StatusCodeInterface;
 use acoby\system\Utils;
 use acoby\exceptions\ObjectNotFoundException;
-use acoby\services\UserFactory;
 use acoby\models\AbstractUser;
+use acoby\services\UserService;
 
 /**
  * A base class for CRUD REST controllers which are stateless and contains the operations of RestCntroller
@@ -101,14 +101,14 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @codeCoverageIgnore
    */
   protected function getCreateUserRole() :string {
-    return UserFactory::USER;
+    return UserService::USER;
   }
   
   /**
    * @return string
    */
   protected function getReadUserRole() :string {
-    return UserFactory::USER;
+    return UserService::USER;
   }
 
   /**
@@ -116,7 +116,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @codeCoverageIgnore
    */
   protected function getUpdateUserRole() :string {
-    return UserFactory::USER;
+    return UserService::USER;
   }
   
   /**
@@ -124,7 +124,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @codeCoverageIgnore
    */
   protected function getDeleteUserRole() :string {
-    return UserFactory::USER;
+    return UserService::USER;
   }
   
   /**

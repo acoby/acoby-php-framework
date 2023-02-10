@@ -5,8 +5,9 @@ namespace acoby\controller;
 
 use acoby\models\AbstractUser;
 use Psr\Http\Message\ServerRequestInterface;
-use acoby\services\UserFactory;
 use acoby\exceptions\AccessDeniedException;
+use acoby\services\AbstractFactory;
+use acoby\services\UserService;
 
 /**
  * a base class for responding REST backend controllers. Implementing controllers need to be stateless
@@ -22,12 +23,12 @@ abstract class AbstractRESTController extends AbstractController {
    * @throws AccessDeniedException
    * @return AbstractUser
    */
-  protected function getRequestUser(ServerRequestInterface $request, string $role = UserFactory::USER) :AbstractUser {
+  protected function getRequestUser(ServerRequestInterface $request, string $role = UserService::USER) :AbstractUser {
     $user = $request->getAttribute(AbstractController::ATTRIBUTE_KEY_USER);
     if ($user === null) {
       throw new AccessDeniedException('User is not authorized');
     }
-    if (!UserFactory::getInstance()->hasRole($user, $role)) {
+    if (!AbstractFactory::getUserService()->hasRole($user, $role)) {
       throw new AccessDeniedException('User has not enough privileges');
     }
     return $user;
@@ -40,7 +41,7 @@ abstract class AbstractRESTController extends AbstractController {
    * @return AbstractUser
    */
   protected function getRequestAdminUser(ServerRequestInterface $request) :AbstractUser {
-    return $this->getRequestUser($request, UserFactory::ADMIN);
+    return $this->getRequestUser($request, UserService::ADMIN);
   }
   
   /**
@@ -50,7 +51,7 @@ abstract class AbstractRESTController extends AbstractController {
    * @return AbstractUser
    */
   protected function getRequestReportUser(ServerRequestInterface $request) :AbstractUser {
-    return $this->getRequestUser($request, UserFactory::REPORT);
+    return $this->getRequestUser($request, UserService::REPORT);
   }
   
 }

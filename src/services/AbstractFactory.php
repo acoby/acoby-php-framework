@@ -5,9 +5,11 @@ namespace acoby\services;
 
 use PDO;
 use acoby\system\DatabaseMapper;
+use acoby\exceptions\IllegalStateException;
 
 abstract class AbstractFactory {
   protected $connection;
+  private static $services = array();
 
   /** */
   protected function __construct() {
@@ -54,4 +56,41 @@ abstract class AbstractFactory {
     return $counts[0] > 0;
   }
   
+  /**
+   * Sets a specific instance of service
+   * 
+   * @param string $key
+   */
+  public static function setService(string $key, $service) :void {
+    AbstractFactory::$services[$key] = $service;
+  }
+  
+  /**
+   * Returns the Singleton of a service.
+   *
+   * @throws IllegalStateException
+   * @return UserService
+   */
+  public static function getService(string $key) :object {
+    if (!isset(AbstractFactory::$services[$key])) throw new IllegalStateException("'".$key."' is not registered");
+    return AbstractFactory::$services[$key];
+  }
+  /**
+   * Sets the Singleton of UserService.
+   * 
+   * @param UserService $userService
+   */
+  public static function setUserService(UserService $userService) :void {
+    AbstractFactory::setService("UserService",$userService);
+  }
+  
+  /**
+   * Returns the Singleton of UserService.
+   * 
+   * @throws IllegalStateException
+   * @return UserService
+   */
+  public static function getUserService() :UserService {
+    return AbstractFactory::getService("UserService");
+  }
 }

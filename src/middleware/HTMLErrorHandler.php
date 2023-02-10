@@ -6,9 +6,10 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 use acoby\system\Utils;
 use acoby\system\RequestBody;
+use Throwable;
 
 class HTMLErrorHandler {
-  public function handleError(ServerRequestInterface $request, \Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, $logger = null) :ResponseInterface {
+  public function handleError(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, $logger = null) :ResponseInterface {
     if ($logErrors) {
       Utils::logException($exception->getMessage(),$exception);
     }

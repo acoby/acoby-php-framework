@@ -96,16 +96,14 @@ class OAuthAuthentication implements MiddlewareInterface {
     }
 
     /* Just in case. */
-    $params = array();
-    $params["username"] = null;
-    $params["password"] = null;
+    $params = new OAuthParams();
 
     $matches = array();
     if (preg_match("/Basic\s+(.*)$/i", $request->getHeaderLine(HttpHeader::AUTHORIZATION), $matches)) {
       $explodedCredential = explode(":", base64_decode($matches[1]), 2);
       if (count($explodedCredential) == 2) {
-        list($params["username"], $params["password"]) = $explodedCredential;
-        $params["method"] = "basic";
+        list($params->username, $params->password) = $explodedCredential;
+        $params->method = "basic";
       }
     } else if (preg_match("/Bearer\s+(.*)$/i", $request->getHeaderLine(HttpHeader::AUTHORIZATION), $matches)) {
       $token = $matches[1];
@@ -153,8 +151,8 @@ class OAuthAuthentication implements MiddlewareInterface {
   /**
    * Validate a OAuth Token
    */
-  private function validateToken(ServerRequestInterface $request, string $token) :array {
-    $params = array();
+  private function validateToken(ServerRequestInterface $request, string $token) :OAuthParams {
+    $params = new OAuthParams();
     try {
       $publicKey = "-----BEGIN PUBLIC KEY-----\n";
       $publicKey.= $this->options["oidc"]["key"]."\n";
@@ -162,12 +160,12 @@ class OAuthAuthentication implements MiddlewareInterface {
 
       $jwt = JWT::decode($token, $publicKey, array('ES256','RS256','RS512'));
 
-      $params["user"] = $jwt->preferred_username;
-      if (isset($jwt->email)) $params["email"] = $jwt->email;
-      $params["firstName"] = $jwt->given_name;
-      $params["lastName"] = $jwt->family_name;
-      $params["roles"] = implode(",",$jwt->realm_access->roles);
-      $params["method"] = "jwt";
+      $params->username = $jwt->preferred_username;
+      if (isset($jwt->email)) $params->email = $jwt->email;
+      $params->firstName = $jwt->given_name;
+      $params->lastName = $jwt->family_name;
+      $params->roles = implode(",",$jwt->realm_access->roles);
+      $params->method = "jwt";
 
       return $params;
 

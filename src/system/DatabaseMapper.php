@@ -462,83 +462,94 @@ class DatabaseMapper {
     return [];
   }
 
-
   /**
-   *
+   * 
    * @param PDO $connection
    * @param string $tableName
-   * @param object $search
+   * @param AbstractSearch $search
+   * @param string $resultType
+   * @param string $orderBy
+   * @param string $condition
+   * @param array $conditionalParams
+   * @throws RuntimeException
    * @return array
    */
-  public function search(PDO $connection, string $tableName, AbstractSearch $search, string $resultType, string $orderBy = null) :array {
-    if (!isset($connection)) throw new DatabaseException("PDO not initialized");
+  public function search(PDO $connection, string $tableName, AbstractSearch $search, string $resultType, string $orderBy = null, string $condition = null, array $conditionalParams = null) :array {
+    if (!isset($connection)) {
+      // @codeCoverageIgnoreStart
+      throw new RuntimeException("PDO not initialized");
+      // @codeCoverageIgnoreEnd
+    }
     
     $tableColumns = $this->getColumns($connection, $tableName);
     $classFields = array_keys(get_class_vars(get_class($search)));
     $searchFields = array_keys(get_class_vars(AbstractSearch::class));
-
+    
     if (!isset($search->offset)) $search->offset = 0;
     if (!isset($search->limit)) $search->limit = 10;
-
+    
     $params = array();
-    $query = 'SELECT * FROM `'.$tableName.'` WHERE 1=1 ';
-//     if ($ownerId !== null) {
-//       $query.= 'AND (ownerId = :myOwnerId OR ownerId IN (SELECT customer.externalId FROM customer WHERE customer.ownerId = :myCustomerId)) ';
-//       $params["myOwnerId"] = $ownerId;
-//       $params["myCustomerId"] = $ownerId;
-//     }
-
+    $query = 'SELECT `'.$tableName.'`.* FROM `'.$tableName.'` WHERE 1=1 ';
+    
+    if ($condition !== null && strlen(trim($condition))>0 && $conditionalParams !== null && count($conditionalParams)>0) {
+      $query.= ' AND '.$condition." ";
+      $params = array_merge($params,$conditionalParams);
+    }
+    
     foreach ($classFields as $field) {
       if (!in_array($field, $searchFields)) {
         if (in_array($field,$tableColumns)) {
           $this->addSelectParam($query, $params, $search->$field, $field,gettype($search->$field));
         } else {
-          // @codeCoverageIgnoreStart
-          Utils::logDebug("INFO: class field: ".$field." has no pendant in table ".$tableName);
-          // @codeCoverageIgnoreEnd
+          Utils::logInfo("class field: '".get_class($search)."->".$field."' has no pendant in table '".$tableName."' in trace ".(new \Exception())->getTraceAsString());
         }
       }
     }
-
-    $this->addSelectParam($query, $params, $search->created, "created","datetime");
-    $this->addSelectParam($query, $params, $search->changed, "changed","datetime");
-    $this->addSelectParam($query, $params, $search->deleted, "deleted","datetime");
-    if (!isset($search->deleted)) $query .= " AND deleted is null";
-
-    if (isset($orderBy)) $query.=" ORDER BY `".$orderBy."`";
-
+    
+    if (isset($tableColumns["created"])) $this->addSelectParam($query, $params, $search->created, "created","datetime");
+    if (isset($tableColumns["changed"])) $this->addSelectParam($query, $params, $search->changed, "changed","datetime");
+    if (isset($tableColumns["deleted"])) {
+      $this->addSelectParam($query, $params, $search->deleted, "deleted","datetime");
+      if (!isset($search->deleted)) $query .= " AND deleted is null";
+    }
+    
+    if (isset($orderBy)) {
+      $query.=" ORDER BY `".$orderBy."`";
+      if (isset($search->reverse) && $search->reverse) $query.=" DESC";
+    }
+    
     if (isset($search->limit) && is_numeric($search->limit)) {
       $query .= " LIMIT ".intval($search->offset).",".intval($search->limit);
     }
-
+    
     $stmt = $connection->prepare($query);
     if (!$stmt) {
-      // @codeCoverageIgnoreStart
-      throw new DatabaseException("Failed to parse query: ".$query);
-      // @codeCoverageIgnoreEnd
+      throw new RuntimeException("Failed to parse query: ".$query);
     }
-
+    
     foreach ($params as $key => &$value) {
       $stmt->bindParam($key, $value);
     }
-
+    
     try {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
-        Utils::logError("Error in search query",$query,$params,$stmt->errorInfo());
+        Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
         return null;
         // @codeCoverageIgnoreEnd
       }
       $results = $stmt->fetchAll(PDO::FETCH_CLASS, $resultType);
       foreach($results as $result) $result->reform($search->expand);
+      
       return $results;
-      // @codeCoverageIgnoreStart
     } catch (Exception $e) {
+      // @codeCoverageIgnoreStart
       Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+      // @codeCoverageIgnoreEnd
     }
     return null;
-    // @codeCoverageIgnoreEnd
   }
+  
 
   /**
    *

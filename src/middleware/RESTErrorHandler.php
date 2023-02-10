@@ -8,6 +8,7 @@ use acoby\system\Utils;
 use acoby\system\RequestBody;
 use Fig\Http\Message\StatusCodeInterface;
 use acoby\controller\AbstractController;
+use acoby\system\RequestUtils;
 
 class RESTErrorHandler {
   public function handleError(ServerRequestInterface $request, \Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, $logger = null) :ResponseInterface {
@@ -15,7 +16,7 @@ class RESTErrorHandler {
       Utils::logException($exception->getMessage(),$exception);
     }
     $code = StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR;
-    $error = Utils::createException($code, "Could not handle request", $exception);
+    $error = RequestUtils::createException($code, "Could not handle request", $exception);
     $doc = json_encode($error);
 
     $responseFactory = new ResponseFactory();

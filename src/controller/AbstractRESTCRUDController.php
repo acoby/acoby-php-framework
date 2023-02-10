@@ -10,10 +10,10 @@ use acoby\models\AbstractSearch;
 use acoby\exceptions\IllegalArgumentException;
 use acoby\exceptions\AccessDeniedException;
 use Fig\Http\Message\StatusCodeInterface;
-use acoby\system\Utils;
 use acoby\exceptions\ObjectNotFoundException;
 use acoby\models\AbstractUser;
 use acoby\services\UserService;
+use acoby\system\RequestUtils;
 
 /**
  * A base class for CRUD REST controllers which are stateless and contains the operations of RestCntroller
@@ -219,7 +219,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
         throw new IllegalArgumentException('Object could not be deleted');
         // @codeCoverageIgnoreEnd
       }
-      return $this->withJSONObject($response, Utils::createResult(StatusCodeInterface::STATUS_ACCEPTED), StatusCodeInterface::STATUS_ACCEPTED);
+      return $this->withJSONObject($response, RequestUtils::createResult(StatusCodeInterface::STATUS_ACCEPTED), StatusCodeInterface::STATUS_ACCEPTED);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {
@@ -270,9 +270,9 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
     try {
       $user = $this->getRequestUser($request, $this->getReadUserRole());
       
-      $expand = Utils::getBooleanQueryParameter($request,'expand', false);
-      $offset = Utils::getIntegerQueryParameter($request, 'offset', 0);
-      $limit = Utils::getIntegerQueryParameter($request, 'limit', 100);
+      $expand = RequestUtils::getBooleanQueryParameter($request,'expand', false);
+      $offset = RequestUtils::getIntegerQueryParameter($request, 'offset', 0);
+      $limit = RequestUtils::getIntegerQueryParameter($request, 'limit', 100);
       
       $objects = $this->getObjects($expand,$offset,$limit+1,$user);
       return $this->withJSONListResponse($response, $objects, $offset, $limit);

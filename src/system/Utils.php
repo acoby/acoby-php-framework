@@ -364,6 +364,7 @@ class Utils {
    * @param int $code
    * @param string $message
    * @return RESTStatus
+   * @deprecated please use RequestUtils::createError
    */
   public static function createError(int $code, string $message = "") :RESTStatus {
     return RequestUtils::createError($code, $message);
@@ -377,6 +378,7 @@ class Utils {
    * @param string $message
    * @param Exception $exception
    * @return RESTStatus
+   * @deprecated please use RequestUtils::createException
    */
   public static function createException(int $code, string $message, Throwable $exception) :RESTStatus {
     return RequestUtils::createException($code, $message, $exception);
@@ -389,6 +391,7 @@ class Utils {
    * @param int $code
    * @param string $message
    * @return RESTStatus
+   * @deprecated please use RequestUtils::createResult
    */
   public static function createResult(int $code, string $message) :RESTStatus {
     return RequestUtils::createResult($code, $message);
@@ -401,6 +404,7 @@ class Utils {
    * @param string $name
    * @param bool $defaultValue
    * @return bool
+   * @deprecated please use RequestUtils::getBooleanQueryParameter
    */
   public static function getBooleanQueryParameter(ServerRequestInterface $request, string $name, bool $defaultValue) :bool {
     return RequestUtils::getBooleanQueryParameter($request, $name, $defaultValue);
@@ -412,6 +416,7 @@ class Utils {
    * @param string $name
    * @param int $defaultValue
    * @return int
+   * @deprecated please use RequestUtils::getIntegerQueryParameter
    */
   public static function getIntegerQueryParameter(ServerRequestInterface $request, string $name, int $defaultValue) :int {
     return RequestUtils::getIntegerQueryParameter($request, $name, $defaultValue);
@@ -423,6 +428,7 @@ class Utils {
    * @param string $name
    * @param string $defaultValue
    * @return string|NULL
+   * @deprecated please use RequestUtils::getStringQueryParameter
    */
   public static function getStringQueryParameter(ServerRequestInterface $request, string $name, string $defaultValue = null) :?string {
     return RequestUtils::getStringQueryParameter($request, $name, $defaultValue);
@@ -434,6 +440,7 @@ class Utils {
    * @param string $name
    * @param string $defaultValue
    * @return string|NULL
+   * @deprecated please use RequestUtils::getStringPathParameter
    */
   public static function getStringPathParameter(array $args, string $name, string $defaultValue = null) :?string {
     return RequestUtils::getStringPathParameter($args, $name, $defaultValue);
@@ -443,12 +450,15 @@ class Utils {
    * @codeCoverageIgnore
    * @param string $string
    * @return string
+   * @deprecated please do not use the method anymore
    */
   public static function ln(string $string) :string {
     return $string."\n";
   }
+  
   /**
-   *
+   * Converts a number into a string with zero-prefix
+   * 
    * @param int $value
    * @return string
    */
@@ -457,6 +467,7 @@ class Utils {
   }
   
   /**
+   * returns the domain part of an email address
    *
    * @param string $email
    * @return string|NULL

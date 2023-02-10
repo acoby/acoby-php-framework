@@ -9,6 +9,7 @@ use acoby\system\BodyMapper;
 use acoby\system\Utils;
 use acoby\system\HttpHeader;
 use Throwable;
+use acoby\system\RequestUtils;
 
 /**
  * This is the base controller for all Slim requests. It contains only some helper methods and constants.
@@ -103,7 +104,7 @@ abstract class AbstractController {
    * @return ResponseInterface
    */
   protected function withJSONError(ResponseInterface $response, string $message, int $code=StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR) :ResponseInterface {
-    $status = Utils::createError($code,$message);
+    $status = RequestUtils::createError($code,$message);
     return $this->withJSONObject($response, $status, $code);
   }
   
@@ -117,7 +118,7 @@ abstract class AbstractController {
    */
   protected function withJSONException(ResponseInterface $response, Throwable $throwable, int $code=StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, string $message = null) :ResponseInterface {
     if ($message === null) $message = $throwable->getMessage();
-    $status = Utils::createException($code, $message, $throwable);
+    $status = RequestUtils::createException($code, $message, $throwable);
     return $this->withJSONObject($response, $status, $code);
   }
   

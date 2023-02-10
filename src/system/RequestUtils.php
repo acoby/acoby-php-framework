@@ -79,6 +79,18 @@ class RequestUtils {
   }
   
   /**
+   * 
+   * @param array $args
+   * @param string $name
+   * @param string $defaultValue
+   * @return string|NULL
+   */
+  public static function getStringPathParameter(array $args, string $name, string $defaultValue = null) :?string {
+    if (isset($args[$name])) return $args[$name];
+    return $defaultValue;
+  }
+  
+  /**
    * Erzeugt ein Standard Error-Array, wie wir es für den JSON Output brauchen.
    *
    * @param int $code

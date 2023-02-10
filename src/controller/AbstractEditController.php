@@ -9,10 +9,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Views\Twig;
 use Throwable;
 use acoby\system\Utils;
+use acoby\system\HttpHeader;
 
 /**
+ * A base class for editing an entity
  *
- * @author thoralf
+ * @author Thoralf Rickert-Wendt
  */
 abstract class AbstractEditController extends AbstractViewController {
   const VIEW_MODE_EDIT = 1;
@@ -170,7 +172,7 @@ abstract class AbstractEditController extends AbstractViewController {
           if ($this->validate($request, $response, $args, $form, $object)) {
             $object = $this->addObject($object);
             if ($object !== null) {
-              return $response->withHeader("Location", $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+              return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
             }
           }
           $data = $this->getTwigArgs($request, $args);
@@ -178,7 +180,7 @@ abstract class AbstractEditController extends AbstractViewController {
           return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_EDIT), $data);
         }
         case "cancel": {
-          return $response->withHeader("Location", $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+          return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
         }
         default: {
           $data = $this->getTwigArgs($request, $args);
@@ -213,17 +215,17 @@ abstract class AbstractEditController extends AbstractViewController {
     $action = $this->getAttribute("action");
     switch ($action) {
       case "cancel": {
-        return $response->withHeader("Location", $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+        return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
       }
       case "delete": {
         $this->deleteObject($object);
-        return $response->withHeader("Location", $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+        return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
       }
       default: {
         $view = Twig::fromRequest($request);
         if ($this->validate($request, $response, $args, $form, $object)) {
           if ($this->saveObject($object)) {
-            return $response->withHeader("Location", $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+            return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
           }
         }
 

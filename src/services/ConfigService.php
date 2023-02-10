@@ -5,6 +5,11 @@ namespace acoby\services;
 
 use acoby\system\Utils;
 
+/**
+ * A simple class for managing configurations.
+ * 
+ * @author Thoralf Rickert-Wendt
+ */
 class ConfigService {
   private static $config = array();
   

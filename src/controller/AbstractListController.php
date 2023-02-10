@@ -9,7 +9,12 @@ use Slim\Views\Twig;
 use Throwable;
 use acoby\system\Utils;
 
-abstract class AbstractListController extends AbstractAPIController {
+/**
+ * A base class for viewing a list of entities
+ * 
+ * @author Thoralf Rickert-Wendt
+ */
+abstract class AbstractListController extends AbstractViewAPIController {
   /**
    * Liefert das zu rendernede Template
    *
@@ -68,7 +73,7 @@ abstract class AbstractListController extends AbstractAPIController {
     if ($my_response !== null) return $my_response;
 
     $list = $this->getData($request, $args);
-    return $this->withJSON($response,$list);
+    return $this->withJSONObjectList($response,$list);
   }
 
   /**
@@ -84,7 +89,7 @@ abstract class AbstractListController extends AbstractAPIController {
     $my_response = $this->validateAPIRequest($request, $response, $args);
     if ($my_response !== null) return $my_response;
 
-    $list = $this->getData($request, $args, AbstractAPIController::FORMAT_SELECT2);
-    return $this->withJSON($response,$list);
+    $list = $this->getData($request, $args, AbstractViewAPIController::FORMAT_SELECT2);
+    return $this->withJSONObjectList($response,$list);
   }
 }

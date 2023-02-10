@@ -105,6 +105,8 @@ class RequestUtils {
    * @return RESTStatus
    */
   public static function createException(int $code, string $message, Throwable $exception) :RESTStatus {
+    error_log("Exception in file ".$exception->getFile().":".$exception->getLine()." with message ".$exception->getMessage()."\n".$exception->getTraceAsString());
+    
     $error = new RESTError();
     $error->message = $message;
     
@@ -113,9 +115,6 @@ class RequestUtils {
       $error->line = $exception->getLine();
       $error->trace =  $exception->getTraceAsString();
       $error->message = $exception->getMessage();
-    } else {
-      // die Exception geben wir im Prod Betrieb nicht raus, aber ins Log
-      error_log("Exception in file ".$exception->getFile().":".$exception->getLine()." with message ".$exception->getMessage()."\n".$exception->getTraceAsString());
     }
     
     $status = new RESTStatus();

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace acoby\system\auth;
+namespace acoby\middleware;
 
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface;

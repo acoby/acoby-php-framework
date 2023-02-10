@@ -6,6 +6,9 @@ namespace acoby\controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * An interface showing all possible functions in CRUD.
+ */
 interface RestController {
   public function create(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface;
   public function update(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface;

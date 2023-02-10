@@ -15,6 +15,18 @@ use acoby\exceptions\ObjectNotFoundException;
 use acoby\services\UserFactory;
 use acoby\models\AbstractUser;
 
+/**
+ * A base class for CRUD REST controllers which are stateless and contains the operations of RestCntroller
+ * 
+ * - create
+ * - read
+ * - update
+ * - delete
+ * 
+ * Also we have a search interface
+ * 
+ * @author Thoralf Rickert-Wendt
+ */
 abstract class AbstractRESTCRUDController extends AbstractRESTController implements RestController {
   /**
    * @return object
@@ -126,15 +138,14 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       
       $newObject = $this->createObject($object, $user);
       if ($newObject === null) throw new IllegalArgumentException('Invalid input');
-      return $response->withStatus(StatusCodeInterface::STATUS_CREATED)->withJson($newObject);
+      return $this->withJSONObject($response, $newObject, StatusCodeInterface::STATUS_CREATED);
     } catch (AccessDeniedException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN)->withJson(Utils::createError(StatusCodeInterface::STATUS_FORBIDDEN,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_ACCEPTABLE)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_ACCEPTABLE,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
-      Utils::logException($exception->getMessage(), $exception);
-      return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withJson(Utils::createException(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,$exception->getMessage(),$exception));
+      return $this->withJSONException($response, $exception);
       // @codeCoverageIgnoreEnd
     }
   }
@@ -148,17 +159,16 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $user = $this->getRequestUser($request, $this->getReadUserRole());
       $object = $this->getObject($request,$args,$user);
       if ($object === null) throw new ObjectNotFoundException('Invalid input');
-      return $response->withStatus(StatusCodeInterface::STATUS_OK)->withJson($object);
+      return $this->withJSONObject($response, $object, StatusCodeInterface::STATUS_OK);
     } catch (AccessDeniedException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN)->withJson(Utils::createError(StatusCodeInterface::STATUS_FORBIDDEN,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_ACCEPTABLE)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_ACCEPTABLE,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
     } catch (ObjectNotFoundException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_FOUND)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_FOUND,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
-      Utils::logException($exception->getMessage(), $exception);
-      return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withJson(Utils::createException(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,$exception->getMessage(),$exception));
+      return $this->withJSONException($response, $exception);
       // @codeCoverageIgnoreEnd
     }
   }
@@ -179,17 +189,16 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $newObject = $this->updateObject($object,$user);
       if ($newObject === null) throw new IllegalArgumentException('Invalid input');
       
-      return $response->withStatus(StatusCodeInterface::STATUS_ACCEPTED)->withJson($newObject);
+      return $this->withJSONObject($response, $newObject, StatusCodeInterface::STATUS_ACCEPTED);
     } catch (AccessDeniedException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN)->withJson(Utils::createError(StatusCodeInterface::STATUS_FORBIDDEN,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_ACCEPTABLE)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_ACCEPTABLE,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
     } catch (ObjectNotFoundException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_FOUND)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_FOUND,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
-      Utils::logException($exception->getMessage(), $exception);
-      return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withJson(Utils::createException(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,$exception->getMessage(),$exception));
+      return $this->withJSONException($response, $exception);
       // @codeCoverageIgnoreEnd
     }
   }
@@ -210,17 +219,16 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
         throw new IllegalArgumentException('Object could not be deleted');
         // @codeCoverageIgnoreEnd
       }
-      return $response->withStatus(StatusCodeInterface::STATUS_ACCEPTED)->withJson(Utils::createResult(StatusCodeInterface::STATUS_ACCEPTED, 'Object deleted'));
+      return $this->withJSONObject($response, Utils::createResult(StatusCodeInterface::STATUS_ACCEPTED), StatusCodeInterface::STATUS_ACCEPTED);
     } catch (AccessDeniedException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN)->withJson(Utils::createError(StatusCodeInterface::STATUS_FORBIDDEN,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_ACCEPTABLE)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_ACCEPTABLE,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
     } catch (ObjectNotFoundException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_FOUND)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_FOUND,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
-      Utils::logException($exception->getMessage(), $exception);
-      return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withJson(Utils::createException(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,$exception->getMessage(),$exception));
+      return $this->withJSONException($response, $exception);
       // @codeCoverageIgnoreEnd
     }
   }
@@ -237,18 +245,19 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $search = $this->mapper->map($request->getBody()->__toString(), $this->getNewSearchObject());
       if ($search === null) throw new IllegalArgumentException('Search could not be parsed');
       $search->verify();
+      // add one to find more then expected (to see, if there are more objects available)
+      $search->limit = $search->limit+1; 
 
       $objects = $this->searchObjects($search,$user);
 
-      return $this->getListResponse($response, $objects, $search->offset, $search->limit);
+      return $this->withJSONListResponse($response, $objects, $search->offset, $search->limit-1);      
     } catch (AccessDeniedException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN)->withJson(Utils::createError(StatusCodeInterface::STATUS_FORBIDDEN,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (IllegalArgumentException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_NOT_ACCEPTABLE)->withJson(Utils::createError(StatusCodeInterface::STATUS_NOT_ACCEPTABLE,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
-      Utils::logException($exception->getMessage(), $exception);
-      return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withJson(Utils::createException(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,$exception->getMessage(),$exception));
+      return $this->withJSONException($response, $exception);
       // @codeCoverageIgnoreEnd
     }
   }
@@ -265,14 +274,13 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $offset = Utils::getIntegerQueryParameter($request, 'offset', 0);
       $limit = Utils::getIntegerQueryParameter($request, 'limit', 100);
       
-      $list = $this->getObjects($expand,$offset,$limit+1,$user);
-      return $this->getListResponse($response, $list, $offset, $limit);
+      $objects = $this->getObjects($expand,$offset,$limit+1,$user);
+      return $this->withJSONListResponse($response, $objects, $offset, $limit);
     } catch (AccessDeniedException $exception) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN)->withJson(Utils::createError(StatusCodeInterface::STATUS_FORBIDDEN,$exception->getMessage()));
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
-      Utils::logException($exception->getMessage(), $exception);
-      return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR)->withJson(Utils::createException(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,$exception->getMessage(),$exception));
+      return $this->withJSONException($response, $exception);
       // @codeCoverageIgnoreEnd
     }
   }

@@ -5,13 +5,17 @@ namespace acoby\controller;
 
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use acoby\system\BodyMapper;
 use acoby\system\RequestBody;
 use acoby\system\Utils;
 use acoby\system\HttpHeader;
-use acoby\system\RequestUtils;
+use Throwable;
 
+/**
+ * This is the base controller for all Slim requests. It contains only some helper methods and constants.
+ * 
+ * @author Thoralf Rickert-Wendt
+ */
 abstract class AbstractController {
   const CONTENT_TYPE = HttpHeader::CONTENT_TYPE;
 
@@ -28,7 +32,6 @@ abstract class AbstractController {
   public function __construct() {
     $this->mapper = new BodyMapper();
   }
-
   
   /**
    * Converts an object into JSON and returns that as a HTTP Response
@@ -41,7 +44,7 @@ abstract class AbstractController {
   protected function withJSONObject(ResponseInterface $response, object $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
     $body = new RequestBody();
     $body->write(json_encode($data));
-    return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
+    return $response->withStatus($code)->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_JSON)->withBody($body);
   }
   
   /**
@@ -55,7 +58,28 @@ abstract class AbstractController {
   protected function withJSONObjectList(ResponseInterface $response, array $data, int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
     $body = new RequestBody();
     $body->write(json_encode($data));
-    return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
+    return $response->withStatus($code)->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_JSON)->withBody($body);
+  }
+  
+  /**
+   *
+   * @param ResponseInterface $response
+   * @param array $list
+   * @param int $offset
+   * @param int $limit
+   * @param int $httpStatus
+   * @return ResponseInterface
+   */
+  protected function withJSONListResponse(ResponseInterface $response, array $list, int $offset = 0, int $limit = 100, int $httpStatus = StatusCodeInterface::HTTP_OK) :ResponseInterface {
+    // we should search always $limit+1 to find out, that there are more objects,
+    // then we pop that value from list and have a hint about more results
+    if (count($list)>$limit) {
+      array_pop($list);
+      $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, Utils::bool2str(true));
+    }
+    $response = $response->withAddedHeader(HttpHeader::X_RESULT_OFFSET, $offset);
+    $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, $limit);
+    return $this->withJSONObjectList($response, $list);
   }
   
   /**
@@ -71,29 +95,31 @@ abstract class AbstractController {
   }
   
   /**
-   *
-   * @deprecated Please use RequestUtils::getBooleanQueryParameter
-   * @param ServerRequestInterface $request
-   * @param string $name
-   * @param bool $defaultValue
-   * @return bool
+   * 
+   * @param ResponseInterface $response
+   * @param string $message
+   * @param Throwable $throwable
+   * @param int $code
+   * @return ResponseInterface
    */
-  public function getBooleanQueryParameter(ServerRequestInterface $request, string $name, bool $defaultValue) :bool {
-    return RequestUtils::getBooleanQueryParameter($request, $name, $defaultValue);
+  protected function withJSONException(ResponseInterface $response, Throwable $throwable, int $code=StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, string $message = null) :ResponseInterface {
+    if ($message === null) $message = $throwable->getMessage();
+    $status = Utils::createException($code, $message, $throwable);
+    return $this->withJSONObject($response, $status, $code);
   }
-
+  
   /**
    *
-   * @deprecated Please use RequestUtils::getIntegerQueryParameter
-   * @param ServerRequestInterface $request
-   * @param string $name
-   * @param int $defaultValue
-   * @return int
+   * @param ResponseInterface $response
+   * @param array $list
+   * @param int $httpStatus
+   * @return ResponseInterface
+   * @deprecated please use withJSONObjectList
    */
-  public function getIntegerQueryParameter(ServerRequestInterface $request, string $name, int $defaultValue) :int {
-    return RequestUtils::getIntegerQueryParameter($request, $name, $defaultValue);
+  protected function getJSONResponse(ResponseInterface $response, array $list, int $httpStatus = StatusCodeInterface::HTTP_OK) :ResponseInterface {
+    return $this->withJSONObjectList($response, $list);
   }
-
+  
   /**
    * Gets a specific attribute from this request (request scope only)
    *

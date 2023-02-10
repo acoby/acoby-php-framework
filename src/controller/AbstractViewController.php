@@ -10,6 +10,7 @@ use Throwable;
 use acoby\services\ConfigService;
 use acoby\system\RequestBody;
 use acoby\system\Utils;
+use acoby\models\AbstractUser;
 
 abstract class AbstractViewController extends AbstractController {
   public function __construct() {
@@ -19,9 +20,9 @@ abstract class AbstractViewController extends AbstractController {
   /**
    * Return the currently logged in user
    *
-   * @return object|NULL
+   * @return AbstractUser|NULL
    */
-  protected abstract function getCurrentUser() :?object;
+  protected abstract function getCurrentUser() :?AbstractUser;
   
   /**
    *
@@ -42,11 +43,10 @@ abstract class AbstractViewController extends AbstractController {
    * @param array $data
    * @param int $code
    * @return ResponseInterface
+   * @deprecated see withJSONObjectList
    */
   protected function withJSON(ResponseInterface $response, array $data=[], int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    $body = new RequestBody();
-    $body->write($this->mapper->mapJSON($data));
-    return $response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_JSON)->withBody($body);
+    return $this->withJSONObjectList($response, $data, $code);
   }
 
   /**
@@ -113,10 +113,10 @@ abstract class AbstractViewController extends AbstractController {
    * @param mixed $value
    * @return string
    */
-  protected function convert($value) {
+  protected function convert($value, $defaultValue = "") {
     if ($value !== null) {
-      return htmlspecialchars("".$value);
+      return htmlspecialchars(strval($value));
     }
-    return "";
+    return $defaultValue;
   }
 }

@@ -26,7 +26,7 @@ interface UserService {
    * @param string $role
    * @return bool
    */
-  public static function hasRole(AbstractUser $user, string $role): bool;
+  public function hasRole(AbstractUser $user, string $role): bool;
 
   /**
    * Returns the user with the given username

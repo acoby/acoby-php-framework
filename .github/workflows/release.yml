@@ -1,0 +1,40 @@
+name: "Build & Test & Release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: "Checkout repository"
+      uses: actions/checkout@v3
+
+    - name: "Install dependencies and run phpunit"
+      run: |
+        php composer.phar --no-plugins --no-scripts install
+        ./vendor/bin/phpunit --configuration phpunit.xml --coverage-text
+      env:
+        XDEBUG_MODE: coverage
+
+    - name: "Create Changelog"
+      uses: scottbrenner/generate-changelog-action@master
+      id: Changelog
+      env:
+        REPO: ${{ github.repository }}
+    
+    - name: "Create Release"
+      uses: actions/create-release@latest
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+            ${{ steps.Changelog.outputs.changelog }}
+        draft: false
+        prerelease: false

@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use acoby\services\UserFactory;
 use acoby\exceptions\AccessDeniedException;
 
-abstract class AbstractRESTController extends AbstractController implements RestController {
+abstract class AbstractRESTController extends AbstractController {
   protected function getRequestUser(ServerRequestInterface $request, string $role = UserFactory::USER) :AbstractUser {
     $user = $request->getAttribute(AbstractController::ATTRIBUTE_KEY_USER);
     if ($user === null) {

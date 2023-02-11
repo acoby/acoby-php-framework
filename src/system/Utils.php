@@ -18,7 +18,7 @@ class Utils {
     $length = strlen($needle);
     return (substr($haystack, 0, $length) === $needle);
   }
-
+  
   /**
    * Sucht am Ende eines Strings nach einem Teilstring
    */
@@ -27,7 +27,7 @@ class Utils {
     if ($length == 0) return true;
     return (substr($haystack, -$length) === $needle);
   }
-
+  
   /**
    * Check, if var content is empty
    * @param mixed $value
@@ -36,7 +36,7 @@ class Utils {
   public static function isEmpty(string $value = null) :bool {
     return $value === null || strlen(trim($value)) === 0;
   }
-
+  
   /**
    * Generate a random string, using a cryptographically secure
    * pseudorandom number generator (random_int)
@@ -62,7 +62,7 @@ class Utils {
     }
     return $str;
   }
-
+  
   /**
    * Check, if string is a boolean "true"
    *
@@ -73,7 +73,7 @@ class Utils {
     if (is_bool($value)) return $value;
     return (strtolower($value) === "true" || strtolower($value) === "on" || strtolower($value) === "yes" || $value === "1");
   }
-
+  
   /**
    * @param bool $value
    * @return string
@@ -81,7 +81,7 @@ class Utils {
   public static function bool2str(bool $value) :string {
     if ($value === TRUE) return "true"; else return "false";
   }
-
+  
   /**
    *
    * @param \stdClass $source
@@ -97,7 +97,7 @@ class Utils {
     }
     return $destination;
   }
-
+  
   /**
    * @codeCoverageIgnore
    * @param string $message
@@ -110,11 +110,11 @@ class Utils {
     if ($query !== null) $message .= " in query ".$query;
     if ($params !== null) $message .= " with params ".print_r($params,true);
     if ($errorInfo !== null) $message .= " with error info ".print_r($errorInfo,true);
-
+    
     error_log($message);
   }
-
-
+  
+  
   /**
    * @codeCoverageIgnore
    * @param string $message
@@ -131,7 +131,7 @@ class Utils {
       error_log("[TRACE] ".$throwable->getTraceAsString());
     }
   }
-
+  
   /**
    * @codeCoverageIgnore
    * @param string $message
@@ -157,29 +157,29 @@ class Utils {
    * @param string $string
    * @return string
    */
-  public static function asString(string $string = null, string $defaultString = "") :string {
+  public static function asString(string $string = null, ?string $defaultString = "") :string {
     if ($string === null) return $defaultString;
     return $string;
   }
   
   /**
-   * 
+   *
    * @param bool $value
    * @param bool $defaultValue
    * @return bool
    */
-  public static function asBool($value = null, bool $defaultValue = false) :bool {
+  public static function asBool($value = null, ?bool $defaultValue = false) :?bool {
     if (!isset($value)) return $defaultValue;
     return $value;
   }
   
   /**
-   * 
+   *
    * @param int $value
    * @param int $defaultValue
    * @return int
    */
-  public static function asInt($value = null, int $defaultValue = 0) :int {
+  public static function asInt($value = null, ?int $defaultValue = 0) :?int {
     if (!isset($value)) return $defaultValue;
     return $value;
   }
@@ -386,7 +386,7 @@ class Utils {
   
   /**
    * Erzeugt ein Standard Result-Array, wie wir es für den JSON Output brauchen.
-   * 
+   *
    * @codeCoverageIgnore
    * @param int $code
    * @param string $message
@@ -458,7 +458,7 @@ class Utils {
   
   /**
    * Converts a number into a string with zero-prefix
-   * 
+   *
    * @param int $value
    * @return string
    */

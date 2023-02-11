@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace acoby\system;
 
 use acoby\services\ConfigService;
+use acoby\models\AbstractUser;
 
 class SessionManager {
   private static $instance = null;
@@ -44,17 +45,17 @@ class SessionManager {
 
   /**
    *
-   * @param object $user
+   * @param AbstractUser $user
    */
-  public function setUser(object $user) :void {
+  public function setUser(AbstractUser $user) :void {
     $this->set(SessionManager::SESSION_KEY_USER,json_encode($user));
   }
 
   /**
    *
-   * @return object|NULL
+   * @return AbstractUser|NULL
    */
-  public function getUser(object $class) :?object {
+  public function getUser(object $class) :?AbstractUser {
     $userdata = $this->get(SessionManager::SESSION_KEY_USER);
     if ($userdata !== null) {
       return $this->mapper->map($userdata, $class);

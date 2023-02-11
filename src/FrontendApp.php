@@ -17,6 +17,7 @@ use acoby\services\ConfigService;
 use acoby\middleware\HTMLErrorHandler;
 use acoby\system\SessionManager;
 use acoby\system\HttpHeader;
+use acoby\models\AbstractUser;
 
 /**
  * A base class for a Slim/Twig Frontend application.
@@ -53,7 +54,7 @@ abstract class FrontendApp {
     } catch (Throwable $exception) {
       $data = $this->handleError($exception);
       
-      $user = SessionManager::getInstance()->getUser();
+      $user = SessionManager::getInstance()->getUser($this->getUserObject());
       $responseFactory = new ResponseFactory();
       $response = $responseFactory->createResponse($data["code"]);
       
@@ -67,6 +68,12 @@ abstract class FrontendApp {
       $responseEmitter->emit($response);
     }
   }
+  
+  /**
+   * Returns a new User object for session manager
+   * @return AbstractUser
+   */
+  protected abstract function getUserObject() :AbstractUser;
   
   /**
    * Returns an error suitable for rendering a useful error message on the screen

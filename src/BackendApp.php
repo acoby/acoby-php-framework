@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace wiregate;
+namespace acoby;
 
 use ErrorException;
 use Throwable;

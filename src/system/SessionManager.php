@@ -53,6 +53,13 @@ class SessionManager {
 
   /**
    *
+   */
+  public function unsetUser() :void {
+    $this->unset(SessionManager::SESSION_KEY_USER);
+  }
+  
+  /**
+   *
    * @return AbstractUser|NULL
    */
   public function getUser(object $class) :?AbstractUser {
@@ -98,6 +105,6 @@ class SessionManager {
    */
   public function unset(string $key) :void {
     ConfigService::unset($key);
-    unset($_SESSION[$key]);
+    if (isset($_SESSION) && isset($_SESSION[$key])) unset($_SESSION[$key]);
   }
 }

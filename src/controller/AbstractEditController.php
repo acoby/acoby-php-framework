@@ -87,13 +87,17 @@ abstract class AbstractEditController extends AbstractViewController {
   protected function validate(ServerRequestInterface $request, ResponseInterface $response, array $args, array &$form, object $object) :bool {
     $isValid = true;
     foreach ($form["elements"] as &$element) {
+      $name = $element["name"];
+      $label = $element["label"];
+      $mandatory = false;
+      if (isset($element["mandatory"])) $mandatory = $element["mandatory"];
+      
       $defaultValue = null;
-      if (isset($element["value"])) {
-        $defaultValue = strval($element["value"]);
-      }
-      $value = strval($this->getAttribute($element["name"],$defaultValue));
-      if (isset($element["mandatory"]) && $element["mandatory"] && $defaultValue !== $value && Utils::isEmpty($value)) {
-        $element["error"] = $element["label"]." must be defined";
+      if (isset($element["value"])) $defaultValue = strval($element["value"]);
+
+      $value = strval($this->getAttribute($name,$defaultValue));
+      if ($mandatory && $defaultValue !== $value && Utils::isEmpty($value)) {
+        $element["error"] = $label." must be defined";
         $isValid = false;
       }
       if (isset($element["validator"])) {

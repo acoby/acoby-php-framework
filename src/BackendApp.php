@@ -99,7 +99,7 @@ abstract class BackendApp {
     $this->app->add(new OAuthAuthentication($this->getAppAuthSettings()));
     $this->app->addMiddleware(new VersionResponseHandler());
     
-    foreach ($this->getMiddleware($this-app) as $middleware) $this->app->addMiddleware($middleware);
+    foreach ($this->getMiddleware($this->app) as $middleware) $this->app->addMiddleware($middleware);
     
     $errorMiddleware = $this->app->addErrorMiddleware((ConfigService::getString("acoby_environment") !== "prod"), true, true);
     $errorMiddleware->setDefaultErrorHandler([RESTErrorHandler::class,'handleError']);

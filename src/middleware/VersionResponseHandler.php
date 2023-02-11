@@ -31,6 +31,6 @@ class VersionResponseHandler implements MiddlewareInterface {
       Utils::logInfo("Client did not send version information via Header ".HttpHeader::X_CLIENT_VERSION);
     }
     $response = $handler->handle($request);
-    return $response->withAddedHeader(HttpHeader::X_SERVER_VERSION, );
+    return $response->withAddedHeader(HttpHeader::X_SERVER_VERSION, $serverVersion);
   }
 }

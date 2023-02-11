@@ -5,14 +5,15 @@ namespace acoby\system;
 
 use acoby\exceptions\IllegalArgumentException;
 use JsonMapper;
+use Throwable;
 
 class BodyMapper {
   private $mapper;
-
+  
   public function __construct() {
     $this->mapper = new JsonMapper();
   }
-
+  
   /**
    * Converts JSON string into array
    *
@@ -35,16 +36,14 @@ class BodyMapper {
         // @codeCoverageIgnoreEnd
       }
       return $mixed;
-    } catch (\Exception $error) {
-      throw new IllegalArgumentException($error->getMessage());
       // @codeCoverageIgnoreStart
-    } catch (\Error $error) {
-      throw new IllegalArgumentException($error->getMessage());
+    } catch (Throwable $throwable) {
+      throw new IllegalArgumentException($throwable->getMessage(),$throwable->getCode(),$throwable);
     }
     // @codeCoverageIgnoreEnd
     return array();
   }
-
+  
   /**
    * Mappen eines String-JSON auf eine Klasse. Gibt es beim Parsen oder Objekt-machen einen Fehler, wird eine Exception geworfen
    *
@@ -62,16 +61,14 @@ class BodyMapper {
       if ($mixed === NULL) {
         throw new IllegalArgumentException(json_last_error_msg());
       }
-      return $this->mapObject($mixed, $object);
-    } catch (\Exception $error) {
-      throw new IllegalArgumentException($error->getMessage());
+      return Utils::cast($mixed, $object);
       // @codeCoverageIgnoreStart
-    } catch (\Error $error) {
-      throw new IllegalArgumentException($error->getMessage(),null,$error);
+    } catch (Throwable $throwable) {
+      throw new IllegalArgumentException($throwable->getMessage(),$throwable->getCode(),$throwable);
     }
     // @codeCoverageIgnoreEnd
   }
-
+  
   /**
    * Mappen eines Mixed Object auf eine Klasse. Gibt es beim Parsen oder Objekt-machen einen Fehler, wird eine Exception geworfen
    *
@@ -84,10 +81,8 @@ class BodyMapper {
     try {
       return $this->mapper->map($body, $object);
       // @codeCoverageIgnoreStart
-    } catch (\Exception $error) {
-      throw new IllegalArgumentException($error->getMessage());
-    } catch (\Error $error) {
-      throw new IllegalArgumentException($error->getMessage());
+    } catch (Throwable $throwable) {
+      throw new IllegalArgumentException($throwable->getMessage(),$throwable->getCode(),$throwable);
       // @codeCoverageIgnoreEnd
     }
   }
@@ -121,19 +116,16 @@ class BodyMapper {
       $mixed = json_decode(json_encode($body),false,100,JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT | JSON_BIGINT_AS_STRING);
       return $this->mapper->map($mixed, $object);
       // @codeCoverageIgnoreStart
-    } catch (\Exception $error) {
-      Utils::logException("Cannot map JSON String to Object", $error);
-      throw new IllegalArgumentException($error->getMessage());
-    } catch (\Error $error) {
-      Utils::logException("Cannot map JSON String to Object", $error);
-      throw new IllegalArgumentException($error->getMessage());
+    } catch (Throwable $throwable) {
+      Utils::logException("Cannot map JSON String to Object", $throwable);
+      throw new IllegalArgumentException($throwable->getMessage(),$throwable->getCode(),$throwable);
     }
     // @codeCoverageIgnoreEnd
   }
-
+  
   /**
    * Return a JSON string from an array
-   * 
+   *
    * @param array $data
    * @return string
    */

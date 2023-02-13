@@ -10,6 +10,7 @@ use Slim\Views\Twig;
 use Throwable;
 use acoby\system\Utils;
 use acoby\system\HttpHeader;
+use acoby\forms\InputField;
 
 /**
  * A base class for editing an entity
@@ -84,27 +85,15 @@ abstract class AbstractEditController extends AbstractViewController {
    * @param object $object
    * @return bool true, wenn die Validierung erfolgreich war.
    */
-  protected function validate(ServerRequestInterface $request, ResponseInterface $response, array $args, array &$form, object $object) :bool {
+  protected function validate(ServerRequestInterface $request, ResponseInterface $response, array $args, array &$form, object &$object) :bool {
     $isValid = true;
+    /** @var $element InputField */
     foreach ($form["elements"] as &$element) {
-      $name = $element["name"];
-      $label = $element["label"];
-      $mandatory = false;
-      if (isset($element["mandatory"])) $mandatory = $element["mandatory"];
+      $element->newValue = strval($this->getAttribute($element->name,$element->currentValue));
       
-      $defaultValue = null;
-      if (isset($element["value"])) $defaultValue = strval($element["value"]);
-
-      $value = strval($this->getAttribute($name,$defaultValue));
-      if ($mandatory && $defaultValue !== $value && Utils::isEmpty($value)) {
-        $element["error"] = $label." must be defined";
+      if ($element->validate($object)) {
         $isValid = false;
       }
-      if (isset($element["validator"])) {
-        $valid = call_user_func_array($element["validator"],[$object,$element,$value]);
-        if (!$valid) $isValid = false;
-      }
-      $element["value"] = $value;
     }
 
     return $isValid;

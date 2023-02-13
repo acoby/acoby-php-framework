@@ -15,18 +15,16 @@ class EMailInputField extends InputField {
   public function __construct(string $tab, string $name, string $label, bool $mandatory = true,  bool $readonly = false) {
     parent::__construct($tab, "input", "email", $name, $label, $mandatory, $readonly);
   }
-  
+
   /**
    * {@inheritDoc}
-   * @see \acoby\forms\InputField::validate()
+   * @see \acoby\forms\InputField::doPostValidate()
    */
-  public function validate($newValue = null) :bool {
-    $parent = parent::validate($newValue);
-    
+  protected function doPostValidate() :?bool {
     if (!Utils::isEmpty($this->newValue) && !filter_var($this->newValue, FILTER_VALIDATE_EMAIL)) {
+      $this->error = $this->label." is not valid";
       return false;
     }
-    
-    return $parent;
+    return null;
   }
 }

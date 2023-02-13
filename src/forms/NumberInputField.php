@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace acoby\forms;
 
+use acoby\system\Utils;
+
 /**
  * 
  */
@@ -20,17 +22,21 @@ class NumberInputField extends InputField {
   
   /**
    * {@inheritDoc}
-   * @see \acoby\forms\InputField::validate()
+   * @see \acoby\forms\InputField::doPostValidate()
    */
-  public function validate($newValue = null) :bool {
-    $parent = parent::validate(strval($newValue));
-    if (!$parent) return $parent;
-    
-    $this->newValue = intval($newValue);
-    
-    if (isset($this->minValue) && $this->newValue < $this->minValue) return false;
-    if (isset($this->maxValue) && $this->maxValue < $this->newValue) return false;
-    
-    return true;
+  protected function doPostValidate() :?bool {
+    if (!Utils::isEmpty($this->newValue)) {
+      $newValue = intval($this->newValue);
+      
+      if (isset($this->minValue) && $newValue < $this->minValue) {
+        $this->error = $this->label." is too small";
+        return false;
+      }
+      if (isset($this->maxValue) && $this->maxValue < $newValue) {
+        $this->error = $this->label." is too big";
+        return false;
+      }
+    }
+    return null;
   }
 }

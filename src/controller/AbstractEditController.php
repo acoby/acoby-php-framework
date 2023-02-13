@@ -91,7 +91,7 @@ abstract class AbstractEditController extends AbstractViewController {
     foreach ($form["elements"] as &$element) {
       $element->newValue = strval($this->getAttribute($element->name,$element->currentValue));
       
-      if ($element->validate($object)) {
+      if (!$element->validate($object)) {
         $isValid = false;
       }
     }

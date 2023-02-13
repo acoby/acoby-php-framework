@@ -2,7 +2,7 @@
 	"name" : "acoby/framework",
 	"require" : {
 		"php" : ">=7.4",
-		"firebase/php-jwt" : "~5 || ~0",
+		"firebase/php-jwt" : "~5 || ~0 || ~0",
 		"guzzlehttp/guzzle" : "~7",
 		"netresearch/jsonmapper" : "~4",
 		"ramsey/uuid" : "~4",

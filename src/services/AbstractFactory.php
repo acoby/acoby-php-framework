@@ -7,6 +7,11 @@ use PDO;
 use acoby\system\DatabaseMapper;
 use acoby\exceptions\IllegalStateException;
 
+/**
+ * A Base Factory for all you needs
+ * 
+ * @author Thoralf Rickert-Wendt
+ */
 abstract class AbstractFactory {
   protected $connection;
   private static $services = array();
@@ -14,6 +19,15 @@ abstract class AbstractFactory {
   /** */
   protected function __construct() {
     global $pdo;
+    $this->connection = $pdo;
+  }
+  
+  /**
+   * Sets the DB connection to this factory
+   * 
+   * @param PDO $pdo
+   */
+  public function setConnection(PDO $pdo) :void {
     $this->connection = $pdo;
   }
 

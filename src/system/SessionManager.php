@@ -59,7 +59,8 @@ class SessionManager {
   }
   
   /**
-   *
+   * Returns the user from the session
+   * 
    * @return AbstractUser|NULL
    */
   public function getUser(object $class) :?AbstractUser {

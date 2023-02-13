@@ -170,7 +170,7 @@ class Utils {
    */
   public static function asBool($value = null, ?bool $defaultValue = false) :?bool {
     if (!isset($value)) return $defaultValue;
-    return $value;
+    return Utils::isEnabled($value);
   }
   
   /**
@@ -478,5 +478,35 @@ class Utils {
       return array_pop($split);
     }
     return null;
+  }
+  
+  /**
+   * Returns a null safe JSON valid date time
+   * 
+   * @param string $dateTime
+   * @param string $format
+   * @return string|NULL
+   */
+  public static function getJSONDateTime(?string $dateTime, string $format = 'c') :?string {
+    if ($dateTime === null) return null;
+    return (new Datetime($dateTime))->format($format);
+  }
+  
+  /**
+   * Verifies if the given DateTime is really in the given format.
+   * 
+   * @param string $dateTime
+   * @param string $format
+   * @return bool
+   */
+  public static function isDateTime(?string $dateTime, string $format = 'Y-m-d H:i:s') :bool {
+    if ($dateTime === null) return false;
+    try {
+      $date = new DateTime($dateTime);
+      if ($date->format($format) !== $dateTime) return false;
+      return true;
+    } catch (Exception $e) {
+      return false;
+    }
   }
 }

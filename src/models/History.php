@@ -3,90 +3,87 @@ declare(strict_types=1);
 
 namespace acoby\models;
 
-use DateTime;
 use acoby\exceptions\IllegalArgumentException;
-use acoby\services\HistoryService;
+use Ramsey\Uuid\Uuid;
+use acoby\system\Utils;
 
 /**
  * @OA\Schema(
  *   schema="History",
- *   type="object",
- *   required={"created","objectId","objectType"}
+ *   type="object"
  * )
  */
 class History {
   const TABLE_NAME = "history";
   /**
-   * @OA\Property(type="string",format="uuid")
+   * @OA\Property(type="string",format="uuid", readOnly=true)
    * @var string|null
    */
   public $externalId;
-
+  
   /**
-   * @OA\Property(type="string",format="uuid")
-   * @var string|null
-   */
-  public $creatorId;
-
-  /**
-   * @OA\Property(type="string",format="date-time")
+   * @OA\Property(type="string",format="date-time", readOnly=true)
    * @var string|null
    */
   public $created;
-
+  
   /**
-   * @OA\Property(type="integer")
-   * @var integer|null
+   * @OA\Property(type="string",format="uuid", readOnly=true)
+   * @var string|null
+   */
+  public $creatorId;
+  
+  /**
+   * @OA\Property(type="int", readOnly=true)
+   * @var int|null
    */
   public $mode;
-
+  
   /**
-   * @OA\Property(type="string")
+   * @OA\Property(type="string",,format="uuid", readOnly=true)
    * @var string|null
    */
   public $objectId;
-
+  
   /**
-   * @OA\Property(type="string")
+   * @OA\Property(type="string", enum={"user","customer","peer", "network"}, readOnly=true)
    * @var string|null
    */
   public $objectType;
-
+  
   /**
-   * @OA\Property(type="string")
+   * @OA\Property(type="string", readOnly=true)
    * @var string|null
    */
   public $message;
-
+  
   /**
-   * verifies an Object
-   *
-   * @param boolean $isNew
-   * @throws IllegalArgumentException::
-   * @return boolean
+   * verify the incoming object.
    */
   public function verify(bool $isNew = true) :bool {
-    if (!$isNew) {
-      if (!$this->externalId) throw new IllegalArgumentException("Unknown external id");
+    if ($isNew) {
+      if (!isset($this->externalId)) $this->externalId = Uuid::uuid4()->toString();
+      if (!isset($this->created)) $this->created = date('Y-m-d H:i:s');
+    } else {
+      if (!is_string($this->externalId) || !Uuid::isValid($this->externalId)) throw new IllegalArgumentException("externalId is not set or invalid");
+      if (!is_string($this->created) || Utils::isDateTime($this->created)) throw new IllegalArgumentException("created is not set or invalid");
     }
-
-    if (!is_string($this->created)) throw new IllegalArgumentException("created is not set");
-    if (!is_string($this->objectId)) throw new IllegalArgumentException("objectId is not set");
+    
+    if (!isset($this->mode) || !HistoryMode::exists($this->mode)) throw new IllegalArgumentException("mode is not set or invalid");
+    if (!is_string($this->objectId) || !Uuid::isValid($this->objectId)) throw new IllegalArgumentException("objectId is not set or invalid");
     if (!is_string($this->objectType)) throw new IllegalArgumentException("objectType is not set");
-    if (!is_int($this->mode)) throw new IllegalArgumentException("mode is not set");
-    if (!is_string($this->message)) throw new IllegalArgumentException("message is not set");
-    if (!is_string($this->creatorId) && $this->objectType !== HistoryService::TYPE_USER) throw new IllegalArgumentException("creatorId is not set");
-
+    
     return true;
   }
-
+  
   /**
+   * ändert das Format.
    *
-   * @param History $host
    * @return History|NULL
    */
   public function reform(bool $expand = false) :History {
-    if (isset($this->created)) $this->created = (new DateTime($this->created))->format('c');
+    $this->created = Utils::getJSONDateTime($this->created);
+    
     unset($this->id);
     return $this;
   }

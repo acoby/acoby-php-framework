@@ -3,118 +3,100 @@ declare(strict_types=1);
 
 namespace acoby\services;
 
-use DateTime;
+use RuntimeException;
 use acoby\models\History;
+use acoby\exceptions\IllegalArgumentException;
+use acoby\system\DatabaseMapper;
 
-class HistoryFactory {
+class HistoryFactory extends AbstractFactory {
+  /** @var HistoryFactory */
   private static $instance = null;
   
-  /** */
-  public static function setInstance(HistoryService $instance) :void {
-    self::$instance = $instance;
-  }
-  
-  /** */
-  public static function getInstance() :HistoryService {
+  /**
+   * Returns the singleton instance of this factory
+   * 
+   * @return HistoryFactory
+   */
+  public static function getInstance() :HistoryFactory {
+    if (self::$instance === null) self::$instance = new HistoryFactory();
     return self::$instance;
   }
   
   /**
+   * Creates a new object in the database
    *
-   * @param object $object
-   * @param array $items
-   * @param string $title
-   * @param string $name
-   * @return array
+   * @param History $history
+   * @return History|NULL
    */
-  public function createHistory(object $object, array $items, string $title, string $name) :array {
-    $data = array();
-    $addMessage = false;
-    $modifiedMessage = false;
+  public function createHistory(History $history, string $creatorId = null) :?History {
+    $history->creatorId = $creatorId;
     
-    foreach ($items as $item) {
-      $response = $this->addHistoryEntry($data,$item,$title,$name);
-      
-      if (isset($response["add"])) $addMessage = true;
-      if (isset($response["modified"])) $modifiedMessage = true;
-    }
+    if (!$history->verify(true)) throw new IllegalArgumentException("History definition is not valid");
     
-    if (!$addMessage) {
-      $day = (new DateTime($object->created))->format('Y-m-d');
-      $time = (new DateTime($object->created))->format('H:i');
-      $timestamp = (new DateTime($object->created))->getTimestamp();
-      $data[$day][$timestamp][] = $this->createHistoryEntry($time,$title." created","fa-user","The ".strtolower($title)." ".$name." was created");
-    }
+    $stmt = DatabaseMapper::getInstance()->insert($this->connection,History::TABLE_NAME, $history);
+    if ($stmt === null) throw new RuntimeException("Could not store history in database");
     
-    if (!$modifiedMessage) {
-      $day = (new DateTime($object->changed))->format('Y-m-d');
-      $time = (new DateTime($object->changed))->format('H:i');
-      $timestamp = (new DateTime($object->changed))->getTimestamp();
-      $data[$day][$timestamp][] = $this->createHistoryEntry($time,$title."Host last updated","fa-user","The ".strtolower($title)." ".$name." was last changed");
-    }
-    
-    
-    krsort($data);
-    foreach ($data as $day => $item) {
-      krsort($data[$day]);
-    }
-    return $data;
+    return $this->geHistoryByExternalId($history->externalId);
   }
   
   /**
+   * Returns the history object with given externalId
    *
-   * @param array $data
-   * @param History $item
-   * @param string $title
-   * @param string $name
-   * @return array
+   * @param string $networkId
+   * @param string $ownerId
+   * @return History|NULL
    */
-  protected function addHistoryEntry(array &$data, History $item, string $title, string $name, string $user = null) :array {
-    $response = array();
+  public function geHistoryByExternalId(string $externalId, bool $expand = false) :?History {
+    $params = array();
+    $params["externalId"] = $externalId;
+    $condition = "`externalId`=:externalId";
     
-    $date = (new DateTime($item->created))->format('Y-m-d');
-    $time = (new DateTime($item->created))->format('H:i');
-    $timestamp = (new DateTime($item->created))->getTimestamp();
-    
-    $subject = $title;
-    $creator = " by Unknown";
-    if ($user !== null) $creator = " by ".$user;
-    
-    if ($item->mode === HistoryService::MODE_ADD) {
-      $response["add"] = true;
-      $subject.= " created";
-    } else if ($item->mode === HistoryService::MODE_CHANGED) {
-      $response["modified"] = true;
-      $subject.= " changed";
-    } else if ($item->mode === HistoryService::MODE_DELETED) {
-      $subject.= " deleted";
-    } else {
-      $response["modified"] = true;
-      $subject.= " modified";
-    }
-    
-    $data[$date][$timestamp][] = $this->createHistoryEntry($time,$subject,"fa-user",$item->message.$creator);
-    
-    return $response;
+    return DatabaseMapper::getInstance()->findOne($this->connection, History::TABLE_NAME, History::class, $expand, $condition, $params, null);
   }
+  
   
   /**
-   *
-   * @param string $time
-   * @param string $title
-   * @param string $icon
-   * @param string $content
-   * @param string $footer
-   * @return array
+   * Returns a list of all history changes to a given objective.
+   * 
+   * @param string $objectType
+   * @param string $objectId
+   * @param bool $expand
+   * @param int $offset
+   * @param int $limit
+   * @param bool $orderAscending order of history
+   * @return History[]
    */
-  protected function createHistoryEntry(string $time, string $title, string $icon, string $content = null, string $footer = null) :array {
-    $item = array();
-    $item["icon"] = $icon;
-    $item["time"] = $time;
-    $item["title"] = $title;
-    if ($content !== null) $item["content"] = $content;
-    if ($footer !== null) $item["footer"] = $footer;
-    return $item;
+  public function getHistoryByObject(string $objectType, string $objectId, bool $expand = false, int $offset = 0, int $limit = 100, bool $orderAscending = false) :array {
+    $order = "DESC";
+    if ($orderAscending) $order = "ASC";
+    
+    $params = array();
+    $params['objectType'] = $objectType;
+    $params['objectId'] = $objectId;
+    $condition = "`objectType` = :objectType AND `objectId` = :objectId ORDER BY `created` ".$order;
+
+    return DatabaseMapper::getInstance()->findAll($this->connection, History::TABLE_NAME, History::class, $condition, $params, $expand, $limit, $offset);
   }
   
+  
+  /**
+   * Returns a list of changes a User did
+   * 
+   * @param string $creatorId the creator who changes something
+   * @param bool $expand to expand all History objects
+   * @param int $offset offset of data
+   * @param int $limit limit of data
+   * @param bool $orderAscending order of history
+   * @return History[]
+   */
+  public function getHistoryByCreator(string $creatorId, bool $expand = false, int $offset = 0, int $limit = 100, bool $orderAscending = false) :array {
+    $order = "DESC";
+    if ($orderAscending) $order = "ASC";
+    
+    $params = array();
+    $params['creatorId'] = $creatorId;
+    $conditions = "`creatorId`=:creatorId ORDER BY `created` ".$order;
+    
+    return DatabaseMapper::getInstance()->findAll($this->connection, History::TABLE_NAME, History::class, $conditions, $params, $expand, $limit, $offset);
+  }
 }

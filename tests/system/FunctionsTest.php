@@ -35,4 +35,20 @@ class FunctionsTest extends BaseTestCase {
     $val = Utils::endsWith($message, "");
     $this->assertTrue($val);
   }
+  
+  public function testCurve() {
+    $curve = new Curve25519();
+    $privateKey1 = base64_encode(random_bytes(32));
+    $publicKey1 = base64_encode($curve->publicKey(base64_decode($privateKey1)));
+    
+    $this->assertNotNull($publicKey1);
+    
+    $privateKey2 = random_bytes(32);
+    $publicKey2 = $curve->publicKey($privateKey2);
+    
+    $sharedKey = $curve->sharedKey(base64_decode($privateKey1), $publicKey2);
+    
+    $this->assertNotNull($sharedKey);
+    
+  }
 }

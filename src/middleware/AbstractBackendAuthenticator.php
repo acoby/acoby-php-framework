@@ -11,12 +11,21 @@ use acoby\models\AbstractUser;
  * 
  * @author Thoralf Rickert-Wendt
  */
-abstract class AcobyAuthenticator {
+abstract class AbstractBackendAuthenticator {
   protected $options = [
     "sso_auto_insert" => true,
     "sso_role" => "CUSTOMER"
   ];
   
+  /**
+   * When there is a SSO login (via JWT) and we dont find a suitable user in the backend,
+   * we need to create a new user in the backend. This method is used to use the JWT attributes
+   * to create a new user in the backend.
+   * 
+   * @param OAuthParams $params
+   * @param AbstractUser $admin
+   * @return AbstractUser|NULL
+   */
   public abstract function createSSOUser(OAuthParams $params, AbstractUser $admin) :?AbstractUser;  
 
   /**

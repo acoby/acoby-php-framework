@@ -90,7 +90,12 @@ abstract class AbstractEditController extends AbstractViewController {
     $isValid = true;
     /** @var $element InputField */
     foreach ($form["elements"] as &$element) {
-      $element->newValue = strval($this->getAttribute($element->name,$element->currentValue));
+      if ($element->tag === "checkbox") {
+        // browser do send nothing, when a checkbox is turned off
+        $element->newValue = strval($this->getAttribute($element->name,Utils::bool2str(false)));
+      } else {
+        $element->newValue = strval($this->getAttribute($element->name,$element->currentValue));
+      }
       
       if (!$element->validate($object)) {
         $isValid = false;
@@ -177,7 +182,7 @@ abstract class AbstractEditController extends AbstractViewController {
           }
           $data = $this->getTwigArgs($request, $args);
           $data["form"] = $form;
-          return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_EDIT), $data);
+          return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_ADD), $data);
         }
         case "cancel": {
           return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);

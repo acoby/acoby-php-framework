@@ -14,7 +14,7 @@ class CheckboxField extends InputField {
     
   public function __construct(string $tab, string $name, string $label, bool $readonly = false) {
     parent::__construct($tab, "checkbox", "checkbox", $name, $label, false, $readonly);
-    $this->currentValue = false;
+    $this->currentValue = Utils::bool2str(false);
   }
 
   /**

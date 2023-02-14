@@ -5,6 +5,7 @@ namespace acoby\services;
 
 use acoby\models\History;
 use acoby\forms\HistoryViewItem;
+use acoby\system\Utils;
 
 abstract class AbstractHistoryViewFactory extends AbstractFactory {
   /**
@@ -17,10 +18,11 @@ abstract class AbstractHistoryViewFactory extends AbstractFactory {
     $data = array();
     
     foreach ($items as $item) {
-      $object = $this->getObject($item);
-      $objectName = $this->getObjectName($item,$object);
-      $userName = $this->getUserService();
-      $entry = new HistoryViewItem($item, $object, $objectName, $userName);
+      $history = Utils::cast($item, new History());
+      $object = $this->getObject($history);
+      $objectName = $this->getObjectName($history,$object);
+      $userName = $this->getCreatorNameForHistory($history);
+      $entry = new HistoryViewItem($history, $object, $objectName, $userName);
       $data[$entry->day][$entry->timestamp][] = $this->customizeViewItem($entry);;
     }
     

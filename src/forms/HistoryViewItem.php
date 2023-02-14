@@ -36,7 +36,7 @@ class HistoryViewItem {
    * @param string $objectName
    * @param string $icon
    */
-  public function __construct(History $history, object $object, string $objectName, string $username = "Unknown", string $icon = "fa-user") :HistoryViewItem {
+  public function __construct(History $history, object $object, string $objectName, string $username = "Unknown", string $icon = "fa-user") {
     $dateTime = new DateTime($history->created);
     
     $this->historyId = $history->externalId;

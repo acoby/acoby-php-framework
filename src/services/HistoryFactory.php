@@ -28,9 +28,7 @@ class HistoryFactory extends AbstractFactory {
    * @param History $history
    * @return History|NULL
    */
-  public function createHistory(History $history, string $creatorId = null) :?History {
-    $history->creatorId = $creatorId;
-    
+  public function createHistory(History $history) :?History {
     if (!$history->verify(true)) throw new IllegalArgumentException("History definition is not valid");
     
     $stmt = DatabaseMapper::getInstance()->insert($this->connection,History::TABLE_NAME, $history);

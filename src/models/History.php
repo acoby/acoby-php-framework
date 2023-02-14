@@ -34,6 +34,11 @@ class History {
   public $creatorId;
   
   /**
+   * @var AbstractUser|null
+   */
+  public $creator;
+  
+  /**
    * @OA\Property(type="int", readOnly=true)
    * @var int|null
    */
@@ -50,6 +55,11 @@ class History {
    * @var string|null
    */
   public $objectType;
+  
+  /**
+   * @var object|null
+   */
+  public $object;
   
   /**
    * @OA\Property(type="string", readOnly=true)

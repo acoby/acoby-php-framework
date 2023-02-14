@@ -35,6 +35,15 @@ to your compose.json. We don't publish the package to the public composer archiv
 
 ## change log
 
+### v2.2.0
+
+- switch from array UI elements to objects to be more type safe and better documentation
+- additional better handling of backend errors
+
+### v2.1.0
+
+- additional options to manage history
+
 ### v2.0.0
 
 - we made some major changes

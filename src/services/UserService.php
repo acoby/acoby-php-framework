@@ -33,7 +33,8 @@ interface UserService {
    * 
    * @param string $username
    * @param bool $expand
+   * @param bool $hide
    * @return AbstractUser|NULL
    */
-  public function getUserByName(string $username, bool $expand = true) :?AbstractUser;
+  public function getUserByName(string $username, bool $expand = false, bool $hide = true) :?AbstractUser;
 }

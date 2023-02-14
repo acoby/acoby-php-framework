@@ -11,6 +11,7 @@ use Throwable;
 use acoby\system\Utils;
 use acoby\system\HttpHeader;
 use acoby\forms\InputField;
+use acoby\exceptions\BackendException;
 
 /**
  * A base class for editing an entity
@@ -163,10 +164,16 @@ abstract class AbstractEditController extends AbstractViewController {
         case "save": {
           $object = $this->newObject();
           if ($this->validate($request, $response, $args, $form, $object)) {
-            $object = $this->addObject($object);
-            if ($object !== null) {
-              return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+            try {
+              $object = $this->addObject($object);
+              if ($object !== null) {
+                return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+              }
+            } catch (BackendException $exception) {
+              $form["error"] = $exception->getMessage()." ".$exception->status->error->message;
             }
+          } else {
+            $form["error"] = "Some attributes are not valid.";
           }
           $data = $this->getTwigArgs($request, $args);
           $data["form"] = $form;
@@ -217,9 +224,15 @@ abstract class AbstractEditController extends AbstractViewController {
       default: {
         $view = Twig::fromRequest($request);
         if ($this->validate($request, $response, $args, $form, $object)) {
-          if ($this->saveObject($object)) {
-            return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+          try {
+            if ($this->saveObject($object)) {
+              return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+            }
+          } catch (BackendException $exception) {
+            $form["error"] = $exception->getMessage()." ".$exception->status->error->message;
           }
+        } else {
+          $form["error"] = "Some attributes are not valid.";
         }
 
         try {

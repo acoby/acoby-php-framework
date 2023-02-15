@@ -44,7 +44,7 @@ abstract class AbstractFactory {
     $params = array();
     $counts = DatabaseMapper::getInstance()->query($this->connection, $query, $params, PDO::FETCH_COLUMN, 0);
     if ($counts === null || count($counts)<1) return 0;
-    return $counts[0];
+    return intval($counts[0]);
   }
   
   /**

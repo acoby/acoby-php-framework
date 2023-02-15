@@ -5,6 +5,7 @@ namespace acoby\services;
 
 use RuntimeException;
 use acoby\models\History;
+use acoby\models\HistorySearch;
 use acoby\exceptions\IllegalArgumentException;
 use acoby\system\DatabaseMapper;
 
@@ -97,4 +98,16 @@ class HistoryFactory extends AbstractFactory {
     
     return DatabaseMapper::getInstance()->findAll($this->connection, History::TABLE_NAME, History::class, $conditions, $params, $expand, $limit, $offset);
   }
+  
+  /**
+   * Search for the History entries based on given parameters.
+   * 
+   * @param HistorySearch $search
+   * @return History[]
+   */
+  public function search(HistorySearch $search) :array {
+    $search->verify();
+    return DatabaseMapper::getInstance()->search($this->connection, History::TABLE_NAME, $search, History::class, 'created');
+  }
+  
 }

@@ -45,7 +45,7 @@ class History {
   public $mode;
   
   /**
-   * @OA\Property(type="string",,format="uuid", readOnly=true)
+   * @OA\Property(type="string",format="uuid", readOnly=true)
    * @var string|null
    */
   public $objectId;

@@ -94,7 +94,7 @@ abstract class AbstractEditController extends AbstractViewController {
         // browser do send nothing, when a checkbox is turned off
         $element->newValue = strval($this->getAttribute($element->name,Utils::bool2str(false)));
       } else {
-        $element->newValue = strval($this->getAttribute($element->name,$element->currentValue));
+        $element->newValue = strval($this->getAttribute($element->name,strval($element->currentValue)));
       }
       
       if (!$element->validate($object)) {

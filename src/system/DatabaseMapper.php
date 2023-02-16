@@ -118,7 +118,7 @@ class DatabaseMapper {
       return $stmt;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
-      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
+      Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $q, $params, $stmt->errorInfo());
     }
     return null;
     // @codeCoverageIgnoreEnd

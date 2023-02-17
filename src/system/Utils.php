@@ -38,6 +38,18 @@ class Utils {
   }
   
   /**
+   * Returns the value or when the value is null or empty ("") null to reduce 
+   * JSON output
+   * 
+   * @param string $value
+   * @return string|NULL
+   */
+  public static function asNullString(string $value = null) :?string {
+    if (Utils::isEmpty($value)) return null;
+    return $value;
+  }
+  
+  /**
    * Generate a random string, using a cryptographically secure
    * pseudorandom number generator (random_int)
    *

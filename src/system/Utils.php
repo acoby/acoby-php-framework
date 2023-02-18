@@ -197,6 +197,19 @@ class Utils {
   }
   
   /**
+   * Splits a list by comma and returns always a list.
+   * 
+   * @param string $value
+   * @return string[]
+   */
+  public static function asList(string $value = null) :array {
+    if (Utils::isEmpty($value)) return array();
+    $values = array();
+    foreach (explode(",", $value) as $element) $values[] = trim($element); 
+    return $values;
+  }
+  
+  /**
    *
    * @param int $value
    * @param string $defaultValue

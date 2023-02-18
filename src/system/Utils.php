@@ -210,6 +210,17 @@ class Utils {
   }
   
   /**
+   * Returns a FQDN of name.domain. When name contains not DNS compatible characters, they are encoded.
+   * 
+   * @param string $name
+   * @param string $domain
+   * @return string
+   */
+  public static function asFQDN(string $name, string $domain) :string {
+   return strval(preg_replace('/[^ \w]+/', '', strtolower($name))).".".$domain;
+  }
+  
+  /**
    *
    * @param int $value
    * @param string $defaultValue

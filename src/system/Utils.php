@@ -217,7 +217,9 @@ class Utils {
    * @return string
    */
   public static function asFQDN(string $name, string $domain) :string {
-   return strval(preg_replace('/[^ \w]+/', '', strtolower($name))).".".$domain;
+    $name = str_replace(["^","°","`","´"], "", $name); // this value are not matched in preg_replace
+    $name = str_replace("--", "-", str_replace(" ", "-", $name));
+    return strval(preg_replace('/[^\w^-]+/', '', strtolower($name))).".".$domain;
   }
   
   /**

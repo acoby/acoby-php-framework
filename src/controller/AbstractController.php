@@ -90,7 +90,10 @@ abstract class AbstractController {
     if (count($list)>$limit) {
       array_pop($list);
       $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, Utils::bool2str(true));
+    } else {
+      $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, Utils::bool2str(false));
     }
+    $response = $response->withAddedHeader(HttpHeader::X_RESULT_SIZE, count($list));
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_OFFSET, $offset);
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, $limit);
     return $this->withJSONArray($response, $list);

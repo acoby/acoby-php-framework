@@ -506,9 +506,9 @@ class DatabaseMapper {
       }
     }
     
-    if (isset($tableColumns["created"])) $this->addSelectParam($query, $params, $search->created, "created","datetime");
-    if (isset($tableColumns["changed"])) $this->addSelectParam($query, $params, $search->changed, "changed","datetime");
-    if (isset($tableColumns["deleted"])) {
+    if (in_array("created",$tableColumns)) $this->addSelectParam($query, $params, $search->created, "created","datetime");
+    if (in_array("changed",$tableColumns)) $this->addSelectParam($query, $params, $search->changed, "changed","datetime");
+    if (in_array("deleted",$tableColumns)) {
       $this->addSelectParam($query, $params, $search->deleted, "deleted","datetime");
       if (!isset($search->deleted)) $query .= " AND deleted is null";
     }

@@ -95,7 +95,7 @@ abstract class AbstractController {
     }
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_SIZE, count($list));
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_OFFSET, $offset);
-    $response = $response->withAddedHeader(HttpHeader::X_RESULT_MORE, $limit);
+    $response = $response->withAddedHeader(HttpHeader::X_RESULT_LIMIT, $limit);
     return $this->withJSONArray($response, $list);
   }
   

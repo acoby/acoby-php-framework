@@ -9,7 +9,6 @@ use acoby\services\ConfigService;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use acoby\system\HttpHeader;
-use acoby\system\Utils;
 
 /**
  * A small handler to add per default server version.
@@ -24,11 +23,11 @@ class VersionResponseHandler implements MiddlewareInterface {
       foreach ($clientVersion as $version) {
         // must be more specfic and ignore bugfix-releases
         if ($version !== $serverVersion) {
-          Utils::logError("Client Version ".$version." does not fit Server Version ".$serverVersion);
+          // Utils::logError("Client Version ".$version." does not fit Server Version ".$serverVersion);
         }
       }
     } else {
-      Utils::logInfo("Client did not send version information via Header ".HttpHeader::X_CLIENT_VERSION);
+      // Utils::logInfo("Client did not send version information via Header ".HttpHeader::X_CLIENT_VERSION);
     }
     $response = $handler->handle($request);
     return $response->withAddedHeader(HttpHeader::X_SERVER_VERSION, $serverVersion);

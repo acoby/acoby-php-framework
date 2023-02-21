@@ -166,8 +166,10 @@ class DatabaseMapper {
    */
   public function addSelectParam(string &$query, array &$params, &$var, string $key, string $type="string", bool $orNull = false) :void {
     if (!isset($var)) return;
-    if ($type == "string") {
-      if (strpos($var,"*")===false) {
+    if ($type === "string") {
+      if ($var === "null") {
+        $query .= " AND `".$key." IS NULL `";
+      } else if (strpos($var,"*")===false) {
         $query .= " AND ".$this->addToQuery($key,"=",$orNull);
         $params[":".$key] = $var;
       } else {
@@ -175,7 +177,9 @@ class DatabaseMapper {
         $params[":".$key] = str_replace("*","%",$var);
       }
     } else  if ($type == "integer") {
-      if (is_string($var) && strpos($var,">=")===0) {
+      if ($var === "null") {
+        $query .= " AND `".$key." IS NULL `";
+      } else if (is_string($var) && strpos($var,">=")===0) {
         $query .= " AND ".$this->addToQuery($key,">=",$orNull);
         $params[":".$key] = str_replace(">=","",$var);
       } else if (is_string($var) && strpos($var,">")===0) {
@@ -192,7 +196,9 @@ class DatabaseMapper {
         $params[":".$key] = $var;
       }
     } else if ($type == "datetime") {
-      if (strpos($var,">=")===0) {
+      if ($var === "null") {
+        $query .= " AND `".$key." IS NULL `";
+      } else if (strpos($var,">=")===0) {
         $query .= " AND ".$this->addToQuery($key,">=",$orNull);
         $params[":".$key] = str_replace(">=","",$var);
       } else if (strpos($var,">")===0) {

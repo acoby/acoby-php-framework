@@ -600,7 +600,7 @@ class DatabaseMapper {
       if (!$stmt->execute()) {
         // @codeCoverageIgnoreStart
         Utils::logError("Error in query",$query,$params,$stmt->errorInfo());
-        return null;
+        return [];
         // @codeCoverageIgnoreEnd
       }
       $results = $stmt->fetchAll(PDO::FETCH_CLASS, $resultType);
@@ -616,7 +616,7 @@ class DatabaseMapper {
     } catch (Exception $e) {
       Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
-    return null;
+    return [];
     // @codeCoverageIgnoreEnd
   }
   

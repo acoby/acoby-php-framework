@@ -9,6 +9,7 @@ use DateTime;
 use acoby\models\RESTStatus;
 use acoby\services\ConfigService;
 use Psr\Http\Message\ServerRequestInterface;
+use acoby\exceptions\IllegalStateException;
 
 class Utils {
   /**
@@ -338,18 +339,21 @@ class Utils {
    */
   public static function encrypt(string $content, string $key) :?string {
     $cipher = ConfigService::get("acoby_cipher","aes-256-cbc");
-    if (!in_array($cipher, openssl_get_cipher_methods())) {
+    try {
+      if (!in_array($cipher, openssl_get_cipher_methods())) throw new IllegalStateException("Could not find cipher ".$cipher);
+      
+      $ivlen = openssl_cipher_iv_length($cipher);
+      $iv = openssl_random_pseudo_bytes($ivlen);
+      $ciphertext_raw = openssl_encrypt($content, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+      
+      $hmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
+      return base64_encode( $iv.$hmac.$ciphertext_raw );
       // @codeCoverageIgnoreStart
-      Utils::logError("could not found cipher ".$cipher);
-      return null;
-      // @codeCoverageIgnoreEnd
+    } catch (Throwable $exception) {
+      Utils::logException("Could not encrypt ciphertext",$exception);
     }
-    $ivlen = openssl_cipher_iv_length($cipher);
-    $iv = openssl_random_pseudo_bytes($ivlen);
-    $ciphertext_raw = openssl_encrypt($content, $cipher, $key, OPENSSL_RAW_DATA, $iv);
-    
-    $hmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
-    return base64_encode( $iv.$hmac.$ciphertext_raw );
+    return null;
+    // @codeCoverageIgnoreEnd
   }
   
   /**
@@ -357,24 +361,23 @@ class Utils {
    */
   public static function decrypt(string $ciphertext, string $key) :?string {
     $cipher = ConfigService::get("acoby_cipher","aes-256-cbc");
-    if (!in_array($cipher, openssl_get_cipher_methods())) {
+    try {
+      if (!in_array($cipher, openssl_get_cipher_methods())) throw new IllegalStateException("Could not find cipher ".$cipher);
+      
+      $c = base64_decode($ciphertext);
+      $ivlen = openssl_cipher_iv_length($cipher);
+      $iv = substr($c, 0, $ivlen);
+      $hmac = substr($c, $ivlen, $sha2len=32);
+      $ciphertext_raw = substr($c, $ivlen+$sha2len);
+      $content = openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+      $calcmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
+      if (hash_equals($hmac, $calcmac)) {
+        return $content;
+      }
       // @codeCoverageIgnoreStart
-      Utils::logError("could not found cipher ".$cipher);
-      return null;
-      // @codeCoverageIgnoreEnd
+    } catch (Throwable $exception) {
+      Utils::logException("Could not decrypt ciphertext",$exception);
     }
-    $c = base64_decode($ciphertext);
-    $ivlen = openssl_cipher_iv_length($cipher);
-    $iv = substr($c, 0, $ivlen);
-    $hmac = substr($c, $ivlen, $sha2len=32);
-    $ciphertext_raw = substr($c, $ivlen+$sha2len);
-    $content = openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
-    $calcmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
-    if (hash_equals($hmac, $calcmac)) {
-      return $content;
-    }
-    // @codeCoverageIgnoreStart
-    Utils::logError("Could not decrypt ciphertext with given key. Either key is wrong or ciphertext truncated.");
     return null;
     // @codeCoverageIgnoreEnd
   }

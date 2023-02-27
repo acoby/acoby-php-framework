@@ -17,6 +17,7 @@ use acoby\forms\TextareaField;
 use acoby\forms\TextField;
 use acoby\forms\URLInputField;
 use acoby\forms\AvatarSelectField;
+use acoby\forms\Select1Field;
 
 class FormUtils {
   private static $instance = null;
@@ -206,6 +207,28 @@ class FormUtils {
    */
   public function createSelectField(string $tab,string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, array $values = [], bool $readonly = false) :SelectField {
     $element = new SelectField($tab, $name, $label, $values, $mandatory, $readonly);
+    if (isset($placeholder)) $element->placeholder = $placeholder;
+    if (isset($currentValue)) $element->currentValue = $currentValue;
+    if (isset($validator)) $element->validator = $validator;
+    return $element;
+  }
+  
+  /**
+   * Create a simple static select form
+   *
+   * @param string $tab which tab contains this element
+   * @param string $name which name has this element
+   * @param string $label what label has this element
+   * @param string $placeholder an optional placeholder in the input field
+   * @param string $currentValue an optional default value
+   * @param bool $mandatory mark this field as mandatory (must be filled)
+   * @param array $validator a reference to a validator that is called with new data
+   * @param array $values a list of possible values
+   * @param bool $readonly define this field as readonly
+   * @return Select1Field
+   */
+  public function createSelect1Field(string $tab,string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, array $values = [], bool $readonly = false) :Select1Field {
+    $element = new Select1Field($tab, $name, $label, $values, $mandatory, $readonly);
     if (isset($placeholder)) $element->placeholder = $placeholder;
     if (isset($currentValue)) $element->currentValue = $currentValue;
     if (isset($validator)) $element->validator = $validator;

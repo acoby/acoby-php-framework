@@ -132,10 +132,11 @@ class DatabaseMapper {
    * @param mixed $var
    * @param string $key
    */
-  public function addUpdateParam(string &$query, array &$params, &$var, string $key) :void {
+  public function addUpdateParam(string &$query, array &$params, &$var, string $key, string $tableName = null) :void {
     if (!isset($var)) return;
     if (!Utils::endsWith($query, ' SET ')) $query .=" ,";
-    $query .= "`".$key."` = :".$key." ";
+    if ($tableName === null) $table = ""; else $table = "`".$tableName."`.";
+    $query .= $table."`".$key."` = :".$key." ";
     $params[":".$key] = $var;
   }
 
@@ -147,14 +148,15 @@ class DatabaseMapper {
    * @param mixed $var
    * @param string $key
    */
-  private function addToQuery(string $key, string $operator, bool $orNull) :string {
+  private function addToQuery(string $key, string $operator, bool $orNull, string $tableName = null) :string {
+    if ($tableName === null) $table = ""; else $table = "`".$tableName."`.";
     if ($orNull) {
-      return " (`".$key."` ".$operator." :".$key." OR `".$key."` IS NULL) ";
+      return " (".$table."`".$key."` ".$operator." :".$key." OR ".$table."`".$key."` IS NULL) ";
     } else {
-      return " `".$key."` ".$operator." :".$key." ";
+      return " ".$table."`".$key."` ".$operator." :".$key." ";
     }
   }
-
+  
   /**
    * Fügt an den String $query für den Schlüssel $key den Wert in $var an.
    *
@@ -164,54 +166,55 @@ class DatabaseMapper {
    * @param string $key
    * @param string $type
    */
-  public function addSelectParam(string &$query, array &$params, &$var, string $key, string $type="string", bool $orNull = false) :void {
+  public function addSelectParam(string &$query, array &$params, &$var, string $key, string $type="string", bool $orNull = false, string $tableName = null) :void {
     if (!isset($var)) return;
+    if ($tableName === null) $table = ""; else $table = "`".$tableName."`.";
     if ($type === "string") {
       if ($var === "null") {
-        $query .= " AND `".$key." IS NULL `";
+        $query .= " AND ".$table."`".$key." IS NULL `";
       } else if (strpos($var,"*")===false) {
-        $query .= " AND ".$this->addToQuery($key,"=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"=",$orNull, $tableName);
         $params[":".$key] = $var;
       } else {
-        $query .= " AND ".$this->addToQuery($key,"LIKE",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"LIKE",$orNull, $tableName);
         $params[":".$key] = str_replace("*","%",$var);
       }
     } else  if ($type == "integer") {
       if ($var === "null") {
-        $query .= " AND `".$key." IS NULL `";
+        $query .= " AND ".$table."`".$key." IS NULL `";
       } else if (is_string($var) && strpos($var,">=")===0) {
-        $query .= " AND ".$this->addToQuery($key,">=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,">=",$orNull, $tableName);
         $params[":".$key] = str_replace(">=","",$var);
       } else if (is_string($var) && strpos($var,">")===0) {
-        $query .= " AND ".$this->addToQuery($key,">",$orNull);
+        $query .= " AND ".$this->addToQuery($key,">",$orNull, $tableName);
         $params[":".$key] = str_replace(">","",$var);
       } else if (is_string($var) && strpos($var,"<=")===0) {
-        $query .= " AND ".$this->addToQuery($key,"<=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"<=",$orNull, $tableName);
         $params[":".$key] = str_replace("<=","",$var);
       } else if (is_string($var) && strpos($var,"<")===0) {
-        $query .= " AND ".$this->addToQuery($key,"<",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"<",$orNull, $tableName);
         $params[":".$key] = str_replace("<","",$var);
       } else {
-        $query .= " AND ".$this->addToQuery($key,"=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"=",$orNull, $tableName);
         $params[":".$key] = $var;
       }
     } else if ($type == "datetime") {
       if ($var === "null") {
-        $query .= " AND `".$key." IS NULL `";
+        $query .= " AND ".$table."`".$key." IS NULL `";
       } else if (strpos($var,">=")===0) {
-        $query .= " AND ".$this->addToQuery($key,">=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,">=",$orNull, $tableName);
         $params[":".$key] = str_replace(">=","",$var);
       } else if (strpos($var,">")===0) {
-        $query .= " AND ".$this->addToQuery($key,">",$orNull);
+        $query .= " AND ".$this->addToQuery($key,">",$orNull, $tableName);
         $params[":".$key] = str_replace(">","",$var);
       } else if (strpos($var,"<=")===0) {
-        $query .= " AND ".$this->addToQuery($key,"<=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"<=",$orNull, $tableName);
         $params[":".$key] = str_replace("<=","",$var);
       } else if (strpos($var,"<")===0) {
-        $query .= " AND ".$this->addToQuery($key,"<",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"<",$orNull, $tableName);
         $params[":".$key] = str_replace("<","",$var);
       } else {
-        $query .= " AND ".$this->addToQuery($key,"=",$orNull);
+        $query .= " AND ".$this->addToQuery($key,"=",$orNull, $tableName);
         $params[":".$key] = $var;
       }
     }
@@ -480,7 +483,7 @@ class DatabaseMapper {
    * @throws RuntimeException
    * @return array
    */
-  public function search(PDO $connection, string $tableName, AbstractSearch $search, string $resultType, string $orderBy = null, string $condition = null, array $conditionalParams = null) :array {
+  public function search(PDO $connection, string $tableName, AbstractSearch $search, string $resultType, string $orderBy = null, string $condition = null, array $conditionalParams = null, array $joins = null) :array {
     if (!isset($connection)) {
       // @codeCoverageIgnoreStart
       throw new RuntimeException("PDO not initialized");
@@ -495,7 +498,13 @@ class DatabaseMapper {
     if (!isset($search->limit)) $search->limit = 10;
     
     $params = array();
-    $query = 'SELECT `'.$tableName.'`.* FROM `'.$tableName.'` WHERE 1=1 ';
+    $query = 'SELECT `'.$tableName.'`.* FROM `'.$tableName.'` ';
+    if ($joins !== null) {
+      foreach ($joins as $joinTable => $joinCondition) {
+        $query.= "LEFT JOIN `".$joinTable."` ON ".$joinCondition." ";
+      }
+    }
+    $query.= 'WHERE 1=1 ';
     
     if ($condition !== null && strlen(trim($condition))>0 && $conditionalParams !== null && count($conditionalParams)>0) {
       $query.= ' AND '.$condition." ";
@@ -505,22 +514,22 @@ class DatabaseMapper {
     foreach ($classFields as $field) {
       if (!in_array($field, $searchFields)) {
         if (in_array($field,$tableColumns)) {
-          $this->addSelectParam($query, $params, $search->$field, $field,gettype($search->$field));
+          $this->addSelectParam($query, $params, $search->$field, $field,gettype($search->$field), false, $tableName);
         } else {
           Utils::logInfo("class field: '".get_class($search)."->".$field."' has no pendant in table '".$tableName."' in trace ".(new \Exception())->getTraceAsString());
         }
       }
     }
     
-    if (in_array("created",$tableColumns)) $this->addSelectParam($query, $params, $search->created, "created","datetime");
-    if (in_array("changed",$tableColumns)) $this->addSelectParam($query, $params, $search->changed, "changed","datetime");
+    if (in_array("created",$tableColumns)) $this->addSelectParam($query, $params, $search->created, "created", "datetime", false, $tableName);
+    if (in_array("changed",$tableColumns)) $this->addSelectParam($query, $params, $search->changed, "changed", "datetime", false, $tableName);
     if (in_array("deleted",$tableColumns)) {
-      $this->addSelectParam($query, $params, $search->deleted, "deleted","datetime");
-      if (!isset($search->deleted)) $query .= " AND deleted is null";
+      $this->addSelectParam($query, $params, $search->deleted, "deleted", "datetime", false, $tableName);
+      if (!isset($search->deleted)) $query .= " AND `".$tableName."`.`deleted` IS NULL";
     }
     
     if (isset($orderBy)) {
-      $query.=" ORDER BY `".$orderBy."`";
+      $query.=" ORDER BY ".$orderBy;
       if (isset($search->reverse) && $search->reverse) $query.=" DESC";
     }
     
@@ -570,10 +579,15 @@ class DatabaseMapper {
    * @throws DatabaseException
    * @return array
    */
-  public function findAll(PDO $connection, string $tableName, string $resultType, string $condition = "", array $params, bool $expand = false, $limit, $offset = 0, bool $hide=null) :array {
+  public function findAll(PDO $connection, string $tableName, string $resultType, string $condition = "", array $params, bool $expand = false, $limit, $offset = 0, bool $hide=null, array $joins = null) :array {
     if (!isset($connection)) throw new DatabaseException("PDO not initialized");
     
-    $query = 'SELECT * FROM `'.$tableName.'`';
+    $query = 'SELECT `'.$tableName.'`.* FROM `'.$tableName.'` ';
+    if ($joins !== null) {
+      foreach ($joins as $joinTable => $joinCondition) {
+        $query.= "LEFT JOIN `".$joinTable."` ON ".$joinCondition." ";
+      }
+    }
     if (isset($condition) && strlen($condition) > 0) $query.=" WHERE ".$condition;
     if (isset($limit) && is_numeric($limit)) {
       if ($limit < 1) {

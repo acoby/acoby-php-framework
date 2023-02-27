@@ -16,6 +16,7 @@ use acoby\forms\Select2Field;
 use acoby\forms\TextareaField;
 use acoby\forms\TextField;
 use acoby\forms\URLInputField;
+use acoby\forms\AvatarSelectField;
 
 class FormUtils {
   private static $instance = null;
@@ -211,6 +212,28 @@ class FormUtils {
     return $element;
   }
   
+  
+  /**
+   * Create a simple static select form
+   *
+   * @param string $tab which tab contains this element
+   * @param string $name which name has this element
+   * @param string $label what label has this element
+   * @param string $path a docroot based path to images
+   * @param string $placeholder an optional placeholder in the input field
+   * @param string $currentValue an optional default value
+   * @param bool $mandatory mark this field as mandatory (must be filled)
+   * @param array $validator a reference to a validator that is called with new data
+   * @param bool $readonly define this field as readonly
+   * @return AvatarSelectField
+   */
+  public function createAvatarSelectField(string $tab,string $name, string $label, string $path, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false) :AvatarSelectField {
+    $element = new AvatarSelectField($tab, $name, $label, $path, $mandatory, $readonly);
+    if (isset($placeholder)) $element->placeholder = $placeholder;
+    if (isset($currentValue)) $element->currentValue = $currentValue;
+    if (isset($validator)) $element->validator = $validator;
+    return $element;
+  }
   /**
    * Create a simple dynamic select form
    *

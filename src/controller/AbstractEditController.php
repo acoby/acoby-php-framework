@@ -172,7 +172,7 @@ abstract class AbstractEditController extends AbstractViewController {
             try {
               $object = $this->addObject($object);
               if ($object !== null) {
-                return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+                return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
               }
             } catch (BackendException $exception) {
               $form["error"] = $exception->getMessage()." ".$exception->status->error->message;
@@ -185,7 +185,7 @@ abstract class AbstractEditController extends AbstractViewController {
           return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_ADD), $data);
         }
         case "cancel": {
-          return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+          return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
         }
         default: {
           $data = $this->getTwigArgs($request, $args);
@@ -220,18 +220,18 @@ abstract class AbstractEditController extends AbstractViewController {
     $action = $this->getAttribute("action");
     switch ($action) {
       case "cancel": {
-        return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+        return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
       }
       case "delete": {
         $this->deleteObject($object);
-        return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+        return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
       }
       default: {
         $view = Twig::fromRequest($request);
         if ($this->validate($request, $response, $args, $form, $object)) {
           try {
             if ($this->saveObject($object)) {
-              return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward())->withStatus(StatusCodeInterface::STATUS_FOUND);
+              return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
             }
           } catch (BackendException $exception) {
             $form["error"] = $exception->getMessage()." ".$exception->status->error->message;
@@ -259,7 +259,7 @@ abstract class AbstractEditController extends AbstractViewController {
    *
    * @return string
    */
-  protected function getOverviewForward() :string {
+  protected function getOverviewForward(ServerRequestInterface $request, array $args) :string {
     return "/";
   }
 

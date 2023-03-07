@@ -280,22 +280,17 @@ class DatabaseMapper {
    * @param PDO $connection
    * @param string $query
    * @param array $params
-   * @throws DatabaseException
    * @return bool
    */
   public function exec(PDO $connection, string $query, array &$params) :bool {
     if (!isset($connection)) throw new DatabaseException("PDO not initialized");
     
-    $stmt = $connection->prepare($query);
-    if (!$stmt) {
-      Utils::logError("Failed to parse query: ".$query." ".print_r($params,true));
-      throw new DatabaseException("Failed to parse query: ".$query." ".print_r($params,true));
-    }
-    foreach ($params as $key => &$value) {
-      $stmt->bindParam($key, $value);
-    }
-
     try {
+      $stmt = $connection->prepare($query);
+      if (!$stmt) throw new DatabaseException("Failed to parse query: ".$query." ".print_r($params,true));
+
+      foreach ($params as $key => &$value) $stmt->bindParam($key, $value);
+
       if (!$stmt->execute()) {
         Utils::logError("Query failed", $query, $params, $stmt->errorInfo());
         return false;

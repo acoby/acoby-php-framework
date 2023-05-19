@@ -17,6 +17,8 @@ use Exception;
 use acoby\system\HttpHeader;
 use Fig\Http\Message\StatusCodeInterface;
 use acoby\system\Utils;
+use Firebase\JWT\Key;
+use acoby\services\UserService;
 
 /**
  *
@@ -167,15 +169,16 @@ class OAuthAuthentication implements MiddlewareInterface {
       $publicKey.= $this->options["oidc"]["key"]."\n";
       $publicKey.= "-----END PUBLIC KEY-----\n";
       
-      $jwt = JWT::decode($token, $publicKey, array('ES256','RS256','RS512'));
+      $jwt = JWT::decode($token, new Key($publicKey,'RS256'));
       
       $params->username = $jwt->preferred_username;
       if (isset($jwt->email)) $params->email = $jwt->email;
       $params->firstName = $jwt->given_name;
       $params->lastName = $jwt->family_name;
-      $params->roles = implode(",",$jwt->realm_access->roles);
+      $params->roles = implode(",",$this->reduceRoles($jwt->realm_access->roles));
       $params->method = "jwt";
       
+      error_log(print_r($params,true));
       return $params;
       
     } catch (Exception $e) {
@@ -183,6 +186,32 @@ class OAuthAuthentication implements MiddlewareInterface {
     }
     
     return $params;
+  }
+  
+  private function reduceRoles(array $roles) :array {
+    $result = array();
+    
+    $isManager = false;
+    $isUser = false;
+    
+    foreach ($roles as $role) {
+      if (UserService::ADMIN === $role) {
+        return [$role];
+      }
+      if (UserService::MANAGER === $role) {
+        $result = [$role];
+        $isManager = true;
+      }
+      if (UserService::USER === $role && !$isManager) {
+        $result = [$role];
+        $isUser = true;
+      }
+      if (UserService::REPORT === $role && !$isUser && !$isManager) {
+        $result = [$role];
+      }
+    }
+    
+    return $result;
   }
   
   /**

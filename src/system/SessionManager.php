@@ -41,7 +41,7 @@ class SessionManager {
    */
   public function contains(string $key) :bool {
     if (ConfigService::getString("acoby_environment") === "test") {
-      ConfigService::contains($key);
+      return ConfigService::contains($key);
     } else {
       return isset($_SESSION[$key]);
     }

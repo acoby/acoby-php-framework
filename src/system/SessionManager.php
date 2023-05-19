@@ -9,17 +9,21 @@ use acoby\models\AbstractUser;
 class SessionManager {
   private static $instance = null;
   protected $mapper;
-
+  
   const SESSION_KEY_USER = "user";
   const SESSION_KEY_REDIRECT = "redirect";
-
+  const SESSION_KEY_OAUTH2STATE = "oauth2state";
+  const SESSION_KEY_REFRESH_TOKEN = "refreshToken";
+  const SESSION_KEY_ACCESS_TOKEN = "accessToken";
+  const SESSION_KEY_EXPIRES = "expires";
+  
   /**
    * @codeCoverageIgnore
    */
   protected function __construct() {
     $this->mapper = new BodyMapper();
   }
-
+  
   public static function getInstance() :SessionManager {
     if (self::$instance === null) {
       // @codeCoverageIgnoreStart
@@ -28,7 +32,7 @@ class SessionManager {
     }
     return self::$instance;
   }
-
+  
   /**
    *
    * @codeCoverageIgnore
@@ -42,7 +46,7 @@ class SessionManager {
       return isset($_SESSION[$key]);
     }
   }
-
+  
   /**
    *
    * @param AbstractUser $user
@@ -50,7 +54,7 @@ class SessionManager {
   public function setUser(AbstractUser $user) :void {
     $this->set(SessionManager::SESSION_KEY_USER,json_encode($user));
   }
-
+  
   /**
    *
    */
@@ -60,7 +64,7 @@ class SessionManager {
   
   /**
    * Returns the user from the session
-   * 
+   *
    * @return AbstractUser|NULL
    */
   public function getUser(object $class) :?AbstractUser {
@@ -70,7 +74,7 @@ class SessionManager {
     }
     return null;
   }
-
+  
   /**
    *
    * @param string $key
@@ -84,7 +88,7 @@ class SessionManager {
     }
     return ConfigService::get($key);
   }
-
+  
   /**
    *
    * @param string $key
@@ -99,7 +103,7 @@ class SessionManager {
       // @codeCoverageIgnoreEnd
     }
   }
-
+  
   /**
    * @codeCoverageIgnore
    * @param string $key

@@ -16,6 +16,7 @@ use Closure;
 use Exception;
 use acoby\system\HttpHeader;
 use Fig\Http\Message\StatusCodeInterface;
+use acoby\system\Utils;
 
 /**
  *
@@ -178,7 +179,7 @@ class OAuthAuthentication implements MiddlewareInterface {
       return $params;
       
     } catch (Exception $e) {
-      error_log($e);
+      Utils::logException("Could not validate token",$e);
     }
     
     return $params;

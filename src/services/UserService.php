@@ -37,4 +37,14 @@ interface UserService {
    * @return AbstractUser|NULL
    */
   public function getUserByName(string $username, bool $expand = false, bool $hide = true) :?AbstractUser;
+  
+  /**
+   * Returns the user with the given email-address
+   * 
+   * @param string $email
+   * @param bool $expand
+   * @param bool $hide
+   * @return AbstractUser|NULL
+   */
+  public function getUserByEMail(string $email, bool $expand = false, bool $hide = true) :?AbstractUser;
 }

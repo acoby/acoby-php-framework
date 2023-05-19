@@ -35,6 +35,10 @@ to your compose.json. We don't publish the package to the public composer archiv
 
 ## change log
 
+### v2.3.0
+
+- add OIDC support for Frontend Applications
+
 ### v2.2.0
 
 - switch from array UI elements to objects to be more type safe and better documentation

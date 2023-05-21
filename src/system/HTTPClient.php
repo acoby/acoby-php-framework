@@ -21,6 +21,46 @@ class HTTPClient {
   
   /**
    *
+   * @param string $uri
+   * @param array $options
+   * @return ResponseInterface|NULL
+   */
+  public function get(string $uri = '', array $options = []) :?ResponseInterface {
+    return $this->request("GET",$uri,$options);
+  }
+  
+  /**
+   *
+   * @param string $uri
+   * @param array $options
+   * @return ResponseInterface|NULL
+   */
+  public function post(string $uri = '', array $options = []) :?ResponseInterface {
+    return $this->request("POST",$uri,$options);
+  }
+  
+  /**
+   *
+   * @param string $uri
+   * @param array $options
+   * @return ResponseInterface|NULL
+   */
+  public function put(string $uri = '', array $options = []) :?ResponseInterface {
+    return $this->request("PUT",$uri,$options);
+  }
+  
+  /**
+   *
+   * @param string $uri
+   * @param array $options
+   * @return ResponseInterface|NULL
+   */
+  public function delete(string $uri = '', array $options = []) :?ResponseInterface {
+    return $this->request("DELETE",$uri,$options);
+  }
+  
+  /**
+   *
    * @param string $method
    * @param string $uri
    * @param array $options

@@ -124,4 +124,17 @@ abstract class FrontendApp {
     $this->handleCookies();
   }
   
+  /**
+   * @return App
+   */
+  public function getApp() :App {
+    return $this->app;
+  }
+  
+  /**
+   * @return Twig
+   */
+  public function getTwig() :Twig {
+    return $this->twig;
+  }
 }

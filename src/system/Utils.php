@@ -194,7 +194,7 @@ class Utils {
    */
   public static function asInt($value = null, ?int $defaultValue = 0) :?int {
     if (!isset($value)) return $defaultValue;
-    return $value;
+    return intval($value);
   }
   
   /**

@@ -107,4 +107,11 @@ abstract class BackendApp {
     $this->initController($this->app);
     $this->app->addRoutingMiddleware();
   }
+  
+  /**
+   * @return App
+   */
+  public function getApp() :App {
+    return $this->app;
+  }
 }

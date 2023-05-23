@@ -100,14 +100,14 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @return string
    * @codeCoverageIgnore
    */
-  protected function getCreateUserRole() :string {
+  public function getCreateUserRole() :string {
     return UserService::USER;
   }
   
   /**
    * @return string
    */
-  protected function getReadUserRole() :string {
+  public function getReadUserRole() :string {
     return UserService::USER;
   }
 
@@ -115,7 +115,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @return string
    * @codeCoverageIgnore
    */
-  protected function getUpdateUserRole() :string {
+  public function getUpdateUserRole() :string {
     return UserService::USER;
   }
   
@@ -123,7 +123,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @return string
    * @codeCoverageIgnore
    */
-  protected function getDeleteUserRole() :string {
+  public function getDeleteUserRole() :string {
     return UserService::USER;
   }
   

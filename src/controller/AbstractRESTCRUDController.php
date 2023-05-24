@@ -159,7 +159,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   public function get(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getReadUserRole());
-      $object = $this->getObject($request, $args, $request, $args, $user);
+      $object = $this->getObject($request, $args, $user);
       if ($object === null) throw new ObjectNotFoundException('Invalid input');
       return $this->withJSONObject($response, $object, StatusCodeInterface::STATUS_OK);
     } catch (AccessDeniedException $exception) {
@@ -182,7 +182,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   public function update(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getUpdateUserRole());
-      $oldObject = $this->getObject($request, $args, $request, $args, $user);
+      $oldObject = $this->getObject($request, $args, $user);
       if ($oldObject === null) throw new ObjectNotFoundException('Invalid input');
 
       $object = $this->mapper->map($request->getBody()->__toString(), $this->getNewObject());
@@ -212,7 +212,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getDeleteUserRole());
-      $object = $this->getObject($request, $args, $request,$args,$user);
+      $object = $this->getObject($request, $args, $user);
       if ($object === null) throw new ObjectNotFoundException('Invalid input');
       
       $state = $this->deleteObject($request, $args, $object,$user);

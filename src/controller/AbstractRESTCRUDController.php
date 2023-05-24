@@ -43,7 +43,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @param AbstractUser $user
    * @return object[]
    */
-  protected abstract function searchObjects(AbstractSearch $search, AbstractUser $user) :array;
+  protected abstract function searchObjects(ServerRequestInterface $request, array $args, AbstractSearch $search, AbstractUser $user) :array;
   
   /**
    * @param object $object
@@ -51,7 +51,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @return object|NULL
    * @throws IllegalArgumentException
    */
-  protected abstract function createObject(object $object, AbstractUser $user) :?object;
+  protected abstract function createObject(ServerRequestInterface $request, array $args, object $object, AbstractUser $user) :?object;
 
   /**
    * @param object $object
@@ -59,14 +59,14 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @return object|NULL
    * @throws IllegalArgumentException
    */
-  protected abstract function updateObject(object $object, AbstractUser $user) :?object;
+  protected abstract function updateObject(ServerRequestInterface $request, array $args, object $object, AbstractUser $user) :?object;
   
   /**
    * @param object $object
    * @param AbstractUser $user
    * @return bool
    */
-  protected abstract function deleteObject(object $object, AbstractUser $user) :bool;
+  protected abstract function deleteObject(ServerRequestInterface $request, array $args, object $object, AbstractUser $user) :bool;
   
   /**
    * @param ServerRequestInterface $request
@@ -84,7 +84,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @param AbstractUser $user
    * @return array
    */
-  protected abstract function getObjects(bool $expand, int $offset, int $limit, AbstractUser $user) :array;
+  protected abstract function getObjects(ServerRequestInterface $request, array $args, bool $expand, int $offset, int $limit, AbstractUser $user) :array;
 
   /**
    * @param object $oldObject
@@ -136,7 +136,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $user = $this->getRequestUser($request, $this->getCreateUserRole());
       $object = $this->mapper->map($request->getBody()->__toString(), $this->getNewObject());
       
-      $newObject = $this->createObject($object, $user);
+      $newObject = $this->createObject($request, $args, $object, $user);
       if ($newObject === null) throw new IllegalArgumentException('Invalid input');
       return $this->withJSONObject($response, $newObject, StatusCodeInterface::STATUS_CREATED);
     } catch (AccessDeniedException $exception) {
@@ -157,7 +157,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   public function get(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getReadUserRole());
-      $object = $this->getObject($request,$args,$user);
+      $object = $this->getObject($request, $args, $request, $args, $user);
       if ($object === null) throw new ObjectNotFoundException('Invalid input');
       return $this->withJSONObject($response, $object, StatusCodeInterface::STATUS_OK);
     } catch (AccessDeniedException $exception) {
@@ -180,13 +180,13 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   public function update(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getUpdateUserRole());
-      $oldObject = $this->getObject($request,$args,$user);
+      $oldObject = $this->getObject($request, $args, $request, $args, $user);
       if ($oldObject === null) throw new ObjectNotFoundException('Invalid input');
 
       $object = $this->mapper->map($request->getBody()->__toString(), $this->getNewObject());
       $this->compareObject($oldObject,$object,$user);
       
-      $newObject = $this->updateObject($object,$user);
+      $newObject = $this->updateObject($request, $args, $object, $user);
       if ($newObject === null) throw new IllegalArgumentException('Invalid input');
       
       return $this->withJSONObject($response, $newObject, StatusCodeInterface::STATUS_ACCEPTED);
@@ -210,10 +210,10 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getDeleteUserRole());
-      $object = $this->getObject($request,$args,$user);
+      $object = $this->getObject($request, $args, $request,$args,$user);
       if ($object === null) throw new ObjectNotFoundException('Invalid input');
       
-      $state = $this->deleteObject($object,$user);
+      $state = $this->deleteObject($request, $args, $object,$user);
       if (!$state) {
         // @codeCoverageIgnoreStart
         throw new IllegalArgumentException('Object could not be deleted');
@@ -248,7 +248,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       // add one to find more then expected (to see, if there are more objects available)
       $search->limit = $search->limit+1; 
 
-      $objects = $this->searchObjects($search,$user);
+      $objects = $this->searchObjects($request, $args, $search,$user);
 
       return $this->withJSONListResponse($response, $objects, $search->offset, $search->limit-1);      
     } catch (AccessDeniedException $exception) {
@@ -274,10 +274,12 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $offset = RequestUtils::getIntegerQueryParameter($request, 'offset', 0);
       $limit = RequestUtils::getIntegerQueryParameter($request, 'limit', 100);
       
-      $objects = $this->getObjects($expand,$offset,$limit+1,$user);
+      $objects = $this->getObjects($request, $args, $expand, $offset, $limit+1, $user);
       return $this->withJSONListResponse($response, $objects, $offset, $limit);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
+    } catch (IllegalArgumentException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
       return $this->withJSONException($response, $exception);

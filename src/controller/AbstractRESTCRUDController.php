@@ -141,6 +141,8 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       return $this->withJSONObject($response, $newObject, StatusCodeInterface::STATUS_CREATED);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
+    } catch (ObjectNotFoundException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
     } catch (IllegalArgumentException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
@@ -162,10 +164,10 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       return $this->withJSONObject($response, $object, StatusCodeInterface::STATUS_OK);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
-    } catch (IllegalArgumentException $exception) {
-      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
     } catch (ObjectNotFoundException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
+    } catch (IllegalArgumentException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
       return $this->withJSONException($response, $exception);
@@ -192,10 +194,10 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       return $this->withJSONObject($response, $newObject, StatusCodeInterface::STATUS_ACCEPTED);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
-    } catch (IllegalArgumentException $exception) {
-      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
     } catch (ObjectNotFoundException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
+    } catch (IllegalArgumentException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
       return $this->withJSONException($response, $exception);
@@ -222,10 +224,10 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       return $this->withJSONObject($response, RequestUtils::createResult(StatusCodeInterface::STATUS_ACCEPTED, 'Object deleted'), StatusCodeInterface::STATUS_ACCEPTED);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
-    } catch (IllegalArgumentException $exception) {
-      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
     } catch (ObjectNotFoundException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
+    } catch (IllegalArgumentException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
     } catch (Exception $exception) {
       return $this->withJSONException($response, $exception);
@@ -253,6 +255,8 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       return $this->withJSONListResponse($response, $objects, $search->offset, $search->limit-1);      
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
+    } catch (ObjectNotFoundException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
     } catch (IllegalArgumentException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart
@@ -278,6 +282,8 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       return $this->withJSONListResponse($response, $objects, $offset, $limit);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
+    } catch (ObjectNotFoundException $exception) {
+      return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_FOUND);
     } catch (IllegalArgumentException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_NOT_ACCEPTABLE);
       // @codeCoverageIgnoreStart

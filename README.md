@@ -35,6 +35,10 @@ to your compose.json. We don't publish the package to the public composer archiv
 
 ## change log
 
+### v2.4.0
+
+- add more details for custom REST CRUD calls
+
 ### v2.3.0
 
 - add OIDC support for Frontend Applications

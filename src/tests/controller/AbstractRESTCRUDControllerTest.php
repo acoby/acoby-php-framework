@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace acoby\controller;
+namespace acoby\tests\controller;
 
 use Fig\Http\Message\StatusCodeInterface;
-
 use Slim\App;
 use acoby\exceptions\IllegalArgumentException;
 use acoby\services\UserService;
 use acoby\models\AbstractSearch;
 use acoby\models\AbstractUser;
+use acoby\controller\AbstractRESTCRUDController;
 
 abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest {
   public const REQUEST_TYPE_CREATE = "CREATE";
@@ -37,7 +37,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest
    * Returns the controller implementation
    * 
    * {@inheritDoc}
-   * @see \acoby\controller\AbstractBaseControllerTest::getController()
+   * @see \acoby\tests\controller\AbstractBaseControllerTest::getController()
    */
   protected abstract function getController() :AbstractRESTCRUDController;
   
@@ -96,7 +96,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\AbstractBaseControllerTest::testCREATE()
+   * @see \acoby\tests\controller\AbstractBaseControllerTest::testCREATE()
    */
   public function testCREATE() {
     $app = $this->getApp();
@@ -178,7 +178,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\AbstractBaseControllerTest::testUPDATE()
+   * @see \acoby\tests\controller\AbstractBaseControllerTest::testUPDATE()
    */
   public function testUPDATE() {
     $app = $this->getApp();
@@ -273,7 +273,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest
   /**
    * 
    * {@inheritDoc}
-   * @see \acoby\controller\AbstractBaseControllerTest::testGET()
+   * @see \acoby\tests\controller\AbstractBaseControllerTest::testGET()
    */
   public function testGET() {
     $app = $this->getApp();
@@ -353,7 +353,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\AbstractBaseControllerTest::testDELETE()
+   * @see \acoby\tests\controller\AbstractBaseControllerTest::testDELETE()
    */
   public function testDELETE() {
     $app = $this->getApp();
@@ -427,7 +427,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBaseControllerTest
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\AbstractBaseControllerTest::testLIST()
+   * @see \acoby\tests\controller\AbstractBaseControllerTest::testLIST()
    */
   public function testLIST() {
     $app = $this->getApp();

@@ -1,25 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace acoby\controller;
+namespace acoby\tests\controller;
 
-use Slim\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
-use acoby\services\ConfigService;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Psr7\Request;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\RequestFactory;
+use acoby\services\ConfigService;
 use acoby\BaseTestCase;
 use acoby\models\AbstractUser;
+use acoby\controller\AbstractController;
 
 abstract class AbstractBaseControllerTest extends BaseTestCase {
-  public abstract function testCREATE();
-  public abstract function testGET();
-  public abstract function testLIST();
-  public abstract function testUPDATE();
-  public abstract function testDELETE();
-  public abstract function testSEARCH();
-  
   protected abstract function getController() :AbstractController;
 
   /**

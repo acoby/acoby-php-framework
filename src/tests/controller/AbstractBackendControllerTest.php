@@ -14,10 +14,6 @@ use acoby\tests\BaseTestCase;
 use acoby\models\AbstractUser;
 
 abstract class AbstractBackendControllerTest extends BaseTestCase {
-  public function setUp() :void {
-    parent::setUp();
-  }
-  
   /**
    * Creates a new Request
    * 

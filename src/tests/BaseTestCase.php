@@ -3,19 +3,23 @@ declare(strict_types=1);
 
 namespace acoby\tests;
 
+use PDO;
 use PHPUnit\Framework\TestCase;
 use acoby\system\BodyMapper;
+use acoby\services\ConfigService;
+use acoby\system\Utils;
 
 abstract class BaseTestCase extends TestCase {
   protected $mapper;
 
   public function setUp() :void {
     $this->mapper = new BodyMapper();
-    $this->setUpComponent();
-  }
-  
-  public function setUpComponent() :void {
-    // do nothing
+    
+    if (ConfigService::contains("acoby_db_dsn") && !Utils::isEmpty(ConfigService::getString("acoby_db_dsn"))) {
+      global $pdo;
+      $pdo = new PDO(ConfigService::getString("acoby_db_dsn"), ConfigService::getString("acoby_db_username"), ConfigService::getString("acoby_db_password"));
+      $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
   }
   
   /**

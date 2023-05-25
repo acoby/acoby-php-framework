@@ -12,6 +12,7 @@ use acoby\system\Utils;
 use acoby\system\HttpHeader;
 use acoby\forms\InputField;
 use acoby\exceptions\BackendException;
+use acoby\services\ConfigService;
 
 /**
  * A base class for editing an entity
@@ -166,6 +167,9 @@ abstract class AbstractEditController extends AbstractViewController {
     $action = $this->getAttribute("action");
     try {
       switch ($action) {
+        case "cancel": {
+          return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
+        }
         case "save": {
           $object = $this->newObject();
           if ($this->validate($request, $response, $args, $form, $object)) {
@@ -180,20 +184,21 @@ abstract class AbstractEditController extends AbstractViewController {
           } else {
             $form["error"] = "Some attributes are not valid.";
           }
-          $data = $this->getTwigArgs($request, $args);
-          $data["form"] = $form;
-          return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_ADD), $data);
-        }
-        case "cancel": {
-          return $response->withHeader(HttpHeader::LOCATION, $this->getOverviewForward($request,$args))->withStatus(StatusCodeInterface::STATUS_FOUND);
-        }
-        default: {
-          $data = $this->getTwigArgs($request, $args);
-          $data["form"] = $form;
-          return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_ADD), $data);
           break;
         }
       }
+      $data = $this->getTwigArgs($request, $args);
+      $data["form"] = $form;
+
+      if (ConfigService::getString("acoby_environment") === "test" && isset($form["error"])) {
+        Utils::logError("[Form] Problem with form ".print_r($form["error"],true)." on uri ".$request->getUri()->__toString());
+        /** @var $element InputField */
+        foreach ($form["elements"] as $element) {
+          if (isset($element->error)) Utils::logError("[Form] ".$element->name." : ".$element->error);
+        }
+      }
+      
+      return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_ADD), $data);
       // @codeCoverageIgnoreStart
     } catch (Throwable $throwable) {
       Utils::logException("Problem during rendering",$throwable);
@@ -243,6 +248,15 @@ abstract class AbstractEditController extends AbstractViewController {
         try {
           $data = $this->getTwigArgs($request, $args);
           $data["form"] = $form;
+          
+          if (ConfigService::getString("acoby_environment") === "test" && isset($form["error"])) {
+            Utils::logError("[Form] Problem with form ".print_r($form["error"],true)." on uri ".$request->getUri()->__toString());
+            /** @var $element InputField */
+            foreach ($form["elements"] as $element) {
+              if (isset($element->error)) Utils::logError("[Form] ".$element->name." : ".$element->error);
+            }
+          }
+          
           return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_EDIT), $data);
           // @codeCoverageIgnoreStart
         } catch (Throwable $throwable) {

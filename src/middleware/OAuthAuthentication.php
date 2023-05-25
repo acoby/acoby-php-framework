@@ -178,7 +178,6 @@ class OAuthAuthentication implements MiddlewareInterface {
       $params->roles = implode(",",$this->reduceRoles($jwt->realm_access->roles));
       $params->method = "jwt";
       
-      error_log(print_r($params,true));
       return $params;
       
     } catch (Exception $e) {

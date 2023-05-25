@@ -18,6 +18,13 @@ abstract class BaseTestCase extends TestCase {
     // do nothing
   }
   
+  /**
+   * Creates a random string
+   * 
+   * @param int $length
+   * @param string $characters
+   * @return string
+   */
   public function randomString(int $length=10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') :string {
     $charactersLength = strlen($characters);
     $randstring = '';
@@ -25,27 +32,59 @@ abstract class BaseTestCase extends TestCase {
     return $randstring;
   }
   
+  /**
+   * Creates a random domain
+   * 
+   * @return string
+   */
   public function randomDomain() :string {
     return $this->randomString(10,'abcdefghijklmnopqrstuvwxyz').".".$this->randomString(3,'abcdefghijklmnopqrstuvwxyz');
   }
   
+  /**
+   * Creates a random email
+   * 
+   * @return string
+   */
   public function randomEMail() :string {
     return $this->randomString(10,'abcdefghijklmnopqrstuvwxyz')."@".$this->randomDomain();
   }
   
+  /**
+   * Creates a random number
+   * 
+   * @param int $min
+   * @param int $max
+   * @return int
+   */
   public function randomNumber(int $min = 1, int $max = 64000) :int {
     return random_int($min, $max);
   }
   
+  /**
+   * Creates a random IPv4 address
+   * 
+   * @return string
+   */
   public function randomIPv4() :string {
     return $this->randomNumber(1,254).".".$this->randomNumber(1,254).".".$this->randomNumber(1,254).".".$this->randomNumber(1,254);
   }
   
+  /**
+   * Creates a random IPv6 address
+   * 
+   * @return string
+   */
   public function randomIPv6() :string {
     $pattern = '0123456789abcdef';
     return $this->randomString(4,$pattern).":".$this->randomString(4,$pattern).":".$this->randomString(4,$pattern).":".$this->randomString(4,$pattern)."::1";
   }
   
+  /**
+   * Creates a random country
+   * 
+   * @return string
+   */
   public function randomCountry() :string {
     return $this->randomString(2,'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
   }

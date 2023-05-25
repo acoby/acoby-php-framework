@@ -16,6 +16,11 @@ use acoby\system\AcobyTwigExtension;
 
 abstract class AbstractFrontendControllerTest extends BaseTestCase {
   private $twig;
+  
+  /**
+   * {@inheritDoc}
+   * @see \acoby\tests\BaseTestCase::setUp()
+   */
   public function setUp() :void {
     parent::setUp();
 
@@ -23,14 +28,31 @@ abstract class AbstractFrontendControllerTest extends BaseTestCase {
     $this->twig->addExtension(new AcobyTwigExtension());
   }
   
+  /**
+   * Creates a Response
+   * @return ResponseInterface
+   */
   protected function getResponse() :ResponseInterface {
     return (new ResponseFactory())->createResponse();
   }
   
+  /**
+   * Creates a Request
+   * @param string $method
+   * @param string $path
+   * @return \Slim\Psr7\Request
+   */
   protected function getRequest(string $method, string $path) {
     return $this->getRequestWithBody($method, $path);
   }
 
+  /**
+   * Creates a Request with a Body
+   * @param string $method
+   * @param string $path
+   * @param string $object
+   * @return \Slim\Psr7\Request
+   */
   protected function getRequestWithBody(string $method, string $path, string $object = null) {
     $uri = new Uri("http", "localhost", 80, $path);
     $headers = new Headers(array());

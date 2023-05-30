@@ -9,6 +9,7 @@ use acoby\exceptions\IllegalArgumentException;
 use acoby\services\UserService;
 use acoby\models\AbstractSearch;
 use acoby\models\AbstractUser;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerTest {
   public const REQUEST_TYPE_CREATE = "CREATE";
@@ -28,9 +29,9 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
    * Returns a request object based on $reequestType
    * 
    * @param string $requestType
-   * @return string
+   * @return ServerRequestInterface
    */
-  protected abstract function createRequest(string $requestType, object $object = null, bool $empty = true) :string;
+  protected abstract function createRequest(string $requestType, object $object = null, bool $empty = true) :ServerRequestInterface;
   
   /**
    * Returns the App to test

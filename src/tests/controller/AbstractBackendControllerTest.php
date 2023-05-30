@@ -12,6 +12,7 @@ use Slim\Psr7\Factory\RequestFactory;
 use acoby\services\ConfigService;
 use acoby\tests\BaseTestCase;
 use acoby\models\AbstractUser;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractBackendControllerTest extends BaseTestCase {
   /**
@@ -21,7 +22,7 @@ abstract class AbstractBackendControllerTest extends BaseTestCase {
    * @param string $uri
    * @return RequestInterface
    */
-  protected function getRequest(string $method, string $uri) :RequestInterface {
+  protected function getRequest(string $method, string $uri) :ServerRequestInterface {
     return (new RequestFactory())->createRequest($method, $uri);
   }
   

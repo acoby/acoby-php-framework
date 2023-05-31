@@ -10,9 +10,7 @@ use Throwable;
 
 class HTMLErrorHandler {
   public function handleError(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, $logger = null) :ResponseInterface {
-    if ($logErrors) {
-      Utils::logException($exception->getMessage(),$exception);
-    }
+    if ($logErrors) Utils::logException($exception->getMessage(),$exception);
 
     $doc = "<html><head><title>Error</title></head><body><h3>Error</h3><p>";
     if ($displayErrorDetails) {

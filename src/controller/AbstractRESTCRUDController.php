@@ -23,7 +23,7 @@ use acoby\system\RequestUtils;
  * - update
  * - delete
  * 
- * Also we have a search interface
+ * Also, we have a search interface
  * 
  * @author Thoralf Rickert-Wendt
  */
@@ -34,37 +34,50 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   protected abstract function getNewObject() :object;
 
   /**
-   * @return object
+   * @return AbstractSearch
    */
   protected abstract function getNewSearchObject() :AbstractSearch;
-  
+
   /**
+   * @param ServerRequestInterface $request
+   * @param array $args
    * @param AbstractSearch $search
    * @param AbstractUser $user
    * @return object[]
+   * @throws ObjectNotFoundException
    */
   protected abstract function searchObjects(ServerRequestInterface $request, array $args, AbstractSearch $search, AbstractUser $user) :array;
-  
+
   /**
+   * @param ServerRequestInterface $request
+   * @param array $args
    * @param object $object
    * @param AbstractUser $user
    * @return object|NULL
    * @throws IllegalArgumentException
+   * @throws ObjectNotFoundException
    */
   protected abstract function createObject(ServerRequestInterface $request, array $args, object $object, AbstractUser $user) :?object;
 
   /**
+   * @param ServerRequestInterface $request
+   * @param array $args
    * @param object $object
    * @param AbstractUser $user
    * @return object|NULL
    * @throws IllegalArgumentException
+   * @throws ObjectNotFoundException
    */
   protected abstract function updateObject(ServerRequestInterface $request, array $args, object $object, AbstractUser $user) :?object;
-  
+
   /**
+   * @param ServerRequestInterface $request
+   * @param array $args
    * @param object $object
    * @param AbstractUser $user
    * @return bool
+   * @throws IllegalArgumentException
+   * @throws ObjectNotFoundException
    */
   protected abstract function deleteObject(ServerRequestInterface $request, array $args, object $object, AbstractUser $user) :bool;
   
@@ -74,15 +87,20 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
    * @param AbstractUser $user
    * @return object|NULL
    * @throws IllegalArgumentException
+   * @throws ObjectNotFoundException
    */
   protected abstract function getObject(ServerRequestInterface $request, array $args, AbstractUser $user) :?object;
-  
+
   /**
+   * @param ServerRequestInterface $request
+   * @param array $args
    * @param bool $expand
    * @param int $offset
    * @param int $limit
    * @param AbstractUser $user
    * @return array
+   * @throws IllegalArgumentException
+   * @throws ObjectNotFoundException
    */
   protected abstract function getObjects(ServerRequestInterface $request, array $args, bool $expand, int $offset, int $limit, AbstractUser $user) :array;
 
@@ -129,7 +147,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\RestController::create()
+   * @see RestController::create
    */
   public function create(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
@@ -154,14 +172,14 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
 
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\RestController::get()
+   * @see RestController::get
    */
   public function get(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
       $user = $this->getRequestUser($request, $this->getReadUserRole());
       $object = $this->getObject($request, $args, $user);
       if ($object === null) throw new ObjectNotFoundException('Invalid input');
-      return $this->withJSONObject($response, $object, StatusCodeInterface::STATUS_OK);
+      return $this->withJSONObject($response, $object);
     } catch (AccessDeniedException $exception) {
       return $this->withJSONError($response, $exception->getMessage(),StatusCodeInterface::STATUS_FORBIDDEN);
     } catch (ObjectNotFoundException $exception) {
@@ -177,7 +195,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\RestController::update()
+   * @see RestController::update
    */
   public function update(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
@@ -207,7 +225,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\RestController::delete()
+   * @see RestController::delete
    */
   public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
@@ -237,7 +255,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
   
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\RestController::search()
+   * @see RestController::search
    */
   public function search(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {
@@ -268,7 +286,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
 
   /**
    * {@inheritDoc}
-   * @see \acoby\controller\RestController::list()
+   * @see RestController::list
    */
   public function list(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
     try {

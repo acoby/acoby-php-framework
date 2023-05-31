@@ -32,12 +32,12 @@ abstract class AbstractController {
   public function __construct() {
     $this->mapper = new BodyMapper();
   }
-  
+
   /**
    * Converts an object into JSON and returns that as a HTTP Response
    *
    * @param ResponseInterface $response
-   * @param $data
+   * @param object $data
    * @param int $code
    * @return ResponseInterface
    */
@@ -96,13 +96,13 @@ abstract class AbstractController {
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_SIZE, count($list));
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_OFFSET, $offset);
     $response = $response->withAddedHeader(HttpHeader::X_RESULT_LIMIT, $limit);
-    return $this->withJSONArray($response, $list);
+    return $this->withJSONArray($response, $list, $httpStatus);
   }
-  
+
   /**
    *
    * @param ResponseInterface $response
-   * @param array $data
+   * @param string $message
    * @param int $code
    * @return ResponseInterface
    */
@@ -110,13 +110,13 @@ abstract class AbstractController {
     $status = RequestUtils::createError($code,$message);
     return $this->withJSONObject($response, $status, $code);
   }
-  
+
   /**
-   * 
+   *
    * @param ResponseInterface $response
-   * @param string $message
    * @param Throwable $throwable
    * @param int $code
+   * @param string|null $message
    * @return ResponseInterface
    */
   protected function withJSONException(ResponseInterface $response, Throwable $throwable, int $code=StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, string $message = null) :ResponseInterface {
@@ -134,20 +134,20 @@ abstract class AbstractController {
    * @deprecated please use withJSONObjectList
    */
   protected function getJSONResponse(ResponseInterface $response, array $list, int $httpStatus = StatusCodeInterface::STATUS_OK) :ResponseInterface {
-    return $this->withJSONArray($response, $list);
+    return $this->withJSONArray($response, $list, $httpStatus);
   }
-  
+
   /**
    * Gets a specific attribute from this request (request scope only)
    *
    * @param string $key
-   * @param string $defaultValue
+   * @param string|null $defaultValue
    * @return string|NULL
    */
   public function getAttribute(string $key, string $defaultValue = null) :?string {
     if (isset($_GET[$key])) return $_GET[$key];
     if (isset($_POST[$key])) return $_POST[$key];
-    if (isset($this->attributes[$key])) return $this->attributes[$key];
+    if (isset($this->attributes[$key])) return strval($this->attributes[$key]);
     return $defaultValue;
   }
 

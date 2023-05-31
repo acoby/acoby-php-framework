@@ -25,7 +25,10 @@ class AcobyAuthHandler {
   public static function addCookieSupport(string $cookieName, string $function) :void {
     AcobyAuthHandler::$cookieSupport[$cookieName] = $function;
   }
-  
+
+  /**
+   * @throws ObjectNotFoundException
+   */
   public function handleRequest($request, $handler) {
     $routeContext = RouteContext::fromRequest($request);
     $route = $routeContext->getRoute();

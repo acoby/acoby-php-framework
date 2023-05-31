@@ -10,15 +10,18 @@ use Throwable;
 use acoby\services\ConfigService;
 use acoby\models\AbstractUser;
 use acoby\system\Utils;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 abstract class AbstractViewController extends AbstractController {
   /**
-   * Return the currently logged in user
+   * Return the currently logged-in user
    *
    * @return AbstractUser|NULL
    */
   protected abstract function getCurrentUser() :?AbstractUser;
-  
+
   /**
    *
    * @param ResponseInterface $response
@@ -27,6 +30,9 @@ abstract class AbstractViewController extends AbstractController {
    * @param array $data
    * @param int $code
    * @return ResponseInterface
+   * @throws LoaderError
+   * @throws RuntimeError
+   * @throws SyntaxError
    */
   protected function withTwig(ResponseInterface $response, Twig $view, string $template, array $data=[], int $code=StatusCodeInterface::STATUS_OK) :ResponseInterface {
     return $view->render($response->withStatus($code)->withHeader(AbstractController::CONTENT_TYPE,AbstractController::MIMETYPE_HTML), $template, $data);
@@ -49,11 +55,11 @@ abstract class AbstractViewController extends AbstractController {
    * @param ResponseInterface $response
    * @param Twig $view
    * @param string $message
-   * @param Throwable $throwable
+   * @param Throwable|null $throwable
    * @param int $code
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return ResponseInterface
    */
-  protected function withError(ResponseInterface $response, Twig $view, string $message = "Unknown error", Throwable $throwable = null, int $code = StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR) {
+  protected function withError(ResponseInterface $response, Twig $view, string $message = "Unknown error", Throwable $throwable = null, int $code = StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR) :ResponseInterface {
     try {
       $data = array();
       if ($throwable !== null) {
@@ -73,7 +79,7 @@ abstract class AbstractViewController extends AbstractController {
       } catch (Throwable $t2) {
         Utils::logException("Problem during rendering second error message",$t2);
 
-        $doc = "<html><head><title>Error</title></head><body><h3>Error</h3><p>";
+        $doc = "<html lang='en'><head><title>Error</title></head><body><h3>Error</h3><p>";
         $doc.= $message."<br/>";
         if (ConfigService::getString("acoby_environment") !== "prod") {
           if ($throwable !== null) {
@@ -106,9 +112,10 @@ abstract class AbstractViewController extends AbstractController {
   /**
    *
    * @param mixed $value
+   * @param string $defaultValue
    * @return string
    */
-  protected function convert($value, $defaultValue = "") {
+  protected function convert($value, string $defaultValue = "") :string {
     if ($value !== null) {
       return htmlspecialchars(strval($value));
     }

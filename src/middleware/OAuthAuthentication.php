@@ -8,6 +8,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
+use SplStack;
 use Tuupola\Http\Factory\ResponseFactory;
 use Tuupola\Middleware\DoublePassTrait;
 use Tuupola\Middleware\HttpBasicAuthentication\RequestMethodRule;
@@ -46,7 +48,7 @@ class OAuthAuthentication implements MiddlewareInterface {
    */
   public function __construct($options = []) {
     /* Setup stack for rules */
-    $this->rules = new \SplStack;
+    $this->rules = new SplStack;
     
     /* Store passed in options overwriting any defaults */
     $this->hydrate($options);
@@ -94,7 +96,7 @@ class OAuthAuthentication implements MiddlewareInterface {
       
       if (!($allowedHost || $allowedForward)) {
         $message = sprintf("Insecure use of middleware over %s denied by configuration.",strtoupper($scheme));
-        throw new \RuntimeException($message);
+        throw new RuntimeException($message);
       }
     }
     
@@ -328,7 +330,7 @@ class OAuthAuthentication implements MiddlewareInterface {
   private function rules(array $rules) {
     $this->rules = $rules;
   }
-  
+
   /**
    * Set the rules which determine if current request should be authenticated.
    *
@@ -336,12 +338,13 @@ class OAuthAuthentication implements MiddlewareInterface {
    * boolean false current request will not be authenticated.
    *
    * @param array $rules
+   * @return OAuthAuthentication
    */
   public function withRules(array $rules): self {
     $new = clone $this;
     /* Clear the stack */
     unset($new->rules);
-    $new->rules = new \SplStack;
+    $new->rules = new SplStack;
     
     /* Add the rules */
     foreach ($rules as $callable) {

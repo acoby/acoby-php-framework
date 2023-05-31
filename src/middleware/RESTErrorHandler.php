@@ -9,9 +9,19 @@ use acoby\system\RequestBody;
 use Fig\Http\Message\StatusCodeInterface;
 use acoby\controller\AbstractController;
 use acoby\system\RequestUtils;
+use Throwable;
 
 class RESTErrorHandler {
-  public function handleError(ServerRequestInterface $request, \Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, $logger = null) :ResponseInterface {
+  /**
+   * @param ServerRequestInterface $request
+   * @param Throwable $exception
+   * @param bool $displayErrorDetails
+   * @param bool $logErrors
+   * @param bool $logErrorDetails
+   * @param $logger
+   * @return ResponseInterface
+   */
+  public function handleError(ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, $logger = null) :ResponseInterface {
     if ($logErrors) {
       Utils::logException($exception->getMessage(),$exception);
     }

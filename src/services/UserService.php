@@ -47,4 +47,13 @@ interface UserService {
    * @return AbstractUser|NULL
    */
   public function getUserByEMail(string $email, bool $expand = false, bool $hide = true) :?AbstractUser;
+
+  /**
+   * Checks, if User has at least the given role.
+   *
+   * @param AbstractUser $user
+   * @param string $role
+   * @return mixed
+   */
+  public function hasMinRole(AbstractUser $user, string $role);
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\middleware;
 
+use acoby\exceptions\IllegalStateException;
 use acoby\services\AbstractFactory;
 use acoby\models\AbstractUser;
 
@@ -18,7 +19,7 @@ abstract class AbstractBackendAuthenticator {
   ];
   
   /**
-   * When there is a SSO login (via JWT) and we dont find a suitable user in the backend,
+   * When there is an SSO login (via JWT) and we don't find a suitable user in the backend,
    * we need to create a new user in the backend. This method is used to use the JWT attributes
    * to create a new user in the backend.
    * 
@@ -26,13 +27,14 @@ abstract class AbstractBackendAuthenticator {
    * @param AbstractUser $admin
    * @return AbstractUser|NULL
    */
-  public abstract function createSSOUser(OAuthParams $params, AbstractUser $admin) :?AbstractUser;  
+  public abstract function createSSOUser(OAuthParams $params, AbstractUser $admin) :?AbstractUser;
 
   /**
    * Will be invoked during authentication.
-   * 
+   *
    * @param OAuthParams $params
    * @return AbstractUser|NULL
+   * @throws IllegalStateException
    */
   public function __invoke(OAuthParams $params) :?AbstractUser {
     $username = $params->username;

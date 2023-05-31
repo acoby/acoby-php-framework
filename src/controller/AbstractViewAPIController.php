@@ -39,6 +39,7 @@ abstract class AbstractViewAPIController extends AbstractViewController {
    * @codeCoverageIgnore
    * @param ServerRequestInterface $request
    * @param array $args
+   * @param int $format
    * @return array
    */
   public function getData(ServerRequestInterface $request, array $args, int $format = AbstractViewAPIController::FORMAT_FULL) :array {

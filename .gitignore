@@ -1,5 +1,6 @@
 .buildpath
 .phpunit.result.cache
 .settings/
+.idea/
 build/
 vendor/

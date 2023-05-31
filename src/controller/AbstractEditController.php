@@ -35,6 +35,7 @@ abstract class AbstractEditController extends AbstractViewController {
    * @param ServerRequestInterface $request
    * @param array $args
    * @return object|NULL
+   * @throws BackendException
    */
   protected abstract function getObject(ServerRequestInterface $request, array $args) :?object;
 
@@ -48,7 +49,7 @@ abstract class AbstractEditController extends AbstractViewController {
    *
    * @param ServerRequestInterface $request
    * @param array $args
-   * @param object $object
+   * @param object|null $object $object
    * @return array
    */
   protected abstract function getForm(ServerRequestInterface $request, array $args, object $object = null) :array;
@@ -58,6 +59,7 @@ abstract class AbstractEditController extends AbstractViewController {
    *
    * @param object $object
    * @return bool
+   * @throws BackendException
    */
   protected abstract function deleteObject(object $object) :bool;
 
@@ -66,6 +68,7 @@ abstract class AbstractEditController extends AbstractViewController {
    *
    * @param object $object
    * @return bool
+   * @throws BackendException
    */
   protected abstract function saveObject(object $object) :bool;
 
@@ -74,6 +77,7 @@ abstract class AbstractEditController extends AbstractViewController {
    *
    * @param object $object
    * @return object|NULL
+   * @throws BackendException
    */
   protected abstract function addObject(object $object) :?object;
 
@@ -113,6 +117,7 @@ abstract class AbstractEditController extends AbstractViewController {
    * @param ResponseInterface $response
    * @param array $args
    * @return ResponseInterface
+   * @throws BackendException
    */
   public function view(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
     session_commit();
@@ -128,7 +133,7 @@ abstract class AbstractEditController extends AbstractViewController {
     try {
       $data = $this->getTwigArgs($request, $args);
       $data["form"] = $form;
-      return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_EDIT), $data);
+      return $this->withTwig($response, $view, $this->getTemplate(), $data);
     } catch (Throwable $throwable) {
       Utils::logException("Problem during rendering",$throwable);
       return $this->withError($response, $view, "Unknown Error",$throwable);
@@ -215,6 +220,7 @@ abstract class AbstractEditController extends AbstractViewController {
    * @param ResponseInterface $response
    * @param array $args
    * @return ResponseInterface
+   * @throws BackendException
    */
   public function edit(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
     $object = $this->getObject($request, $args);
@@ -257,7 +263,7 @@ abstract class AbstractEditController extends AbstractViewController {
             }
           }
           
-          return $this->withTwig($response, $view, $this->getTemplate(AbstractEditController::VIEW_MODE_EDIT), $data);
+          return $this->withTwig($response, $view, $this->getTemplate(), $data);
           // @codeCoverageIgnoreStart
         } catch (Throwable $throwable) {
           Utils::logException("Problem during rendering",$throwable);
@@ -271,6 +277,8 @@ abstract class AbstractEditController extends AbstractViewController {
   /**
    * Liefert den Forward-Pfad, zu dem wir gehen, wenn die Bearbeitung abgeschlossen ist.
    *
+   * @param ServerRequestInterface $request
+   * @param array $args
    * @return string
    */
   protected function getOverviewForward(ServerRequestInterface $request, array $args) :string {
@@ -284,6 +292,7 @@ abstract class AbstractEditController extends AbstractViewController {
    * @param ResponseInterface $response
    * @param array $args
    * @param array $form
+   * @param object $object
    * @return ResponseInterface|NULL wenn alles ok ist, kommt ein null zurück
    */
   protected function validateFormRequest(ServerRequestInterface $request, ResponseInterface $response, array $args, array $form, object $object) :?ResponseInterface {
@@ -299,7 +308,7 @@ abstract class AbstractEditController extends AbstractViewController {
 
     if (count($form) === 0) {
       $view = Twig::fromRequest($request);
-      return $this->withError($response, $view, "Could not initialize form", null, StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+      return $this->withError($response, $view, "Could not initialize form");
     }
 
     // darf der User auf diesen Punkt zugreifen?

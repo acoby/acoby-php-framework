@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\controller;
 
+use acoby\exceptions\IllegalStateException;
 use acoby\models\AbstractUser;
 use Psr\Http\Message\ServerRequestInterface;
 use acoby\exceptions\AccessDeniedException;
@@ -20,8 +21,8 @@ abstract class AbstractRESTController extends AbstractController {
    * 
    * @param ServerRequestInterface $request
    * @param string $role
-   * @throws AccessDeniedException
    * @return AbstractUser
+   *@throws AccessDeniedException|IllegalStateException
    */
   protected function getRequestUser(ServerRequestInterface $request, string $role = UserService::USER) :AbstractUser {
     $user = $request->getAttribute(AbstractController::ATTRIBUTE_KEY_USER);
@@ -33,22 +34,26 @@ abstract class AbstractRESTController extends AbstractController {
     }
     return $user;
   }
-  
+
   /**
-   * Expects a admin user in the request
-   * 
+   * Expects an admin user in the request
+   *
    * @param ServerRequestInterface $request
    * @return AbstractUser
+   * @throws AccessDeniedException
+   * @throws IllegalStateException
    */
   protected function getRequestAdminUser(ServerRequestInterface $request) :AbstractUser {
     return $this->getRequestUser($request, UserService::ADMIN);
   }
-  
+
   /**
    * expects a report user in the request
-   * 
+   *
    * @param ServerRequestInterface $request
    * @return AbstractUser
+   * @throws AccessDeniedException
+   * @throws IllegalStateException
    */
   protected function getRequestReportUser(ServerRequestInterface $request) :AbstractUser {
     return $this->getRequestUser($request, UserService::REPORT);

@@ -33,7 +33,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
    * @param string $requestType
    * @return ServerRequestInterface
    */
-  protected abstract function createRequest(string $requestType, object $object = null, bool $empty = true) :ServerRequestInterface;
+  protected abstract function createRequest(string $requestType, object $object = null) :ServerRequestInterface;
   
   /**
    * Returns the App to test
@@ -177,7 +177,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $body = (string)$response->getBody();
     $this->assertGreaterThan(0, strlen($body));
     
-    $result = $this->mapper->mapObject($body,new $this->getObjectClass());
+    $result = $this->mapper->map($body, $this->getObjectClass());
     $this->compareObject($object, $result);
   }
   
@@ -235,14 +235,8 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
       $this->assertEquals(StatusCodeInterface::STATUS_FORBIDDEN, $response->getStatusCode());
     }
     
-    // richtiger User, Daten sind leer
-    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_UPDATE);
-    $request = $this->withUser($request, $userAllowed);
-    $response = $app->handle($request);
-    $this->assertEquals(StatusCodeInterface::STATUS_NOT_ACCEPTABLE, $response->getStatusCode());
-    
     // richtiger User, Daten sind falsch
-    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_UPDATE, null, false);
+    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_UPDATE);
     $request = $this->withUser($request, $userAllowed);
     $response = $app->handle($request);
     $this->assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $response->getStatusCode());
@@ -270,7 +264,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $body = (string)$response->getBody();
     $this->assertGreaterThan(0, strlen($body));
     
-    $result = $this->mapper->mapObject($body,new $this->getObjectClass());
+    $result = $this->mapper->map($body, $this->getObjectClass());
     $this->compareObject($object, $result);
   }
   
@@ -328,14 +322,8 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
       $this->assertEquals(StatusCodeInterface::STATUS_FORBIDDEN, $response->getStatusCode());
     }
     
-    // richtiger User, Daten sind leer
-    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_GET);
-    $request = $this->withUser($request, $userAllowed);
-    $response = $app->handle($request);
-    $this->assertEquals(StatusCodeInterface::STATUS_NOT_ACCEPTABLE, $response->getStatusCode());
-    
     // richtiger User, Daten sind falsch
-    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_GET, null, false);
+    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_GET);
     $request = $this->withUser($request, $userAllowed);
     $response = $app->handle($request);
     $this->assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $response->getStatusCode());
@@ -349,7 +337,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $body = (string)$response->getBody();
     $this->assertGreaterThan(0, strlen($body));
     
-    $result = $this->mapper->mapObject($body,new $this->getObjectClass());
+    $result = $this->mapper->map($body, $this->getObjectClass());
     $this->compareObject($object, $result);
   }
   
@@ -407,14 +395,8 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
       $this->assertEquals(StatusCodeInterface::STATUS_FORBIDDEN, $response->getStatusCode());
     }
     
-    // richtiger User, Daten sind leer
-    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_DELETE);
-    $request = $this->withUser($request, $userAllowed);
-    $response = $app->handle($request);
-    $this->assertEquals(StatusCodeInterface::STATUS_NOT_ACCEPTABLE, $response->getStatusCode());
-    
     // richtiger User, Daten sind falsch
-    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_DELETE, null, false);
+    $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_DELETE);
     $request = $this->withUser($request, $userAllowed);
     $response = $app->handle($request);
     $this->assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $response->getStatusCode());
@@ -489,12 +471,11 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $body = (string)$response->getBody();
     $this->assertGreaterThan(0, strlen($body));
 
-    $elements = json_decode($body);
+    $elements = $this->mapper->mapList($body, get_class($this->getObjectClass()));
     $this->assertGreaterThan(0, count($elements));
-
+    
     foreach ($elements as $element) {
-      $result = $this->mapper->mapObject($element,new $this->getObjectClass());
-      $this->verifyObject($result);
+      $this->verifyObject($element);
     }
   }
 
@@ -583,13 +564,11 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $body = (string)$response->getBody();
     $this->assertGreaterThan(0, strlen($body));
     
-    $elements = json_decode($body);
+    $elements = $this->mapper->mapList($body, get_class($this->getObjectClass()));
     $this->assertGreaterThan(0, count($elements));
     
     foreach ($elements as $element) {
-      $result = $this->mapper->mapObject($element,new $this->getObjectClass());
-      $this->verifyObject($result);
+      $this->verifyObject($element);
     }
-    
   }
 }

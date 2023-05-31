@@ -13,13 +13,13 @@ class BodyMapper {
   public function __construct() {
     $this->mapper = new JsonMapper();
   }
-  
+
   /**
    * Converts JSON string into array
    *
-   * @param string $body
-   * @throws IllegalArgumentException
+   * @param string|null $body
    * @return array
+   * @throws IllegalArgumentException
    */
   public static function decode(?string $body) :array {
     if ($body === NULL || $body === "") return array();
@@ -41,7 +41,6 @@ class BodyMapper {
       throw new IllegalArgumentException($throwable->getMessage(),$throwable->getCode(),$throwable);
     }
     // @codeCoverageIgnoreEnd
-    return array();
   }
   
   /**
@@ -86,12 +85,13 @@ class BodyMapper {
       // @codeCoverageIgnoreEnd
     }
   }
-  
+
   /**
    *
    * @param string $body
    * @param string $class
    * @return array
+   * @throws IllegalArgumentException
    */
   public function mapList(string $body, string $class) :array {
     $response = array();

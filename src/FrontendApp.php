@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace acoby;
 
+use acoby\system\Utils;
 use ErrorException;
+use Exception;
 use Throwable;
 use Slim\App;
 use Slim\Factory\AppFactory;
@@ -18,6 +20,7 @@ use acoby\middleware\HTMLErrorHandler;
 use acoby\system\SessionManager;
 use acoby\system\HttpHeader;
 use acoby\models\AbstractUser;
+use Twig\Error\LoaderError;
 
 /**
  * A base class for a Slim/Twig Frontend application.
@@ -32,6 +35,7 @@ abstract class FrontendApp {
 
   /**
    * @codeCoverageIgnore
+   * @throws ErrorException|LoaderError
    */
   protected function __construct() {
     set_error_handler(
@@ -57,13 +61,18 @@ abstract class FrontendApp {
       $user = SessionManager::getInstance()->getUser($this->getUserObject());
       $responseFactory = new ResponseFactory();
       $response = $responseFactory->createResponse($data["code"]);
-      
-      if ($user !== null) {
-        $response = $this->twig->render($response->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_HTML), 'error.html', $data);
-      } else {
-        $response = $this->twig->render($response->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_HTML), 'login/error.html', $data);
+
+      try {
+        if ($user !== null) {
+          $response = $this->twig->render($response->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_HTML), 'error.html', $data);
+        } else {
+          $response = $this->twig->render($response->withHeader(HttpHeader::CONTENT_TYPE,HttpHeader::MIMETYPE_HTML), 'login/error.html', $data);
+        }
+      } catch (Exception $exception) {
+        Utils::logException("Could not render error template.",$exception);
+        echo "Fatal. Problem during rendering error message. More details in Log.";
       }
-      
+
       $responseEmitter = new ResponseEmitter();
       $responseEmitter->emit($response);
     }
@@ -102,6 +111,7 @@ abstract class FrontendApp {
   
   /**
    *
+   * @throws LoaderError
    */
   protected function init() :void {
     AcobyAuthHandler::addIgnoreRoute("login");

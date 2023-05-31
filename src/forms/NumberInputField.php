@@ -22,7 +22,7 @@ class NumberInputField extends InputField {
   
   /**
    * {@inheritDoc}
-   * @see \acoby\forms\InputField::doPostValidate()
+   * @see InputField::doPostValidate
    */
   protected function doPostValidate() :?bool {
     if (!Utils::isEmpty($this->newValue)) {

@@ -19,7 +19,7 @@ class CheckboxField extends InputField {
 
   /**
    * {@inheritDoc}
-   * @see \acoby\forms\InputField::doPreValidate()
+   * @see InputField::doPreValidate
    */
   protected function doPreValidate() :?bool {
     $this->newValue = Utils::bool2str(Utils::asBool($this->newValue));

@@ -14,12 +14,12 @@ class AvatarSelectField extends InputField {
   public $currentValue;
   /** @var string[] */
   public $availableValues;
-  
+
   /**
    * @param string $tab
    * @param string $name
    * @param string $label
-   * @param string[] $availableValues
+   * @param string $path
    * @param bool $mandatory
    * @param bool $readonly
    */

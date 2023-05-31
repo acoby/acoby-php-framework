@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\tests\controller;
 
+use acoby\exceptions\IllegalStateException;
 use Fig\Http\Message\StatusCodeInterface;
 use Slim\Psr7\Response;
 use acoby\system\SessionManager;
@@ -15,16 +16,16 @@ abstract class AbstractEditControllerTest extends AbstractFrontendControllerTest
    * @return object
    */
   protected abstract function createObject(bool $save = true) :object;
-  
+
   /**
    * @param bool $new
-   * @param object $object
+   * @param object|null $object $object
    * @return string
    */
   protected abstract function getPath(bool $new = false, object $object = null) :string;
   
   /**
-   * @param object $object
+   * @param object|null $object
    * @return array
    */
   protected abstract function getArgs(object $object = null) :array;
@@ -35,11 +36,12 @@ abstract class AbstractEditControllerTest extends AbstractFrontendControllerTest
   protected abstract function getController() :AbstractEditController;
   
   /**
-   * 
+   *
+   * @throws IllegalStateException
    */
   public function testView() {
     $admin = AbstractFactory::getUserService()->getUserByName("admin");
-    $object = $this->createObject(true);
+    $object = $this->createObject();
     SessionManager::getInstance()->unsetUser();
     
     $args = array();
@@ -72,7 +74,8 @@ abstract class AbstractEditControllerTest extends AbstractFrontendControllerTest
   protected abstract function fillForm(AbstractEditController $controller, object $object) :void;
 
   /**
-   * 
+   *
+   * @throws IllegalStateException
    */
   public function testAdd() {
     $admin = AbstractFactory::getUserService()->getUserByName("admin");

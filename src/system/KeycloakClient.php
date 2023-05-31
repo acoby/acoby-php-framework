@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\system;
 
-use \acoby\services\ConfigService;
+use acoby\services\ConfigService;
 use Fig\Http\Message\StatusCodeInterface;
 
 class KeycloakClient {

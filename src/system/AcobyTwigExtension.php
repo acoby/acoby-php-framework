@@ -1,6 +1,8 @@
 <?php
 namespace acoby\system;
 
+use acoby\exceptions\IllegalArgumentException;
+use acoby\exceptions\IllegalStateException;
 use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
 use acoby\services\ConfigService;
@@ -42,12 +44,19 @@ class AcobyTwigExtension extends AbstractExtension {
     return ConfigService::getArray("ui_menu",[]);
   }
 
+  /**
+   * @throws IllegalArgumentException
+   * @throws IllegalStateException
+   */
   public static function hasMinRole(string $role) :bool {
     $user = SessionManager::getInstance()->getUser(new AbstractUser());
     if ($user === null) return false;
     return AbstractFactory::getUserService()->hasMinRole($user, $role);
   }
 
+  /**
+   * @throws IllegalArgumentException
+   */
   public static function getCurrentUser() :?AbstractUser {
     return SessionManager::getInstance()->getUser(new AbstractUser());
   }

@@ -66,7 +66,7 @@ class RequestUtils {
    *
    * @param ServerRequestInterface $request
    * @param string $name
-   * @param string $defaultValue
+   * @param string|null $defaultValue
    * @return string
    */
   public static function getStringQueryParameter(ServerRequestInterface $request, string $name, string $defaultValue = null) :?string {
@@ -77,12 +77,12 @@ class RequestUtils {
       return $defaultValue;
     }
   }
-  
+
   /**
-   * 
+   *
    * @param array $args
    * @param string $name
-   * @param string $defaultValue
+   * @param string|null $defaultValue
    * @return string|NULL
    */
   public static function getStringPathParameter(array $args, string $name, string $defaultValue = null) :?string {

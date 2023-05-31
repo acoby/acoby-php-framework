@@ -6,6 +6,7 @@ namespace acoby\forms;
 use DateTime;
 use acoby\models\History;
 use acoby\models\HistoryMode;
+use Exception;
 
 /**
  * Presents a history view item
@@ -26,15 +27,16 @@ class HistoryViewItem {
   public $title;
   public $content;
   public $footer;
-  
+
   /**
-   * Returns a filled item with the given 
-   * 
+   * Returns a filled item with the given
+   *
    * @param History $history
    * @param string $username
    * @param object $object
    * @param string $objectName
    * @param string $icon
+   * @throws Exception
    */
   public function __construct(History $history, object $object, string $objectName, string $username = "Unknown", string $icon = "fa-user") {
     $dateTime = new DateTime($history->created);

@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace acoby\system;
 
-use \Psr\Http\Message\ResponseInterface;
-use \GuzzleHttp\Client;
-use \acoby\services\ConfigService;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Client;
+use acoby\services\ConfigService;
 
 class HTTPClient {
   /** @var Client */
@@ -18,53 +19,58 @@ class HTTPClient {
   public function __construct(array $config = []) {
     $this->instance = new Client($config);
   }
-  
+
   /**
    *
    * @param string $uri
    * @param array $options
    * @return ResponseInterface|NULL
+   * @throws GuzzleException
    */
   public function get(string $uri = '', array $options = []) :?ResponseInterface {
     return $this->request("GET",$uri,$options);
   }
-  
+
   /**
    *
    * @param string $uri
    * @param array $options
    * @return ResponseInterface|NULL
+   * @throws GuzzleException
    */
   public function post(string $uri = '', array $options = []) :?ResponseInterface {
     return $this->request("POST",$uri,$options);
   }
-  
+
   /**
    *
    * @param string $uri
    * @param array $options
    * @return ResponseInterface|NULL
+   * @throws GuzzleException
    */
   public function put(string $uri = '', array $options = []) :?ResponseInterface {
     return $this->request("PUT",$uri,$options);
   }
-  
+
   /**
    *
    * @param string $uri
    * @param array $options
    * @return ResponseInterface|NULL
+   * @throws GuzzleException
    */
   public function delete(string $uri = '', array $options = []) :?ResponseInterface {
     return $this->request("DELETE",$uri,$options);
   }
-  
+
   /**
    *
    * @param string $method
    * @param string $uri
    * @param array $options
    * @return ResponseInterface
+   * @throws GuzzleException
    */
   public function request(string $method, string $uri = '', array $options = []) :?ResponseInterface {
     // this is a specific wrapper for testing frontends which are heavily calling backends
@@ -93,13 +99,12 @@ class HTTPClient {
    * @param array $options
    * @return ResponseInterface
    */
-  private function wrap(string $method, string $uri = '', array $options) :?ResponseInterface {
+  private function wrap(string $method, string $uri = '', array $options = []) :?ResponseInterface {
     $key = $method." ".$uri;
     
     foreach (ConfigService::getArray("test.http_wrapper",array()) as $match => $value) {
       if (preg_match($match, $key)>0) {
-        $result = call_user_func_array($value, array($method,$uri,$options));
-        return $result;
+        return call_user_func_array($value, array($method,$uri,$options));
       }
     }
     

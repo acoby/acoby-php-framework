@@ -26,6 +26,7 @@ class VersionManagement {
    * Software-Version
    */
   public function initDatabase() :void {
+    $connection = null;
     try {
       $connection = DatabaseMapper::getInstance()->beginTransaction();
       $connection->exec("SET FOREIGN_KEY_CHECKS=0;");
@@ -62,6 +63,7 @@ class VersionManagement {
    *
    */
   public function clearDatabase() :void {
+    $connection = null;
     try {
       $connection = DatabaseMapper::getInstance()->beginTransaction();
       
@@ -96,7 +98,7 @@ class VersionManagement {
    */
   public function printTables() :void {
     if (!ConfigService::getBool("acoby_full_state")) return;
-    
+    $connection = null;
     try {
       $connection = DatabaseMapper::getInstance()->beginTransaction();
       

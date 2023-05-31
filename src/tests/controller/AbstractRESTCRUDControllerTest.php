@@ -10,11 +10,13 @@ use acoby\services\UserService;
 use acoby\models\AbstractSearch;
 use acoby\models\AbstractUser;
 use Psr\Http\Message\ServerRequestInterface;
+use acoby\controller\AbstractRESTController;
 
 abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerTest {
   public const REQUEST_TYPE_CREATE = "CREATE";
   public const REQUEST_TYPE_GET    = "GET";
   public const REQUEST_TYPE_UPDATE = "UPDATE";
+  public const REQUEST_TYPE_DELETE = "DELETE";
   public const REQUEST_TYPE_LIST   = "LIST";
   public const REQUEST_TYPE_SEARCH = "SEARCH";
   
@@ -73,6 +75,11 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
    * @return AbstractUser
    */
   protected abstract function getUserForRole(string $role) :AbstractUser;
+  
+  /**
+   * @return AbstractRESTController
+   */
+  protected abstract function getController() :AbstractRESTController;
   
   /**
    * Returns the minimum role for a specific rest type

@@ -26,21 +26,21 @@ class FormUtils {
     if (self::$instance === null) self::$instance = new FormUtils();
     return self::$instance;
   }
-  
+
   /**
    * Create a password input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param bool $readonly define this field as readonly
-   * @param int $minlength define the minimum length of the value
-   * @param int $maxlength define the maximum length of this value
-   * @param string $pattern define a pattern for this field
+   * @param int|null $minlength define the minimum length of the value
+   * @param int|null $maxlength define the maximum length of this value
+   * @param string|null $pattern define a pattern for this field
    * @return PasswordInputField
    */
   public function createPasswordField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :PasswordInputField {
@@ -53,21 +53,21 @@ class FormUtils {
     if (isset($maxlength)) $element->maxlength = $maxlength;
     return $element;
   }
-  
+
   /**
    * Create a phone input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param bool $readonly define this field as readonly
-   * @param int $minlength define the minimum length of the value
-   * @param int $maxlength define the maximum length of this value
-   * @param string $pattern define a pattern for this field
+   * @param int|null $minlength define the minimum length of the value
+   * @param int|null $maxlength define the maximum length of this value
+   * @param string|null $pattern define a pattern for this field
    * @return PhoneInputField
    */
   public function createPhoneField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :PhoneInputField {
@@ -80,21 +80,21 @@ class FormUtils {
     if (isset($maxlength)) $element->maxlength = $maxlength;
     return $element;
   }
-  
+
   /**
    * Create a phone input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param bool $readonly define this field as readonly
-   * @param int $minlength define the minimum length of the value
-   * @param int $maxlength define the maximum length of this value
-   * @param string $pattern define a pattern for this field
+   * @param int|null $minlength define the minimum length of the value
+   * @param int|null $maxlength define the maximum length of this value
+   * @param string|null $pattern define a pattern for this field
    * @return EMailInputField
    */
   public function createEMailField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :EMailInputField {
@@ -107,21 +107,21 @@ class FormUtils {
     if (isset($maxlength)) $element->maxlength = $maxlength;
     return $element;
   }
-  
+
   /**
    * Create a URL input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param bool $readonly define this field as readonly
-   * @param int $minlength define the minimum length of the value
-   * @param int $maxlength define the maximum length of this value
-   * @param string $pattern define a pattern for this field
+   * @param int|null $minlength define the minimum length of the value
+   * @param int|null $maxlength define the maximum length of this value
+   * @param string|null $pattern define a pattern for this field
    * @return URLInputField
    */
   public function createURLField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :URLInputField {
@@ -134,17 +134,19 @@ class FormUtils {
     if (isset($maxlength)) $element->maxlength = $maxlength;
     return $element;
   }
-  
+
   /**
    * Create a number input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param int $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param int|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
+   * @param int|null $minValue
+   * @param int|null $maxValue
    * @param bool $readonly define this field as readonly
    * @return NumberInputField
    */
@@ -163,21 +165,21 @@ class FormUtils {
     }
     return $element;
   }
-  
+
   /**
    * Create a text input form
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param bool $readonly define this field as readonly
-   * @param int $minlength define the minimum length of the value
-   * @param int $maxlength define the maximum length of this value
-   * @param string $pattern define a pattern for this field
+   * @param int|null $minlength define the minimum length of the value
+   * @param int|null $maxlength define the maximum length of this value
+   * @param string|null $pattern define a pattern for this field
    * @return TextField
    */
   public function createInputField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, bool $readonly = false, int $minlength = null, int $maxlength = null, string $pattern = null) :TextField {
@@ -190,17 +192,17 @@ class FormUtils {
     if (isset($maxlength)) $element->maxlength = $maxlength;
     return $element;
   }
-  
+
   /**
    * Create a simple static select form
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param array $values a list of possible values
    * @param bool $readonly define this field as readonly
    * @return SelectField
@@ -212,17 +214,17 @@ class FormUtils {
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
-  
+
   /**
    * Create a simple static select form
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param array $values a list of possible values
    * @param bool $readonly define this field as readonly
    * @return Select1Field
@@ -234,8 +236,8 @@ class FormUtils {
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
-  
-  
+
+
   /**
    * Create a simple static select form
    *
@@ -243,10 +245,10 @@ class FormUtils {
    * @param string $name which name has this element
    * @param string $label what label has this element
    * @param string $path a docroot based path to images
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param bool $readonly define this field as readonly
    * @return AvatarSelectField
    */
@@ -257,17 +259,19 @@ class FormUtils {
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
+
   /**
    * Create a simple dynamic select form
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
-   * @param string $ajax the endpoint for retrieving possible values
+   * @param array|null $validator a reference to a validator that is called with new data
+   * @param string|null $ajax the endpoint for retrieving possible values
+   * @param bool $readonly
    * @return Select2Field
    */
   public function createSelect2Field(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, string $ajax = null, bool $readonly = false) :Select2Field {
@@ -277,17 +281,17 @@ class FormUtils {
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
-  
+
   /**
    * Create a multu select form field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param array $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param array $values a list of allowed fields
    * @param bool $readonly define this field as readonly
    * @return MultiSelectField
@@ -299,18 +303,19 @@ class FormUtils {
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
-  
+
   /**
    * Create a multi line text input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param int $rows
+   * @param bool $readonly
    * @return TextareaField
    * @deprecated use createMultilineInputField
    */
@@ -321,36 +326,35 @@ class FormUtils {
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
-  
+
   /**
    * Create a multi line text input field
    *
    * @param string $tab which tab contains this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
-   * @param string $currentValue an optional default value
+   * @param string|null $placeholder an optional placeholder in the input field
+   * @param string|null $currentValue an optional default value
    * @param bool $mandatory mark this field as mandatory (must be filled)
-   * @param array $validator a reference to a validator that is called with new data
+   * @param array|null $validator a reference to a validator that is called with new data
    * @param int $rows
+   * @param bool|null $readonly
    * @return TextareaField
    */
-  public function createMultilineInputField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, int $rows = 3, bool $readonly = null) :TextareaField {
+  public function createMultilineInputField(string $tab, string $name, string $label, string $placeholder = null, string $currentValue = null, bool $mandatory = false, array $validator = null, int $rows = 3, bool $readonly = false) :TextareaField {
     $element = new TextareaField($tab, $name, $label, $rows, $mandatory, $readonly);
     if (isset($placeholder)) $element->placeholder = $placeholder;
     if (isset($currentValue)) $element->currentValue = $currentValue;
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
-  
+
   /**
    * Create a text field (without input)
    *
    * @param string $tab which tab contains this element
-   * @param string $name which id is used for this element
    * @param string $name which name has this element
    * @param string $label what label has this element
-   * @param string $placeholder an optional placeholder in the input field
    * @param string $currentValue an optional default value
    * @return CommentField
    */
@@ -359,34 +363,43 @@ class FormUtils {
     $element->currentValue = $currentValue;
     return $element;
   }
-  
+
   /**
    * Create a checkbox entry
    *
    * @param string $tab
    * @param string $name
    * @param string $label
-   * @param bool $checked
-   * @param array $validator
+   * @param bool $currentValue
+   * @param array|null $validator
+   * @param bool $readonly
    * @return CheckboxField
    */
   public function createCheckbox(string $tab, string $name, string $label, bool $currentValue = false, array $validator = null, bool $readonly = false) :CheckboxField {
-    $element = new CheckboxField($tab, $name, $label, false, $readonly);
+    $element = new CheckboxField($tab, $name, $label, $readonly);
     $element->currentValue = $currentValue;
     if (isset($validator)) $element->validator = $validator;
     return $element;
   }
+
   /**
    * Erzeugt ein Form Objekt
    *
+   * @param string $tab
    * @param string $tag
    * @param string $type
    * @param string $id
    * @param string $name
    * @param string $label
-   * @param string $placeholder
-   * @param string $value
-   * @param array $validator
+   * @param string|null $placeholder
+   * @param string|null $currentValue
+   * @param bool $mandatory
+   * @param array|null $validator
+   * @param array|null $values
+   * @param bool $readonly
+   * @param int|null $minlength
+   * @param int|null $maxlength
+   * @param string|null $pattern
    * @return InputField
    * @deprecated please use specific implementation
    * @codeCoverageIgnore

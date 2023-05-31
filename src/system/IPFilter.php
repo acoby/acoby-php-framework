@@ -22,7 +22,8 @@ class IPFilter {
    * - one or more wildcards like 127.* - IPv6 not supported
    * - one or more sections like 10.0.0.0-10.0.1.0 - IPv6 not supported
    *
-   * @param array $allowed_ips
+   * @param array|null $allowed_ips
+   * @throws Exception
    */
   public function __construct(array $allowed_ips = null) {
     if ($allowed_ips != null) {
@@ -42,7 +43,8 @@ class IPFilter {
    * Returns the first IP from the given allowed IPs in the constructor.
    * This is useful to start an iteration process.
    *
-   * @return string The first well formed IP
+   * @return string The first well-formed IP
+   * @throws Exception
    */
   public function first($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -116,6 +118,7 @@ class IPFilter {
    *
    * @param string $ip
    * @return string
+   * @throws Exception
    */
   public function getNetwork(string $ip) :?string {
     if (strpos($ip,'.')) {
@@ -130,6 +133,7 @@ class IPFilter {
    * Returns the network part of an IP address
    *
    * @param string $cidr
+   * @param bool $full
    * @return string
    */
   public function getIPv4Network(string $cidr, bool $full = false) :?string {
@@ -153,8 +157,11 @@ class IPFilter {
 
   /**
    * Returns the network part of an IP address
-   * @param string $ip
+   *
+   * @param string $cidr
+   * @param bool $full
    * @return string
+   * @throws Exception
    */
   public static function getIPv6Network(string $cidr, bool $full = false) :?string {
     if (strpos($cidr, '/')) {
@@ -187,14 +194,15 @@ class IPFilter {
 
   /**
    * Returns the IPv6 network cidr of an address of type <ip>/<prefix>
+   * @throws Exception
    */
-  public static function getIPv6NetworkCIDR(string $address) {
+  public static function getIPv6NetworkCIDR(string $address) :?string {
     list($ip, $mask) = explode('/', $address);
     return IPFilter::getIPv6Network($ip.'/'.$mask).'/'.$mask;
   }
 
   /**
-   * Returns the the first IP of a IPv4 wildcard address
+   * Returns the first IP of a IPv4 wildcard address
    *
    * @param string $ip Something like 10.0.*
    * @return string a String with 10.0.0.0
@@ -222,7 +230,7 @@ class IPFilter {
 
 
   /**
-   * Returns the the first IP of a IPv6 wildcard address
+   * Returns the first IP of a IPv6 wildcard address
    *
    * @param string $ip Something like fd00:1:*
    * @return string a String with fd00:1::
@@ -246,10 +254,11 @@ class IPFilter {
   }
 
   /**
-   * Returns the the first IP of a IPv6 wildcard address
+   * Returns the first IP of a IPv6 wildcard address
    *
    * @param string $ip Something like 10.0.0.0-10.0.0.255
    * @return string a String with 10.0.0.0
+   * @throws Exception
    */
   public function getIPv4Section(string $ip) :?string {
     if (strpos($ip, '-')) {
@@ -260,10 +269,11 @@ class IPFilter {
   }
 
   /**
-   * Returns the the first IP of a IPv6 wildcard address
+   * Returns the first IP of a IPv6 wildcard address
    *
    * @param string $ip Something like fd00:1::0-fd00:1::ffff
    * @return string a String with fd00:1::0
+   * @throws Exception
    */
   public function getIPv6Section(string $ip) :?string {
     if (strpos($ip, '-')) {
@@ -277,7 +287,8 @@ class IPFilter {
    * Returns the first IPv4 from the given allowed IPs in the constructor.
    * This is useful to start an iteration process.
    *
-   * @return string The first well formed IP
+   * @return string The first well-formed IP
+   * @throws Exception
    */
   public function firstIPv4($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -306,7 +317,8 @@ class IPFilter {
    * Returns the first IPv6 from the given allowed IPs in the constructor.
    * This is useful to start an iteration process.
    *
-   * @return string The first well formed IP
+   * @return string The first well-formed IP
+   * @throws Exception
    */
   public function firstIPv6($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -334,7 +346,8 @@ class IPFilter {
    * Returns the last IP from the given allowed IPs in the constructor.
    * This is useful to end an iteration process.
    *
-   * @return string The last well formed IP
+   * @return string The last well-formed IP
+   * @throws Exception
    */
   public function last($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -358,7 +371,7 @@ class IPFilter {
    * Returns the last IPv4 from the given allowed IPs in the constructor.
    * This is useful to end an iteration process.
    *
-   * @return string The last well formed IP
+   * @return string The last well-formed IP
    */
   public function lastIPv4($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -384,7 +397,8 @@ class IPFilter {
    * Returns the last IPv4 from the given allowed IPs in the constructor.
    * This is useful to end an iteration process.
    *
-   * @return string The last well formed IP
+   * @return string The last well-formed IP
+   * @throws Exception
    */
   public function lastIPv6($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -489,9 +503,7 @@ class IPFilter {
 
     $lastaddrbin = hex2bin($lastaddrhex);
 
-    $lastaddrstr = inet_ntop($lastaddrbin);
-
-    return $lastaddrstr;
+    return inet_ntop($lastaddrbin);
   }
 
   /*
@@ -499,9 +511,10 @@ class IPFilter {
    *
    * @param string $ip
    * @return string|NULL
+   * @throws Exception
    */
   private function lastIPv6Wildcard(string $ip) :?string {
-    throw new Exception('Comparing an IP with a wildcard IPv6 is currently not supported');
+    throw new Exception('Comparing an IP with a wildcard IPv6 is currently not supported. '.$ip);
   }
 
   /*
@@ -514,11 +527,13 @@ class IPFilter {
     $ip_arr = explode('-', $ip);
     return $this->increment($ip_arr[1],0);
   }
+
   /**
    * Checks, if the given IP is in IP range. Be aware, that comparing IPv6 with IPv4 always return false.
    *
    * @param string $ip an IPv4/IPv6 address
    * @return bool true, if it is in allowed IPs range
+   * @throws Exception
    */
   public function inrange(string $ip, string $range = null) :bool {
     if ($this->isIP($ip)) {
@@ -553,12 +568,13 @@ class IPFilter {
     return true;
   }
 
- /**
-  * Returns if the given string is a valid IPv4 address.
-  *
-  * @param string $ip
-  * @return bool
-  */
+  /**
+   * Returns if the given string is a valid IPv4 address.
+   *
+   * @param string $ip
+   * @param bool $withCIDR
+   * @return bool
+   */
   public function isIPv4(string $ip, bool $withCIDR = false) :bool {
     if (strpos($ip, '/')) {
       list($ip, $mask) = explode('/', $ip);
@@ -572,11 +588,12 @@ class IPFilter {
     
     return false;
   }
-  
+
   /**
-  * Returns if the given string is a valid IPv6 address.
+   * Returns if the given string is a valid IPv6 address.
    *
    * @param string $ip
+   * @param bool $withCIDR
    * @return bool
    */
   public function isIPv6(string $ip, bool $withCIDR = false) :bool {
@@ -638,6 +655,7 @@ class IPFilter {
    * @param string $allowed_ip
    * @param string $ip
    * @return bool
+   * @throws Exception
    */
   private function _sub_checker_wildcard(string $allowed_ip, string $ip) :bool {
     if ($this->isIPv4($ip) && strpos($allowed_ip,'.')) {
@@ -647,7 +665,7 @@ class IPFilter {
         if ($allowed_ip_arr[$i] == '*') {
           return true;
         } else {
-          if (false == ($allowed_ip_arr[$i] == $ip_arr[$i])) {
+          if (!($allowed_ip_arr[$i] == $ip_arr[$i])) {
             return false;
           }
         }
@@ -698,6 +716,7 @@ class IPFilter {
    * @param string $allowed_ip
    * @param string $ip
    * @return bool
+   * @throws Exception
    */
   private function _sub_checker_section(string $allowed_ip, string $ip) :bool {
     if ($this->isIPv4($ip) && strpos($allowed_ip,'.')) {
@@ -719,6 +738,7 @@ class IPFilter {
    * @param string $ip
    * @param int $increment
    * @return string|NULL
+   * @throws Exception
    */
   public function increment(string $ip, int $increment) :?string {
     if (strpos($ip, '/')>0) $ip = $this->first($ip);
@@ -778,8 +798,7 @@ class IPFilter {
    */
   public function expandIPv6(string $ip) :string {
     $hex = unpack("H*hex", inet_pton($ip));
-    $ip = substr(preg_replace("/([A-f0-9]{4})/", "$1:", $hex['hex']), 0, -1);
-    return $ip;
+    return substr(preg_replace("/([A-f0-9]{4})/", "$1:", $hex['hex']), 0, -1);
   }
 
   /**
@@ -787,9 +806,10 @@ class IPFilter {
    *
    * Converts a printable IP into an unpacked binary string
    *
-   * @author Mike Mackintosh - mike@bakeryphp.com
    * @param string $ip
    * @return string $bin
+   * @throws Exception
+   * @author Mike Mackintosh - mike@bakeryphp.com
    */
   public static function dtr_pton(string $ip) :?string {
     if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)){
@@ -799,8 +819,6 @@ class IPFilter {
     }
 
     throw new Exception("Please supply a valid IPv4 or IPv6 address");
-
-    return false;
   }
 
   /**
@@ -808,9 +826,10 @@ class IPFilter {
    *
    * Converts an unpacked binary string into a printable IP
    *
-   * @author Mike Mackintosh - mike@bakeryphp.com
    * @param string $str
    * @return string $ip
+   * @throws Exception
+   * @author Mike Mackintosh - mike@bakeryphp.com
    */
   public static function dtr_ntop(string $str) :?string {
     if (strlen( $str ) == 16 OR strlen( $str ) == 4 ){
@@ -818,8 +837,6 @@ class IPFilter {
     }
 
     throw new Exception( "Please provide a 4 or 16 byte string" );
-
-    return false;
   }
 
   /**
@@ -828,6 +845,7 @@ class IPFilter {
    * @param array $iplist
    * @param string $ip
    * @return bool
+   * @throws Exception
    */
   public function inList(array $iplist, string $ip) :bool {
     $ip = $this->format($ip,true);
@@ -843,6 +861,7 @@ class IPFilter {
    * @param string $ip
    * @param bool $cidr
    * @return string|NULL
+   * @throws Exception
    */
   public function format(string $ip, bool $cidr = false) :?string {
     if (strpos($ip,'.')) {
@@ -862,8 +881,9 @@ class IPFilter {
    * @param string $base
    * @param array $index
    * @param string $hostname
-   * @param string $mask
+   * @param string|null $mask
    * @return string|NULL
+   * @throws Exception
    */
   public function calc(string $base, array $index, string $hostname, string $mask = null) :?string {
     $increment = array_search($hostname,$index);

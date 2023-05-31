@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace acoby\system;
 
+use ReflectionObject;
+use stdClass;
 use Throwable;
 use Exception;
 use DateTime;
@@ -37,19 +39,19 @@ class Utils {
   public static function isEmpty(string $value = null) :bool {
     return $value === null || strlen(trim($value)) === 0;
   }
-  
+
   /**
-   * Returns the value or when the value is null or empty ("") null to reduce 
+   * Returns the value or when the value is null or empty ("") null to reduce
    * JSON output
-   * 
-   * @param string $value
+   *
+   * @param string|null $value
    * @return string|NULL
    */
   public static function asNullString(string $value = null) :?string {
     if (Utils::isEmpty($value)) return null;
     return $value;
   }
-  
+
   /**
    * Generate a random string, using a cryptographically secure
    * pseudorandom number generator (random_int)
@@ -57,12 +59,13 @@ class Utils {
    * For PHP 7, random_int is a PHP core function
    * For PHP 5.x, depends on https://github.com/paragonie/random_compat
    *
-   * @param int $length      How many characters do we want?
+   * @param int $length How many characters do we want?
    * @param string $keyspace A string of all possible characters
    *                         to select from
    * @return string
+   * @throws Exception
    */
-  public static function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+  public static function random_str(int $length, string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') :string {
     $str = '';
     $max = mb_strlen($keyspace, '8bit') - 1;
     if ($max < 1) {
@@ -97,12 +100,12 @@ class Utils {
   
   /**
    *
-   * @param \stdClass $source
+   * @param stdClass $source
    * @param object $destination
    * @return object
    */
-  public static function cast(\stdClass $source, $destination) {
-    $sourceReflection = new \ReflectionObject($source);
+  public static function cast(stdClass $source, $destination) :object {
+    $sourceReflection = new ReflectionObject($source);
     $sourceProperties = $sourceReflection->getProperties();
     foreach ($sourceProperties as $sourceProperty) {
       $name = $sourceProperty->getName();
@@ -110,13 +113,13 @@ class Utils {
     }
     return $destination;
   }
-  
+
   /**
    * @codeCoverageIgnore
    * @param string $message
-   * @param string $query
-   * @param array $params
-   * @param array $errorInfo
+   * @param string|null $query
+   * @param array|null $params
+   * @param array|null $errorInfo
    */
   public static function logError(string $message, string $query = null, array $params = null, array $errorInfo = null) {
     $message = "[ERROR] ".$message;
@@ -126,12 +129,12 @@ class Utils {
     
     error_log($message);
   }
-  
-  
+
+
   /**
    * @codeCoverageIgnore
-   * @param string $message
-   * @param \Throwable $throwable
+   * @param string $comment
+   * @param Throwable|null $throwable
    */
   public static function logException(string $comment, Throwable $throwable = null) :void {
     $message = "[ERROR] ".$comment;
@@ -164,10 +167,11 @@ class Utils {
       error_log("[INFO] ".$message);
     }
   }
-  
+
   /**
    *
-   * @param string $string
+   * @param string|null $string $string
+   * @param string|null $defaultString
    * @return string
    */
   public static function asString(string $string = null, ?string $defaultString = "") :string {
@@ -185,22 +189,22 @@ class Utils {
     if (!isset($value)) return $defaultValue;
     return Utils::isEnabled($value);
   }
-  
+
   /**
    *
-   * @param int $value
-   * @param int $defaultValue
+   * @param null $value
+   * @param int|null $defaultValue
    * @return int
    */
   public static function asInt($value = null, ?int $defaultValue = 0) :?int {
     if (!isset($value)) return $defaultValue;
     return intval($value);
   }
-  
+
   /**
    * Splits a list by comma and returns always a list.
-   * 
-   * @param string $value
+   *
+   * @param string|null $value
    * @return string[]
    */
   public static function asList(string $value = null) :array {
@@ -222,23 +226,25 @@ class Utils {
     $name = str_replace("--", "-", str_replace(" ", "-", $name));
     return strval(preg_replace('/[^\w^-]+/', '', strtolower($name))).".".$domain;
   }
-  
+
   /**
    *
-   * @param int $value
-   * @param string $defaultValue
+   * @param int|null $value
+   * @param string|null $defaultValue
+   * @param string $format
    * @return string|NULL
    */
-  public static function asDateTimeStringFromTimestamp($value = null, string $defaultValue = null, string $format = 'c') :?string {
+  public static function asDateTimeStringFromTimestamp(int $value = null, string $defaultValue = null, string $format = 'c') :?string {
     if (!isset($value)) return $defaultValue;
     if ($value === 0) return $defaultValue;
     return (new DateTime())->setTimestamp((int)$value)->format($format);
   }
-  
+
   /**
    *
    * @param string $string
    * @param int $maxLength
+   * @param string $skipText
    * @return string
    */
   public static function shorten(string $string, int $maxLength = 31000, string $skipText = "\n...skipped...\n") :string {
@@ -263,14 +269,15 @@ class Utils {
       return $host;
     }
   }
-  
+
   /**
    *
    * @param string $datetime
    * @param bool $full
    * @return string
+   * @throws Exception
    */
-  public static function getTimeElapsed(string $datetime, bool $full = false) {
+  public static function getTimeElapsed(string $datetime, bool $full = false) :string {
     $now = new DateTime();
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
@@ -298,15 +305,16 @@ class Utils {
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' ago' : 'just now';
   }
-  
+
   /**
    * Produces a string that contains the human readable time between two datetime strings.
    *
    * @param string $timeA
    * @param string $timeB
    * @return string
+   * @throws Exception
    */
-  public static function getTimeDifference(string $timeA, string $timeB) {
+  public static function getTimeDifference(string $timeA, string $timeB) :string {
     $now = new DateTime($timeB);
     $ago = new DateTime($timeA);
     $diff = $now->diff($ago);
@@ -462,24 +470,24 @@ class Utils {
   public static function getIntegerQueryParameter(ServerRequestInterface $request, string $name, int $defaultValue) :int {
     return RequestUtils::getIntegerQueryParameter($request, $name, $defaultValue);
   }
-  
+
   /**
    * @codeCoverageIgnore
    * @param ServerRequestInterface $request
    * @param string $name
-   * @param string $defaultValue
+   * @param string|null $defaultValue
    * @return string|NULL
    * @deprecated please use RequestUtils::getStringQueryParameter
    */
   public static function getStringQueryParameter(ServerRequestInterface $request, string $name, string $defaultValue = null) :?string {
     return RequestUtils::getStringQueryParameter($request, $name, $defaultValue);
   }
-  
+
   /**
    * @codeCoverageIgnore
    * @param array $args
    * @param string $name
-   * @param string $defaultValue
+   * @param string|null $defaultValue
    * @return string|NULL
    * @deprecated please use RequestUtils::getStringPathParameter
    */
@@ -496,11 +504,12 @@ class Utils {
   public static function ln(string $string) :string {
     return $string."\n";
   }
-  
+
   /**
    * Converts a number into a string with zero-prefix
    *
    * @param int $value
+   * @param int $length
    * @return string
    */
   public static function toID(int $value, int $length = 2) :string {
@@ -520,23 +529,24 @@ class Utils {
     }
     return null;
   }
-  
+
   /**
    * Returns a null safe JSON valid date time
-   * 
-   * @param string $dateTime
+   *
+   * @param string|null $dateTime
    * @param string $format
    * @return string|NULL
+   * @throws Exception
    */
   public static function getJSONDateTime(?string $dateTime, string $format = 'c') :?string {
     if ($dateTime === null) return null;
     return (new Datetime($dateTime))->format($format);
   }
-  
+
   /**
    * Verifies if the given DateTime is really in the given format.
-   * 
-   * @param string $dateTime
+   *
+   * @param string|null $dateTime
    * @param string $format
    * @return bool
    */

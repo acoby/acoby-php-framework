@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\tests\controller;
 
+use acoby\exceptions\IllegalStateException;
 use Fig\Http\Message\StatusCodeInterface;
 use Slim\Psr7\Response;
 use acoby\system\SessionManager;
@@ -22,7 +23,8 @@ abstract class AbstractListControllerTest extends AbstractFrontendControllerTest
   protected abstract function getController() :AbstractListController;
   
   /**
-   * 
+   *
+   * @throws IllegalStateException
    */
   public function testHTMLView() {
     $admin = AbstractFactory::getUserService()->getUserByName("admin");
@@ -40,9 +42,10 @@ abstract class AbstractListControllerTest extends AbstractFrontendControllerTest
     $response = $controller->view($request, new Response(), $args);
     $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
   }
-  
+
   /**
-   * 
+   *
+   * @throws IllegalStateException
    */
   public function testJSONList() {
     $admin = AbstractFactory::getUserService()->getUserByName("admin");
@@ -60,7 +63,10 @@ abstract class AbstractListControllerTest extends AbstractFrontendControllerTest
     $response = $controller->list($request, new Response(), $args);
     $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
   }
-  
+
+  /**
+   * @throws IllegalStateException
+   */
   public function testJSONValues() {
     $admin = AbstractFactory::getUserService()->getUserByName("admin");
     SessionManager::getInstance()->unsetUser();

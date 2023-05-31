@@ -24,11 +24,12 @@ use acoby\middleware\VersionResponseHandler;
  * @author Thoralf Rickert-Wendt
  */
 abstract class BackendApp {
-  /** @var $app \Slim\App */
+  /** @var $app App */
   protected $app;
-  
+
   /**
    * @codeCoverageIgnore
+   * @throws ErrorException
    */
   protected function __construct() {
     set_error_handler(

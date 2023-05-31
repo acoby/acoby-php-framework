@@ -63,10 +63,11 @@ class InputField {
     if ($this->currentValue === null || $this->newValue === null) return true;
     return $this->currentValue !== $this->newValue;
   }
-  
+
   /**
-   * Validates if the given value is valid. Depends on mandatory field, it cannot be null or it will be truncated to maxLength
-   * 
+   * Validates if the given value is valid. Depends on mandatory field, it cannot be null, or it will be truncated to maxLength
+   *
+   * @param object $object
    * @return bool
    */
   public function validate(object $object) :bool {

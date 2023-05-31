@@ -13,13 +13,15 @@ use acoby\system\RequestBody;
 use acoby\services\ConfigService;
 use acoby\tests\BaseTestCase;
 use acoby\system\AcobyTwigExtension;
+use Twig\Error\LoaderError;
 
 abstract class AbstractFrontendControllerTest extends BaseTestCase {
   private $twig;
-  
+
   /**
    * {@inheritDoc}
-   * @see \acoby\tests\BaseTestCase::setUp()
+   * @throws LoaderError
+   * @see BaseTestCase::setUp()
    */
   public function setUp() :void {
     parent::setUp();
@@ -40,9 +42,9 @@ abstract class AbstractFrontendControllerTest extends BaseTestCase {
    * Creates a Request
    * @param string $method
    * @param string $path
-   * @return \Slim\Psr7\Request
+   * @return Request
    */
-  protected function getRequest(string $method, string $path) {
+  protected function getRequest(string $method, string $path) :Request {
     return $this->getRequestWithBody($method, $path);
   }
 
@@ -50,10 +52,10 @@ abstract class AbstractFrontendControllerTest extends BaseTestCase {
    * Creates a Request with a Body
    * @param string $method
    * @param string $path
-   * @param string $object
-   * @return \Slim\Psr7\Request
+   * @param string|null $object
+   * @return Request
    */
-  protected function getRequestWithBody(string $method, string $path, string $object = null) {
+  protected function getRequestWithBody(string $method, string $path, string $object = null) :Request {
     $uri = new Uri("http", "localhost", 80, $path);
     $headers = new Headers(array());
     $cookies = array();

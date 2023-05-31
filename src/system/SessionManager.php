@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\system;
 
+use acoby\exceptions\IllegalArgumentException;
 use acoby\services\ConfigService;
 use acoby\models\AbstractUser;
 
@@ -61,11 +62,13 @@ class SessionManager {
   public function unsetUser() :void {
     $this->unset(SessionManager::SESSION_KEY_USER);
   }
-  
+
   /**
    * Returns the user from the session
    *
+   * @param object $class
    * @return AbstractUser|NULL
+   * @throws IllegalArgumentException
    */
   public function getUser(object $class) :?AbstractUser {
     $userdata = $this->get(SessionManager::SESSION_KEY_USER);

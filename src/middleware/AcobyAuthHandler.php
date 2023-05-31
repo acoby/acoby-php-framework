@@ -172,6 +172,7 @@ class AcobyAuthHandler {
     if (!$params->valid) throw new IllegalArgumentException("SSO Token not valid");
 
     if (!isset(AcobyAuthHandler::$options["sso_create"])) throw new IllegalStateException("Missing option 'sso_create' to create OIDC user.");
-    return call_user_func(AcobyAuthHandler::$options["sso_create"], $params);
+    $admin = AbstractFactory::getUserService()->getUserByName("admin");
+    return call_user_func(AcobyAuthHandler::$options["sso_create"], $params, $admin);
   }
 }

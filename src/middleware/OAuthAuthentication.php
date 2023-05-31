@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace acoby\middleware;
 
-use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -15,12 +14,8 @@ use Tuupola\Middleware\DoublePassTrait;
 use Tuupola\Middleware\HttpBasicAuthentication\RequestMethodRule;
 use Tuupola\Middleware\HttpBasicAuthentication\RequestPathRule;
 use Closure;
-use Exception;
 use acoby\system\HttpHeader;
 use Fig\Http\Message\StatusCodeInterface;
-use acoby\system\Utils;
-use Firebase\JWT\Key;
-use acoby\services\UserService;
 
 /**
  *
@@ -112,7 +107,7 @@ class OAuthAuthentication implements MiddlewareInterface {
       }
     } else if (preg_match("/Bearer\s+(.*)$/i", $request->getHeaderLine(HttpHeader::AUTHORIZATION), $matches)) {
       $token = $matches[1];
-      $params = $this->validateToken($request,$token);
+      $params = $this->validateToken($token);
     }
     
     /* Check if user authenticates. */
@@ -140,7 +135,7 @@ class OAuthAuthentication implements MiddlewareInterface {
     
     /* Modify $request before calling next middleware. */
     if (is_callable($this->options["before"])) {
-      $response = (new ResponseFactory)->createResponse(StatusCodeInterface::STATUS_OK);
+      // $response = (new ResponseFactory)->createResponse(StatusCodeInterface::STATUS_OK);
       $before_request = $this->options["before"]($request, $params);
       if ($before_request instanceof ServerRequestInterface) {
         $request = $before_request;
@@ -164,57 +159,10 @@ class OAuthAuthentication implements MiddlewareInterface {
   /**
    * Validate a OAuth Token
    */
-  private function validateToken(ServerRequestInterface $request, string $token) :OAuthParams {
-    $params = new OAuthParams();
-    try {
-      $publicKey = "-----BEGIN PUBLIC KEY-----\n";
-      $publicKey.= $this->options["oidc"]["key"]."\n";
-      $publicKey.= "-----END PUBLIC KEY-----\n";
-      
-      $jwt = JWT::decode($token, new Key($publicKey,'RS256'));
-      
-      $params->username = $jwt->preferred_username;
-      if (isset($jwt->email)) $params->email = $jwt->email;
-      $params->firstName = $jwt->given_name;
-      $params->lastName = $jwt->family_name;
-      $params->roles = implode(",",$this->reduceRoles($jwt->realm_access->roles));
-      $params->method = "jwt";
-      
-      return $params;
-      
-    } catch (Exception $e) {
-      Utils::logException("Could not validate token",$e);
-    }
-    
-    return $params;
+  private function validateToken(string $token) :OAuthParams {
+    return JWTHandler::validateToken($token, $this->options["oidc"]["key"]);
   }
-  
-  private function reduceRoles(array $roles) :array {
-    $result = array();
-    
-    $isManager = false;
-    $isUser = false;
-    
-    foreach ($roles as $role) {
-      if (UserService::ADMIN === $role) {
-        return [$role];
-      }
-      if (UserService::MANAGER === $role) {
-        $result = [$role];
-        $isManager = true;
-      }
-      if (UserService::USER === $role && !$isManager) {
-        $result = [$role];
-        $isUser = true;
-      }
-      if (UserService::REPORT === $role && !$isUser && !$isManager) {
-        $result = [$role];
-      }
-    }
-    
-    return $result;
-  }
-  
+
   /**
    * Hydrate all options from given array.
    */

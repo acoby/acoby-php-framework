@@ -20,4 +20,7 @@ class OAuthParams {
   public $email;
   /** @var $roles string a JWT content of roles  */
   public $roles;
+
+  /** @var bool $valid */
+  public $valid;
 }

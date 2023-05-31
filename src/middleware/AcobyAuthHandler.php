@@ -1,8 +1,13 @@
 <?php
 namespace acoby\middleware;
 
+use acoby\exceptions\IllegalArgumentException;
+use acoby\exceptions\IllegalStateException;
+use acoby\models\AbstractUser;
 use Exception;
 use Fig\Http\Message\StatusCodeInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Routing\RouteContext;
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
@@ -17,19 +22,42 @@ use League\OAuth2\Client\Token\AccessToken;
 class AcobyAuthHandler {
   private static $ignoreRoute = array();
   private static $cookieSupport = array();
-  
+  private static $options = array();
+
+  /**
+   * Adds a path to the ignore auth list (do not make any auth checks)
+   *
+   * @param string $route
+   */
   public static function addIgnoreRoute(string $route) :void {
     AcobyAuthHandler::$ignoreRoute[] = $route;
   }
-  
+
+  /**
+   * Handle cookies automatically to create session
+   *
+   * @param string $cookieName
+   * @param string $function
+   */
   public static function addCookieSupport(string $cookieName, string $function) :void {
     AcobyAuthHandler::$cookieSupport[$cookieName] = $function;
   }
 
   /**
+   * @param string $key
+   * @param string $value
+   */
+  public static function setOption(string $key, string $value) :void {
+    AcobyAuthHandler::$options[$key] = $value;
+  }
+
+  /**
+   * @param ServerRequestInterface $request
+   * @param $handler
+   * @return ResponseInterface
    * @throws ObjectNotFoundException
    */
-  public function handleRequest($request, $handler) {
+  public function handleRequest(ServerRequestInterface $request, $handler) :ResponseInterface {
     $routeContext = RouteContext::fromRequest($request);
     $route = $routeContext->getRoute();
     if ($route === null) throw new ObjectNotFoundException();
@@ -79,6 +107,9 @@ class AcobyAuthHandler {
               // We got an access token, let's now get the user's details
               $ssoUser = $provider->getResourceOwner($token);
               $user = AbstractFactory::getUserService()->getUserByEMail($ssoUser->getEmail());
+              if ($user === null && isset(AcobyAuthHandler::$options["sso_auto_insert"])) {
+                $user = $this->createSSOUser($token->getToken());
+              }
               if ($user !== null) {
                 SessionManager::getInstance()->setUser($user);
               } else {
@@ -128,5 +159,19 @@ class AcobyAuthHandler {
       }
     }
     return $handler->handle($request);
+  }
+
+  /**
+   * @throws IllegalStateException
+   * @throws IllegalArgumentException
+   */
+  protected function createSSOUser(string $token) :?AbstractUser {
+    if (!isset(AcobyAuthHandler::$options["sso_pubkey"])) throw new IllegalStateException("Missing option 'sso_pubkey' to validate OIDC tokens.");
+    if (!isset(AcobyAuthHandler::$options["sso_algorithm"])) throw new IllegalStateException("Missing option 'sso_algorithm' to validate OIDC tokens.");
+    $params = JWTHandler::validateToken($token, AcobyAuthHandler::$options["sso_pubkey"], AcobyAuthHandler::$options["sso_algorithm"]);
+    if (!$params->valid) throw new IllegalArgumentException("SSO Token not valid");
+
+    if (!isset(AcobyAuthHandler::$options["sso_create"])) throw new IllegalStateException("Missing option 'sso_create' to create OIDC user.");
+    return call_user_func(AcobyAuthHandler::$options["sso_create"], $params);
   }
 }

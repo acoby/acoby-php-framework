@@ -2,6 +2,8 @@
 
 namespace acoby\system;
 
+use InvalidArgumentException;
+
 class Curve25519 {
     private $zero = [0,0,0,0, 0,0,0,0, 0,0];
     private $one  = [1,0,0,0, 0,0,0,0, 0,0];
@@ -227,7 +229,7 @@ class Curve25519 {
 
     public function publicKey(string $secret) :string {
         if (!is_string($secret) || strlen($secret) !== 32) {
-            throw new \InvalidArgumentException('Secret must be a 32 byte string');
+            throw new InvalidArgumentException('Secret must be a 32 byte string');
         }
 
         return $this->scalarmult($this->clamp($secret), $this->nine);
@@ -235,11 +237,11 @@ class Curve25519 {
 
     public function sharedKey(string $secret, string $public) :string {
         if (!is_string($secret) || strlen($secret) !== 32) {
-            throw new \InvalidArgumentException('Secret must be a 32 byte string');
+            throw new InvalidArgumentException('Secret must be a 32 byte string');
         }
 
         if (!is_string($public) || strlen($public) !== 32) {
-            throw new \InvalidArgumentException('Public must be a 32 byte string');
+            throw new InvalidArgumentException('Public must be a 32 byte string');
         }
 
         $w = unpack('V8', $public);

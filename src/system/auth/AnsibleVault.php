@@ -3,6 +3,8 @@ namespace acoby\system\auth;
 
 // https://github.com/daniel-ness/ansible-vault
 
+use RuntimeException;
+
 class AnsibleVault {
   const CIPHER = "aes-256-ctr";
 
@@ -36,7 +38,7 @@ class AnsibleVault {
     $new_hmac = bin2hex($new_hmac);
 
     if (!hash_equals($new_hmac, $hmac)) {
-      throw new \RuntimeException("Invalid HMAC");
+      throw new RuntimeException("Invalid HMAC");
     }
 
     $binaryText = openssl_decrypt($ciphertext_raw, AnsibleVault::CIPHER, $key["key1"], OPENSSL_RAW_DATA, $key["iv"]);
@@ -61,6 +63,7 @@ class AnsibleVault {
    *
    * @param string $plaintext
    * @param string $secret
+   * @param bool $chunk
    * @return string
    */
   public static function encrypt(string $plaintext, string $secret, bool $chunk = true) :string {
@@ -116,5 +119,3 @@ class AnsibleVault {
   }
 
 }
-
-?>

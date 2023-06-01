@@ -34,7 +34,7 @@ abstract class AbstractController {
   }
 
   /**
-   * Converts an object into JSON and returns that as a HTTP Response
+   * Converts an object into JSON and returns that as an HTTP Response
    *
    * @param ResponseInterface $response
    * @param object $data
@@ -48,7 +48,7 @@ abstract class AbstractController {
   }
   
   /**
-   * Converts an array into JSON and returns that as a HTTP Response
+   * Converts an array into JSON and returns that as an HTTP Response
    *
    * @param ResponseInterface $response
    * @param array $data
@@ -61,7 +61,7 @@ abstract class AbstractController {
   }
   
   /**
-   * Converts an array into JSON and returns that as a HTTP Response
+   * Converts an array into JSON and returns that as an HTTP Response
    * 
    * @param ResponseInterface $response
    * @param array $data
@@ -75,7 +75,7 @@ abstract class AbstractController {
   }
   
   /**
-   * Converts an array into JSON and returns that as a HTTP Response
+   * Converts an array into JSON and returns that as an HTTP Response
    * 
    * @param ResponseInterface $response
    * @param array $list

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\services;
 
+use Exception;
 use RuntimeException;
 use acoby\models\History;
 use acoby\models\HistorySearch;
@@ -22,27 +23,29 @@ class HistoryFactory extends AbstractFactory {
     if (self::$instance === null) self::$instance = new HistoryFactory();
     return self::$instance;
   }
-  
+
   /**
    * Creates a new object in the database
    *
    * @param History $history
    * @return History|NULL
+   * @throws IllegalArgumentException
+   * @throws Exception
    */
   public function createHistory(History $history) :?History {
-    if (!$history->verify(true)) throw new IllegalArgumentException("History definition is not valid");
+    if (!$history->verify()) throw new IllegalArgumentException("History definition is not valid");
     
     $stmt = DatabaseMapper::getInstance()->insert($this->connection,History::TABLE_NAME, $history);
     if ($stmt === null) throw new RuntimeException("Could not store history in database");
     
     return $this->geHistoryByExternalId($history->externalId);
   }
-  
+
   /**
    * Returns the history object with given externalId
    *
-   * @param string $networkId
-   * @param string $ownerId
+   * @param string $externalId
+   * @param bool $expand
    * @return History|NULL
    */
   public function geHistoryByExternalId(string $externalId, bool $expand = false) :?History {
@@ -50,7 +53,7 @@ class HistoryFactory extends AbstractFactory {
     $params["externalId"] = $externalId;
     $condition = "`externalId`=:externalId";
     
-    return DatabaseMapper::getInstance()->findOne($this->connection, History::TABLE_NAME, History::class, $expand, $condition, $params, null);
+    return DatabaseMapper::getInstance()->findOne($this->connection, History::TABLE_NAME, History::class, $expand, $condition, $params);
   }
   
   
@@ -98,12 +101,13 @@ class HistoryFactory extends AbstractFactory {
     
     return DatabaseMapper::getInstance()->findAll($this->connection, History::TABLE_NAME, History::class, $conditions, $params, $expand, $limit, $offset);
   }
-  
+
   /**
    * Search for the History entries based on given parameters.
-   * 
+   *
    * @param HistorySearch $search
    * @return History[]
+   * @throws Exception
    */
   public function search(HistorySearch $search) :array {
     $search->verify();

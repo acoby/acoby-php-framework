@@ -372,6 +372,8 @@ class IPFilter {
    * This is useful to end an iteration process.
    *
    * @return string The last well-formed IP
+   * @throws Exception
+   * @throws Exception
    */
   public function lastIPv4($ip = null) :?string {
     $array = $this->_allowed_ips;
@@ -472,6 +474,9 @@ class IPFilter {
    * @param string $ip
    * @return string|NULL
    */
+  /**
+   * @throws Exception
+   */
   private function lastIPv4Section(string $ip) :?string {
     $ip_arr = explode('-', $ip);
     return $this->increment($ip_arr[1],0);
@@ -513,6 +518,9 @@ class IPFilter {
    * @return string|NULL
    * @throws Exception
    */
+  /**
+   * @throws Exception
+   */
   private function lastIPv6Wildcard(string $ip) :?string {
     throw new Exception('Comparing an IP with a wildcard IPv6 is currently not supported. '.$ip);
   }
@@ -522,6 +530,9 @@ class IPFilter {
    *
    * @param string $cidr
    * @return string|NULL
+   */
+  /**
+   * @throws Exception
    */
   private function lastIPv6Section(string $ip) :?string {
     $ip_arr = explode('-', $ip);
@@ -657,6 +668,9 @@ class IPFilter {
    * @return bool
    * @throws Exception
    */
+  /**
+   * @throws Exception
+   */
   private function _sub_checker_wildcard(string $allowed_ip, string $ip) :bool {
     if ($this->isIPv4($ip) && strpos($allowed_ip,'.')) {
       $allowed_ip_arr = explode('.', $allowed_ip);
@@ -716,6 +730,9 @@ class IPFilter {
    * @param string $allowed_ip
    * @param string $ip
    * @return bool
+   * @throws Exception
+   */
+  /**
    * @throws Exception
    */
   private function _sub_checker_section(string $allowed_ip, string $ip) :bool {

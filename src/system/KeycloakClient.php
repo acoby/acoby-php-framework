@@ -5,6 +5,7 @@ namespace acoby\system;
 
 use acoby\services\ConfigService;
 use Fig\Http\Message\StatusCodeInterface;
+use GuzzleHttp\Exception\GuzzleException;
 
 class KeycloakClient {
   protected $client;
@@ -34,12 +35,13 @@ class KeycloakClient {
     $options['headers'][HttpHeader::CONTENT_TYPE] = 'application/json';
     return $options;
   }
-  
+
   /**
    * https://sso.acoby.net/auth/realms/acoby-test/protocol/openid-connect/certs
-   * 
+   *
    * @param string $realm
    * @return string|NULL
+   * @throws GuzzleException
    */
   public function getPubkey(string $realm) :?string {
     if (isset($this->cache[$realm])) return $this->cache[$realm];

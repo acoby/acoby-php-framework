@@ -6,10 +6,11 @@ namespace acoby\system;
 use acoby\BaseTestCase;
 use DateTime;
 use DateInterval;
+use Exception;
 
 class UtilsTest extends BaseTestCase {
   public function testIsEmpty() {
-    $this->assertTrue(Utils::isEmpty(null));
+    $this->assertTrue(Utils::isEmpty());
     $this->assertTrue(Utils::isEmpty(""));
     $this->assertFalse(Utils::isEmpty("."));
   }
@@ -23,6 +24,10 @@ class UtilsTest extends BaseTestCase {
     $this->assertEquals("host", Utils::getHostname("host.domain.tld"));
     $this->assertEquals("host", Utils::getHostname("host"));
   }
+
+  /**
+   * @throws Exception
+   */
   public function testTime() {
     $interval = new DateInterval("P2D");
     $datetime = new DateTime();

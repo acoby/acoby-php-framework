@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby\tests\controller;
 
+use acoby\exceptions\BackendException;
 use acoby\exceptions\IllegalStateException;
 use Fig\Http\Message\StatusCodeInterface;
 use Slim\Psr7\Response;
@@ -34,10 +35,15 @@ abstract class AbstractEditControllerTest extends AbstractFrontendControllerTest
    * @return AbstractEditController
    */
   protected abstract function getController() :AbstractEditController;
-  
+
   /**
    *
    * @throws IllegalStateException
+   * @throws BackendException
+   * @throws BackendException
+   * @throws BackendException
+   * @throws BackendException
+   * @throws BackendException|BackendException
    */
   public function testView() {
     $admin = AbstractFactory::getUserService()->getUserByName("admin");

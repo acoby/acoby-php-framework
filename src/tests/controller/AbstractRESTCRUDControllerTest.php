@@ -26,11 +26,12 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
    * @param App $app
    */
   protected abstract function initRoutes(App $app) :void;
-  
+
   /**
-   * Returns a request object based on $reequestType
-   * 
+   * Returns a request object based on $requestType
+   *
    * @param string $requestType
+   * @param object|null $object
    * @return ServerRequestInterface
    */
   protected abstract function createRequest(string $requestType, object $object = null) :ServerRequestInterface;
@@ -63,9 +64,9 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
    * @return object
    */
   protected abstract function createObject(bool $save = false) :object;
-  
+
   /**
-   * @param object $object
+   * @param object|null $object $object
    * @return AbstractSearch
    */
   protected abstract function createSearch(object $object = null) :AbstractSearch;
@@ -93,15 +94,17 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
       case AbstractRESTCRUDControllerTest::REQUEST_TYPE_CREATE: return $controller->getCreateUserRole();
       case AbstractRESTCRUDControllerTest::REQUEST_TYPE_UPDATE: return $controller->getUpdateUserRole();
       case AbstractRESTCRUDControllerTest::REQUEST_TYPE_DELETE: return $controller->getDeleteUserRole();
-      case AbstractRESTCRUDControllerTest::REQUEST_TYPE_SEARCH: return $controller->getReadUserRole();
-      case AbstractRESTCRUDControllerTest::REQUEST_TYPE_LIST: return $controller->getReadUserRole();
+      case AbstractRESTCRUDControllerTest::REQUEST_TYPE_SEARCH:
+      case AbstractRESTCRUDControllerTest::REQUEST_TYPE_LIST:
       case AbstractRESTCRUDControllerTest::REQUEST_TYPE_GET: return $controller->getReadUserRole();
       default: throw new IllegalArgumentException("Unknown Request Type ".$requestType);
     }
   }
-  
+
   /**
-   * 
+   *
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
    */
   public function testCREATE() {
     $app = $this->getApp();
@@ -112,7 +115,7 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $user = $this->getUserForRole(UserService::USER);
     $report = $this->getUserForRole(UserService::REPORT);
     
-    $object = $this->createObject(false);
+    $object = $this->createObject();
     
     // kein User angegeben, kein Object
     $request = $this->createRequest(AbstractRESTCRUDControllerTest::REQUEST_TYPE_CREATE);
@@ -180,9 +183,11 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $result = $this->mapper->map($body, $this->getObjectClass());
     $this->compareObject($object, $result);
   }
-  
+
   /**
    *
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
    */
   public function testUPDATE() {
     $app = $this->getApp();
@@ -267,9 +272,11 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $result = $this->mapper->map($body, $this->getObjectClass());
     $this->compareObject($object, $result);
   }
-  
+
   /**
-   * 
+   *
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
    */
   public function testGET() {
     $app = $this->getApp();
@@ -340,9 +347,10 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $result = $this->mapper->map($body, $this->getObjectClass());
     $this->compareObject($object, $result);
   }
-  
+
   /**
-   * 
+   *
+   * @throws IllegalArgumentException
    */
   public function testDELETE() {
     $app = $this->getApp();
@@ -407,9 +415,11 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
     $response = $app->handle($request);
     $this->assertEquals(StatusCodeInterface::STATUS_ACCEPTED, $response->getStatusCode());
   }
-  
+
   /**
-   * 
+   *
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
    */
   public function testLIST() {
     $app = $this->getApp();
@@ -480,7 +490,9 @@ abstract class AbstractRESTCRUDControllerTest extends AbstractBackendControllerT
   }
 
   /**
-   * 
+   *
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
    */
   public function testSEARCH() {
     $app = $this->getApp();

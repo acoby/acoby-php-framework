@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace acoby;
 
 use ErrorException;
+use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 use Slim\Factory\AppFactory;
 use Slim\App;
@@ -81,12 +82,12 @@ abstract class BackendApp {
    * Returns a list of middleware components
    * 
    * @param App $app
-   * @return \Psr\Http\Server\MiddlewareInterface[]
+   * @return MiddlewareInterface[]
    */
   protected abstract function getMiddleware(App $app) :array;
   
   /**
-   * Returns the usefull OAuthConfiguration
+   * Returns the useful OAuthConfiguration
    * @return array
    */
   protected abstract function getAppAuthSettings() :array;

@@ -19,10 +19,13 @@ class BodyMapperTest extends BaseTestCase {
     $mapper->decode('{"wrong":"wrong",}');
   }
 
+  /**
+   * @throws IllegalArgumentException
+   */
   public function testSuccess() {
     $mapper = new BodyMapper();
     $array = $mapper->decode('{"correct":"correct"}');
     $this->assertIsArray($array);
-    $this->assertEquals(1, count($array));
+    $this->assertCount(1, $array);
   }
 }

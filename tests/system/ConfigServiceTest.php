@@ -13,14 +13,14 @@ class ConfigServiceTest extends BaseTestCase {
 
     $value2 = ConfigService::getString("testkey","test");
     $this->assertNotNull($value2);
-    $this->assertEquals($value2, "test");
+    $this->assertEquals("test", $value2);
 
     $value3 = ConfigService::getInt("testkey");
-    $this->assertEquals($value3,0);
+    $this->assertEquals(0, $value3);
 
     $value4 = ConfigService::getInt("testkey",1);
     $this->assertNotNull($value4);
-    $this->assertEquals($value4, 1);
+    $this->assertEquals(1, $value4);
 
     $value5 = ConfigService::getBool("testkey");
     $this->assertNull($value5);

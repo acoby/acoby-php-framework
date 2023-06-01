@@ -11,7 +11,7 @@ class AnsibleVaultTest extends BaseTestCase {
     $plaintext = "dies ist mein cooler text";
     $secret = "mein passwort";
 
-    $encrypted = AnsibleVault::encrypt($plaintext, $secret, true);
+    $encrypted = AnsibleVault::encrypt($plaintext, $secret);
     $this->assertGreaterThan(0, strlen($encrypted));
     $this->assertStringContainsString("ANSIBLE", $encrypted);
 
@@ -27,7 +27,7 @@ class AnsibleVaultTest extends BaseTestCase {
     $plaintext = "dies ist mein cooler text";
     $secret = "mein passwort";
 
-    $encrypted = AnsibleVault::encrypt($plaintext, $secret, true);
+    $encrypted = AnsibleVault::encrypt($plaintext, $secret);
 
     $this->expectException(RuntimeException::class);
     $wrong_secret = "irgendwas";

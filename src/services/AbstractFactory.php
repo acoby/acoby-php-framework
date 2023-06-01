@@ -48,7 +48,7 @@ abstract class AbstractFactory {
    * @param string $table the table to search for
    * @param string $column the column in the table to search for
    * @param string $value the value in the column in the table to search for
-   * @param string|null $externalId ignore rows with that id (to avoiid duplicates)
+   * @param string|null $externalId ignore rows with that id (to avoid duplicates)
    * @return bool true, when there is a row with that value in the given column in the given table
    */
   public function existsObject(string $table, string $column, string $value, string $externalId = null) :bool {

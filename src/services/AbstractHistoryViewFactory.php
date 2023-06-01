@@ -6,13 +6,15 @@ namespace acoby\services;
 use acoby\models\History;
 use acoby\forms\HistoryViewItem;
 use acoby\system\Utils;
+use Exception;
 
 abstract class AbstractHistoryViewFactory extends AbstractFactory {
   /**
    * Creates a list of viewable items in correct order
-   * 
+   *
    * @param History[] $items
    * @return HistoryViewItem[]
+   * @throws Exception
    */
   public function createHistoryView(array $items) :array {
     $data = array();
@@ -23,7 +25,7 @@ abstract class AbstractHistoryViewFactory extends AbstractFactory {
       $objectName = $this->getObjectName($history,$object);
       $userName = $this->getCreatorNameForHistory($history);
       $entry = new HistoryViewItem($history, $object, $objectName, $userName);
-      $data[$entry->day][$entry->timestamp][] = $this->customizeViewItem($entry);;
+      $data[$entry->day][$entry->timestamp][] = $this->customizeViewItem($entry);
     }
     
     krsort($data);
@@ -34,18 +36,18 @@ abstract class AbstractHistoryViewFactory extends AbstractFactory {
   }
 
   /**
-   * Returns the correcponding object of the history
+   * Returns the corresponding object of the history
    * 
    * @param History $history
    * @return object|NULL
    */
   public abstract function getObject(History $history) :?object;
-  
+
   /**
    * Returns the name of the object of the history
-   * 
+   *
    * @param History $history
-   * @param object $object
+   * @param object|null $object $object
    * @return string|NULL
    */
   public abstract function getObjectName(History $history, object $object = null) :?string;

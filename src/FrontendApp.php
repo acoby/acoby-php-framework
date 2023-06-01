@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace acoby;
 
+use acoby\exceptions\IllegalArgumentException;
 use acoby\system\Utils;
 use ErrorException;
 use Exception;
@@ -21,6 +22,7 @@ use acoby\system\SessionManager;
 use acoby\system\HttpHeader;
 use acoby\models\AbstractUser;
 use Twig\Error\LoaderError;
+use Twig\Extension\ExtensionInterface;
 
 /**
  * A base class for a Slim/Twig Frontend application.
@@ -46,10 +48,11 @@ abstract class FrontendApp {
         );
     $this->init();
   }
-  
+
   /**
    * Runs the Slim App
    * @codeCoverageIgnore
+   * @throws IllegalArgumentException
    */
   public function run() :void {
     try {
@@ -98,7 +101,7 @@ abstract class FrontendApp {
   /**
    * Returns a list of 
    * @param App $app
-   * @return \Twig\Extension\ExtensionInterface[]
+   * @return ExtensionInterface[]
    */
   protected abstract function getTwigExtensions(App $app) :array;
   

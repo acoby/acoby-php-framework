@@ -5,6 +5,7 @@ namespace acoby\system;
 
 use acoby\BaseTestCase;
 use acoby\forms\InputField;
+use stdClass;
 
 class FormUtilsTest extends BaseTestCase {
   
@@ -18,15 +19,15 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
     $this->assertEquals("pattern", $element->pattern);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
     $this->assertEquals(0, $element->minlength);
     $this->assertEquals(100, $element->maxlength);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertCount(2, $element->validator);
     
     $element->newValue = "123";
     $this->assertTrue($element->isChanged());
-    $object = new \stdClass();
+    $object = new stdClass();
     $this->assertTrue($element->validate($object));
   }
 
@@ -40,16 +41,16 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
     $this->assertEquals("pattern", $element->pattern);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
     $this->assertEquals(0, $element->minlength);
     $this->assertEquals(100, $element->maxlength);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertCount(2, $element->validator);
 
     $element->newValue = "123";
     $this->assertTrue($element->isChanged());
     
-    $object = new \stdClass();
+    $object = new stdClass();
     $this->assertFalse($element->validate($object));
 
     $element->newValue = "nobody@example.com";
@@ -66,16 +67,16 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
     $this->assertEquals("pattern", $element->pattern);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
     $this->assertEquals(0, $element->minlength);
     $this->assertEquals(100, $element->maxlength);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertCount(2, $element->validator);
     
     $element->newValue = "123";
     $this->assertTrue($element->isChanged());
     
-    $object = new \stdClass();
+    $object = new stdClass();
     $this->assertFalse($element->validate($object));
     
     $element->newValue = "http://example.com/";
@@ -92,16 +93,16 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
     $this->assertEquals("pattern", $element->pattern);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
     $this->assertEquals(5, $element->minlength);
     $this->assertEquals(100, $element->maxlength);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertCount(2, $element->validator);
 
     $element->newValue = "123";
     $this->assertTrue($element->isChanged());
     
-    $object = new \stdClass();
+    $object = new stdClass();
     $this->assertFalse($element->validate($object));
     
     $element->newValue = "1234567";
@@ -110,20 +111,20 @@ class FormUtilsTest extends BaseTestCase {
   
 
   public function testForms5() {
-    $element = FormUtils::getInstance()->createCheckbox("tab", "name", "label", true, [$this,"validateElement"], false);
+    $element = FormUtils::getInstance()->createCheckbox("tab", "name", "label", true, [$this,"validateElement"]);
     
     $this->assertEquals("tab", $element->tab);
     $this->assertEquals("name", $element->id);
     $this->assertEquals("name", $element->name);
     $this->assertEquals("label", $element->label);
-    $this->assertEquals(true, $element->currentValue);
-    $this->assertEquals(false, $element->readonly);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertTrue($element->currentValue);
+    $this->assertFalse($element->readonly);
+    $this->assertCount(2, $element->validator);
 
     $element->newValue = "123";
     $this->assertTrue($element->isChanged());
     
-    $object = new \stdClass();
+    $object = new stdClass();
     $this->assertTrue($element->validate($object));
     $this->assertEquals("false",$element->newValue);
     
@@ -137,7 +138,7 @@ class FormUtilsTest extends BaseTestCase {
   }
   
   public function testForms6() {
-    $element = FormUtils::getInstance()->createMultilineInputField("tab", "name", "label", "placeholder", "currentValue", true, [$this,"validateElement"], 5, false);
+    $element = FormUtils::getInstance()->createMultilineInputField("tab", "name", "label", "placeholder", "currentValue", true, [$this,"validateElement"], 5);
     
     $this->assertEquals("tab", $element->tab);
     $this->assertEquals("name", $element->id);
@@ -145,12 +146,12 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("label", $element->label);
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
+    $this->assertCount(2, $element->validator);
   }
   public function testForms7() {
-    $element = FormUtils::getInstance()->createNumberField("tab", "name", "label", "placeholder", 100, true, [$this,"validateElement"], 1, 200, false);
+    $element = FormUtils::getInstance()->createNumberField("tab", "name", "label", "placeholder", 100, true, [$this,"validateElement"], 1, 200);
     
     $this->assertEquals("tab", $element->tab);
     $this->assertEquals("name", $element->id);
@@ -158,18 +159,18 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("label", $element->label);
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals(100, $element->currentValue);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
     $this->assertEquals(1, $element->minValue);
     $this->assertEquals(200, $element->maxValue);
     $this->assertEquals(1, $element->minlength);
     $this->assertEquals(3, $element->maxlength);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertCount(2, $element->validator);
     
     $element->newValue = "123";
     $this->assertTrue($element->isChanged());
     
-    $object = new \stdClass();
+    $object = new stdClass();
     $this->assertTrue($element->validate($object));
     
     $element->newValue = "5";
@@ -194,11 +195,11 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
     $this->assertEquals("pattern", $element->pattern);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
     $this->assertEquals(0, $element->minlength);
     $this->assertEquals(100, $element->maxlength);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertCount(2, $element->validator);
   }
   public function testForms9() {
     $currentValue = ["on","off"];
@@ -210,12 +211,12 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("label", $element->label);
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("on,off", $element->currentValue);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
+    $this->assertCount(2, $element->validator);
   }
   public function testFormsA() {
-    $element = FormUtils::getInstance()->createSelectField("tab", "name", "label", "placeholder", "currentValue", true, [$this,"validateElement"], [["value"=>"on","name"=>"On"],["value"=>"off","name"=>"Off"]], false);
+    $element = FormUtils::getInstance()->createSelectField("tab", "name", "label", "placeholder", "currentValue", true, [$this,"validateElement"], [["value"=>"on","name"=>"On"],["value"=>"off","name"=>"Off"]]);
     
     $this->assertEquals("tab", $element->tab);
     $this->assertEquals("name", $element->id);
@@ -223,12 +224,12 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("label", $element->label);
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
+    $this->assertCount(2, $element->validator);
   }
   public function testFormsB() {
-    $element = FormUtils::getInstance()->createSelect2Field("tab", "name", "label", "placeholder", "currentValue", true, [$this,"validateElement"], "url", false);
+    $element = FormUtils::getInstance()->createSelect2Field("tab", "name", "label", "placeholder", "currentValue", true, [$this,"validateElement"], "url");
     
     $this->assertEquals("tab", $element->tab);
     $this->assertEquals("name", $element->id);
@@ -236,9 +237,9 @@ class FormUtilsTest extends BaseTestCase {
     $this->assertEquals("label", $element->label);
     $this->assertEquals("placeholder", $element->placeholder);
     $this->assertEquals("currentValue", $element->currentValue);
-    $this->assertEquals(true, $element->mandatory);
-    $this->assertEquals(false, $element->readonly);
-    $this->assertEquals(2, count($element->validator));
+    $this->assertTrue($element->mandatory);
+    $this->assertFalse($element->readonly);
+    $this->assertCount(2, $element->validator);
   }
   
   public function validateElement(object $object, InputField $element) :bool {

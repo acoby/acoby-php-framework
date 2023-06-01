@@ -21,7 +21,7 @@ class VersionResponseHandler implements MiddlewareInterface {
     $clientVersion = $request->getHeader(HttpHeader::X_CLIENT_VERSION);
     if (count($clientVersion) > 0) {
       foreach ($clientVersion as $version) {
-        // must be more specfic and ignore bugfix-releases
+        // must be more specific and ignore bugfix-releases
         if ($version !== $serverVersion) {
           // Utils::logError("Client Version ".$version." does not fit Server Version ".$serverVersion);
         }

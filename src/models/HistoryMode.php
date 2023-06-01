@@ -11,11 +11,11 @@ abstract class HistoryMode {
   const MODE_CREATED = 1;
   const MODE_CHANGED = 2;
   const MODE_DELETED = 3;
-  
+
   /**
    * Creates a string representation of History.
-   * 
-   * @param int $mode
+   *
+   * @param int|null $mode
    * @return string
    */
   public static function toString(?int $mode) :string {
@@ -26,11 +26,11 @@ abstract class HistoryMode {
       default: return "did unknown";
     }
   }
-  
+
   /**
    * Checks of mode exists
-   * 
-   * @param int $mode
+   *
+   * @param int|null $mode
    * @return bool
    */
   public static function exists(?int $mode) :bool {

@@ -307,7 +307,7 @@ class Utils {
   }
 
   /**
-   * Produces a string that contains the human readable time between two datetime strings.
+   * Produces a string that contains the human-readable time between two datetime strings.
    *
    * @param string $timeA
    * @param string $timeB
@@ -513,7 +513,7 @@ class Utils {
    * @return string
    */
   public static function toID(int $value, int $length = 2) :string {
-    return "".str_pad("".$value, $length, "0", STR_PAD_LEFT);
+    return str_pad("".$value, $length, "0", STR_PAD_LEFT);
   }
   
   /**

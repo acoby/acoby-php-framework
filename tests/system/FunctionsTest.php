@@ -4,8 +4,12 @@ declare(strict_types=1);
 namespace acoby\system;
 
 use acoby\BaseTestCase;
+use Exception;
 
 class FunctionsTest extends BaseTestCase {
+  /**
+   * @throws Exception
+   */
   public function testRandomStr() {
     $str = Utils::random_str(10);
     $this->assertIsString($str);
@@ -35,7 +39,10 @@ class FunctionsTest extends BaseTestCase {
     $val = Utils::endsWith($message, "");
     $this->assertTrue($val);
   }
-  
+
+  /**
+   * @throws Exception
+   */
   public function testCurve() {
     $curve = new Curve25519();
     $privateKey1 = base64_encode(random_bytes(32));

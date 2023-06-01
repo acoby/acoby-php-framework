@@ -16,7 +16,7 @@ use acoby\services\UserService;
 use acoby\system\RequestUtils;
 
 /**
- * A base class for CRUD REST controllers which are stateless and contains the operations of RestCntroller
+ * A base class for CRUD REST controllers which are stateless and contains the operations of RestController
  * 
  * - create
  * - read
@@ -265,7 +265,7 @@ abstract class AbstractRESTCRUDController extends AbstractRESTController impleme
       $search = $this->mapper->map($request->getBody()->__toString(), $this->getNewSearchObject());
       if ($search === null) throw new IllegalArgumentException('Search could not be parsed');
       $search->verify();
-      // add one to find more then expected (to see, if there are more objects available)
+      // add one to find more than expected (to see, if there are more objects available)
       $search->limit = $search->limit+1; 
 
       $objects = $this->searchObjects($request, $args, $search,$user);

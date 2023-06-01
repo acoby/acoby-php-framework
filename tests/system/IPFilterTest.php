@@ -7,12 +7,18 @@ use Exception;
 use acoby\BaseTestCase;
 
 class IPFilterTest extends BaseTestCase {
+  /**
+   * @throws Exception
+   */
   public function testWrongRange() {
     $filter = new IPFilter();
     $this->assertNull($filter->first());
     $this->assertFalse($filter->inrange('10.0.1.0'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv4Mask() {
     $array = array("10.0.0.0/24");
     $filter = new IPFilter($array);
@@ -23,6 +29,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('fd00:1::1'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv4Single() {
     $array = array("10.0.0.0");
     $filter = new IPFilter($array);
@@ -31,6 +40,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('fd00:1::1'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv4Section() {
     $array = array("10.0.0.0-10.0.0.255");
     $filter = new IPFilter($array);
@@ -41,6 +53,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('null'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv4Wildcard() {
     $array = array("10.0.0.*");
     $filter = new IPFilter($array);
@@ -51,6 +66,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('null'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv6Mask() {
     $array = array("fd00:1::/64");
     $filter = new IPFilter($array);
@@ -61,6 +79,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('10.0.0.0'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv6Single() {
     $array = array("fd00:1::0");
     $filter = new IPFilter($array);
@@ -70,6 +91,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('10.0.0.1'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv6Section() {
     $array = array("fd00:1::-fd00:1::ffff");
     $filter = new IPFilter($array);
@@ -77,6 +101,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('fd00:1::1'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testInRangeIPv6Wildcard() {
     $array = array("fd00:1:*::");
     $filter = new IPFilter($array);
@@ -84,6 +111,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->inrange('fd00:1::1'));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testFirstIPv4() {
     $array = array("10.0.0.0/24");
     $filter = new IPFilter($array);
@@ -109,6 +139,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals('10.0.1.0',$filter->firstIPv4("10.0.1.*"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testLastIPv4() {
     $array = array("10.0.0.0/24");
     $filter = new IPFilter($array);
@@ -134,6 +167,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertNull($filter->lastIPv4("null"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testLastIPv6Mask() {
     $array = array("fd00:1::/64");
     $filter = new IPFilter($array);
@@ -141,6 +177,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals('fd00:1::ffff:ffff:ffff:ffff',$filter->lastIPv6());
   }
 
+  /**
+   * @throws Exception
+   */
   public function testLastIPv6Wildcard() {
     $array = array("fd00:1:*");
     $filter = new IPFilter($array);
@@ -149,6 +188,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals('fd00:1:ffff:ffff:ffff:ffff:ffff:ffff',$filter->lastIPv6());
   }
 
+  /**
+   * @throws Exception
+   */
   public function testLastIPv6Section() {
     $array = array("fd00:1::0-fd00:1::ffff");
     $filter = new IPFilter($array);
@@ -156,6 +198,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals('fd00:1::ffff',$filter->lastIPv6());
   }
 
+  /**
+   * @throws Exception
+   */
   public function testLastIPv6Simple() {
     $filter = new IPFilter();
     $this->assertEquals('fd00:1::ffff:ffff:ffff:ffff',$filter->last("fd00:1::/64"));
@@ -165,6 +210,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertNull($filter->lastIPv6("null"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testFirstIPv6() {
     $array = array("fd00:1::/64");
     $filter = new IPFilter($array);
@@ -188,6 +236,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals('fd00:1::0',$filter->firstIPv6("fd00:1::/64"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testFirstIPMix() {
     $array = array("10.0.0.0/24","fd00:1::/64");
     $filter = new IPFilter($array);
@@ -196,6 +247,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertNotNull($filter->first());
   }
 
+  /**
+   * @throws Exception
+   */
   public function testIncrementIPv4() {
     $array = array("10.0.0.0/24");
     $filter = new IPFilter($array);
@@ -204,6 +258,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals('10.0.0.100',$next);
   }
 
+  /**
+   * @throws Exception
+   */
   public function testIncrementIPv6() {
     $array = array("fd00:1::/64");
     $filter = new IPFilter($array);
@@ -211,6 +268,10 @@ class IPFilterTest extends BaseTestCase {
     $next = $filter->increment($first, 100);
     $this->assertEquals('fd00:1::64',$next);
   }
+
+  /**
+   * @throws Exception
+   */
   public function testIncrementWrongString() {
     $filter = new IPFilter();
     $this->assertNull($filter->increment("null", 1));
@@ -230,6 +291,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertFalse($filter->isIP("nix:null"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testPackingUnpackingIPv6() {
     $filter = new IPFilter();
     $text = "fd00:1::f000";
@@ -241,6 +305,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertEquals($text,$ip);
   }
 
+  /**
+   * @throws Exception
+   */
   public function testPackingUnpackingIPv4() {
     $filter = new IPFilter();
     $text = "10.0.0.1";
@@ -266,6 +333,9 @@ class IPFilterTest extends BaseTestCase {
     $filter->dtr_ntop($text);
   }
 
+  /**
+   * @throws Exception
+   */
   public function testGetNetwork() {
     $filter = new IPFilter();
     $this->assertEquals("10.0.0.0",$filter->getNetwork("10.0.0.0/24"));
@@ -294,6 +364,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertNull($filter->getIPv6Wildcard("fd00:1::"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testGetFirstSectionIPv4() {
     $filter = new IPFilter();
 
@@ -304,6 +377,9 @@ class IPFilterTest extends BaseTestCase {
     $this->assertNull($filter->getIPv4Section("fd00:1::"));
   }
 
+  /**
+   * @throws Exception
+   */
   public function testGetFirstSectionIPv6() {
     $filter = new IPFilter();
 

@@ -113,6 +113,6 @@ class SessionManager {
    */
   public function unset(string $key) :void {
     ConfigService::unset($key);
-    if (isset($_SESSION) && isset($_SESSION[$key])) unset($_SESSION[$key]);
+    if (isset($_SESSION[$key])) unset($_SESSION[$key]);
   }
 }

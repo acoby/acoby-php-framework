@@ -394,7 +394,7 @@ class DatabaseMapper {
       }
       $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
       if ($result[0] == null) return 0;
-      return $result[0];
+      return intval($result[0]);
     } catch (Exception $e) {
       Utils::logError("Exception in query ".$e->getMessage()." trace ".$e->getTraceAsString(), $query, $params, $stmt->errorInfo());
     }
@@ -478,7 +478,7 @@ class DatabaseMapper {
     foreach ($classFields as $field) {
       if (!in_array($field, $searchFields)) {
         if (in_array($field,$tableColumns)) {
-          $this->addSelectParam($query, $params, $search->$field, $field,gettype($search->$field), false, $tableName);
+          $this->addSelectParam($query, $params, $search->$field, $field, gettype($search->$field), false, $tableName);
         } else {
           Utils::logInfo("class field: '".get_class($search)."->".$field."' has no pendant in table '".$tableName."' in trace ".(new Exception())->getTraceAsString());
         }

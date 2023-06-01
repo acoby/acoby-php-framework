@@ -11,7 +11,8 @@ class DatabaseMapperTest extends BaseTestCase {
     $params = array();
     $key = "key";
     $var = "value";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key);
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key);
     $this->assertNotEquals($query, $newQuery);
   }
 
@@ -20,42 +21,48 @@ class DatabaseMapperTest extends BaseTestCase {
     $params = array();
     $key = "key";
     $var = 1;
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "integer");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "integer");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = ">=1";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "integer");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "integer");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = ">1";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "integer");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "integer");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = "<1";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "integer");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "integer");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = "<=1";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "integer");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "integer");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = 1;
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "integer", true);
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "integer", true);
     $this->assertNotEquals($query, $newQuery);
   }
 
@@ -64,42 +71,48 @@ class DatabaseMapperTest extends BaseTestCase {
     $params = array();
     $key = "key";
     $var = "2021-06-30 00:00:00";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "datetime");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "datetime");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = ">2021-06-30 00:00:00";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "datetime");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "datetime");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = ">=2021-06-30 00:00:00";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "datetime");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "datetime");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = "<2021-06-30 00:00:00";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "datetime");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "datetime");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = "<=2021-06-30 00:00:00";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "datetime");
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "datetime");
     $this->assertNotEquals($query, $newQuery);
 
     $query = "WHERE 1=1 ";
     $params = array();
     $key = "key";
     $var = "2021-06-30 00:00:00";
-    $newQuery = DatabaseMapper::getInstance()->addSelectParam($query, $params, $var, $key, "datetime", true);
+    $newQuery = $query;
+    DatabaseMapper::getInstance()->addSelectParam($newQuery, $params, $var, $key, "datetime", true);
     $this->assertNotEquals($query, $newQuery);
   }
 }

@@ -39,23 +39,21 @@ abstract class AbstractBackendControllerTest extends BaseTestCase {
    * Returns a JSON Response
    *
    * @param string $body
-   * @param string $class
-   * @param bool $asList
+   * @param string|null $class
    * @return array
    * @throws IllegalArgumentException
+   * @deprecated please use getJSONResponseArray, getJSONResponseObject or getJSONResponseObjectList
    */
-  protected function getJSONResponse(string $body, string $class = null, bool $asList = false) :array {
+  protected function getJSONResponse(string $body, string $class = null) :array {
     if ($class === null) {
       return $this->mapper->decode($body);
-    } else if ($asList) {
-      return $this->mapper->mapList($body, $class);
     } else {
-      return $this->mapper->map($body, new $class);
+      return $this->mapper->mapList($body, $class);
     }
   }
 
   /**
-   * Returns a JSON respresentation of the body
+   * Returns a JSON representation of the body
    *
    * @param ResponseInterface $response
    * @return array
@@ -67,7 +65,7 @@ abstract class AbstractBackendControllerTest extends BaseTestCase {
   }
 
   /**
-   * Returns a JSON respresentation of the body
+   * Returns a JSON representation of the body
    *
    * @param ResponseInterface $response
    * @param string $class
@@ -78,13 +76,14 @@ abstract class AbstractBackendControllerTest extends BaseTestCase {
     $body = $response->getBody()->__toString();
     return $this->mapper->map($body, new $class);
   }
-  
+
   /**
-   * Returns a JSON respresentation of the body
+   * Returns a JSON representation of the body
    *
    * @param ResponseInterface $response
    * @param string $class
    * @return array
+   * @throws IllegalArgumentException
    */
   protected function getJSONResponseObjectList(ResponseInterface $response, string $class) :array {
     $body = $response->getBody()->__toString();

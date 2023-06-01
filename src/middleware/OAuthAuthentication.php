@@ -41,7 +41,7 @@ class OAuthAuthentication implements MiddlewareInterface {
    *
    * @param array $options
    */
-  public function __construct($options = []) {
+  public function __construct(array $options = []) {
     /* Setup stack for rules */
     $this->rules = new SplStack;
     

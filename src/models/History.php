@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace acoby\models;
 
 use acoby\exceptions\IllegalArgumentException;
+use Exception;
 use Ramsey\Uuid\Uuid;
 use acoby\system\Utils;
 
@@ -66,9 +67,14 @@ class History {
    * @var string|null
    */
   public $message;
-  
+
   /**
    * verify the incoming object.
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException
    */
   public function verify(bool $isNew = true) :bool {
     if ($isNew) {
@@ -85,11 +91,13 @@ class History {
     
     return true;
   }
-  
+
   /**
    * ändert das Format.
    *
+   * @param bool $expand
    * @return History|NULL
+   * @throws Exception
    */
   public function reform(bool $expand = false) :History {
     $this->created = Utils::getJSONDateTime($this->created);

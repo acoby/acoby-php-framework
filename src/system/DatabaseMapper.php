@@ -561,8 +561,11 @@ class DatabaseMapper {
     }
 
     $stmt = $connection->prepare($query);
-    if (!$stmt) throw new DatabaseException("Failed to parse query: ".$query);
-
+    if (!$stmt) {
+      Utils::logError("Failed parsing query",$query,$params,$stmt->errorInfo());
+      throw new DatabaseException("Failed to parse query: ".$query);
+    }
+    
     foreach ($params as $key => &$value) {
       $stmt->bindParam($key, $value);
     }

@@ -35,7 +35,7 @@ class DatabaseMapper {
 
     $query = "SELECT * FROM `".$tableName."` LIMIT 0";
     $result = $connection->query($query);
-    if ($result === false) throw new Exception("Table ".$tableName." is not available");
+    if ($result === false) throw new DatabaseException("Table ".$tableName." is not available");
     $columns = array();
     for ($i = 0; $i < $result->columnCount(); $i++) {
       $col = $result->getColumnMeta($i);

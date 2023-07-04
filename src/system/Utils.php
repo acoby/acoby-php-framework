@@ -568,7 +568,7 @@ class Utils {
    * @param string $characters
    * @return string
    */
-  public function createRandomString(int $length=10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') :string {
+  public static function createRandomString(int $length=10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') :string {
     $charactersLength = strlen($characters);
     $randstring = '';
     for ($i = 0; $i < $length; $i++) $randstring.= $characters[random_int(0, $charactersLength - 1)];

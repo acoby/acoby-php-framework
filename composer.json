@@ -11,7 +11,7 @@
 		"slim/slim" : "~4",
 		"slim/twig-view" : "~3",
 		"tuupola/slim-basic-auth" : "~3",
-		"stevenmaguire/oauth2-keycloak" : "~4",
+		"stevenmaguire/oauth2-keycloak" : "~4 || ~0",
       "ext-json": "*",
 		"ext-pdo": "*",
 		"ext-openssl": "*"

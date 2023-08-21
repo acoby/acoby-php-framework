@@ -120,7 +120,6 @@ abstract class AbstractEditController extends AbstractViewController {
    * @throws BackendException
    */
   public function view(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
-    session_commit();
     $view = Twig::fromRequest($request);
 
     $object = $this->getObject($request, $args);
@@ -133,6 +132,7 @@ abstract class AbstractEditController extends AbstractViewController {
     try {
       $data = $this->getTwigArgs($request, $args);
       $data["form"] = $form;
+      session_commit();
       return $this->withTwig($response, $view, $this->getTemplate(), $data);
     } catch (Throwable $throwable) {
       Utils::logException("Problem during rendering",$throwable);
@@ -159,7 +159,6 @@ abstract class AbstractEditController extends AbstractViewController {
    * @return ResponseInterface
    */
   public function add(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
-    session_commit();
     $view = Twig::fromRequest($request);
 
     $form = $this->getForm($request, $args);

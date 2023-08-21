@@ -31,7 +31,6 @@ abstract class AbstractListController extends AbstractViewAPIController {
    * @return ResponseInterface
    */
   public function view(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
-    session_commit();
     $my_response = $this->validateAPIRequest($request, $response, $args);
     if ($my_response !== null) return $my_response;
 
@@ -68,7 +67,6 @@ abstract class AbstractListController extends AbstractViewAPIController {
    * @return ResponseInterface
    */
   public function list(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
-    session_commit();
     $my_response = $this->validateAPIRequest($request, $response, $args);
     if ($my_response !== null) return $my_response;
 
@@ -85,7 +83,6 @@ abstract class AbstractListController extends AbstractViewAPIController {
    * @return ResponseInterface
    */
   public function values(ServerRequestInterface $request, ResponseInterface $response, array $args) :ResponseInterface {
-    session_commit();
     $my_response = $this->validateAPIRequest($request, $response, $args);
     if ($my_response !== null) return $my_response;
 

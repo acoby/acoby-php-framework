@@ -296,9 +296,7 @@ abstract class AbstractEditController extends AbstractViewController {
    */
   protected function validateFormRequest(ServerRequestInterface $request, ResponseInterface $response, array $args, array $form, object $object) :?ResponseInterface {
     $user = $this->getCurrentUser();
-    if ($user === null) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
-    }
+    if ($user === null) return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
 
     if ($object === null) {
       $view = Twig::fromRequest($request);

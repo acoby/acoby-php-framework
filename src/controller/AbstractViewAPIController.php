@@ -26,9 +26,7 @@ abstract class AbstractViewAPIController extends AbstractViewController {
    */
   protected function validateAPIRequest(ServerRequestInterface $request, ResponseInterface $response, array $args) :?ResponseInterface {
     $user = $this->getCurrentUser();
-    if ($user === null) {
-      return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
-    }
+    if ($user === null) return $response->withStatus(StatusCodeInterface::STATUS_FORBIDDEN);
     // darf der User auf diesen Punkt zugreifen?
     return null;
   }

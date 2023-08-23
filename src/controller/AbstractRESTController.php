@@ -26,12 +26,8 @@ abstract class AbstractRESTController extends AbstractController {
    */
   protected function getRequestUser(ServerRequestInterface $request, string $role = UserService::USER) :AbstractUser {
     $user = $request->getAttribute(AbstractController::ATTRIBUTE_KEY_USER);
-    if ($user === null) {
-      throw new AccessDeniedException('User is not authorized');
-    }
-    if (!AbstractFactory::getUserService()->hasRole($user, $role)) {
-      throw new AccessDeniedException('User has not enough privileges');
-    }
+    if ($user === null) throw new AccessDeniedException('User is not authorized');
+    if (!AbstractFactory::getUserService()->hasMinRole($user, $role)) throw new AccessDeniedException('User has not enough privileges');
     return $user;
   }
 

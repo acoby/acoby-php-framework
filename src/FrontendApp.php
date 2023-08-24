@@ -24,6 +24,7 @@ use acoby\models\AbstractUser;
 use Twig\Error\LoaderError;
 use Twig\Extension\ExtensionInterface;
 use Slim\Exception\HttpNotFoundException;
+use Fig\Http\Message\StatusCodeInterface;
 
 /**
  * A base class for a Slim/Twig Frontend application.
@@ -60,8 +61,13 @@ abstract class FrontendApp {
       if ($this->app === null) throw new IllegalStateException("FrontendApp not initialized");
       $this->app->run();
     } catch (HttpNotFoundException $exception) {
-      header("HTTP/1.0 404 Not Found");
-      exit();
+      $responseFactory = new ResponseFactory();
+      $response = $responseFactory->createResponse(StatusCodeInterface::STATUS_NOT_FOUND);
+      
+      $body = $response->getBody();
+      $body->write("Not found");
+      $responseEmitter = new ResponseEmitter();
+      $responseEmitter->emit($response);
     } catch (Throwable $exception) {
       $data = $this->handleError($exception);
       
